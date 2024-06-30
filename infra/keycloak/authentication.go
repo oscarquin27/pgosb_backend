@@ -1,4 +1,4 @@
-// package authentication
+package authentication
 
 // import (
 // 	"os"
@@ -13,7 +13,6 @@
 // func NewAuthentication() (*pgxpool.Pool, error) {
 
 // 	KeycloakClient := gocloak.NewClient("http://192.168.0.91:8080")
-
 
 // 	return KeycloakClient, nil
 // }
