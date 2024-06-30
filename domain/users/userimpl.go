@@ -146,7 +146,7 @@ func (u *UserImpl) Create(user *entities.UserCreateDto) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion_date, promotion, condition, division, profession, institution, user_system, zip_code)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32);
+VALUES($1::integer, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::integer, $12, $13, $14, $15::integer, $16::integer, $17::integer, $18::integer, $19::integer, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32);
 `, 
 	user.UserIdentification.Id_role,
 	user.UserProfile.User_name,

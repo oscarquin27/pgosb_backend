@@ -265,7 +265,7 @@ func (u *LocationsImpl) GetMunicipality(id int64) (*municipality.Municipality, e
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, "select municipality_id, state_id, name, coordinates from locations.municipalities where municipality = $1", id)
+	rows, err := conn.Query(ctx, "select municipality_id, state_id, name, coordinates from locations.municipalities where municipality_id = $1", id)
 
 	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[municipality.Municipality])
 

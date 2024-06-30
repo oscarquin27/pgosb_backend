@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 	"os"
+	"path/filepath"
 
 	"gopkg.in/yaml.v3"
 )
@@ -11,13 +12,23 @@ type Config struct {
 	Database struct {
 		ConnectionString string `yaml:"connection_string"`
 	}
+	Keycloak struct {
+		ClientId string `yaml:"client_id"`
+		ClientSecret string `yaml:"client_secret"`
+	}
 }
 
-func NewConfig(configPath string) (*Config, error) {
-	config := &Config{}
+var Configuration *Config
+
+func NewConfig() (*Config, error) {
 	
-	file, err := os.Open(configPath)
-	
+	path, err := os.Getwd()
+
+	path = filepath.Join(path, "config", "settings.yml")
+
+
+	file, err := os.Open(path)
+
 	if err != nil {
 		log.Fatal("No se encontro el archivo de configuracion")
 		os.Exit(1)
@@ -27,9 +38,9 @@ func NewConfig(configPath string) (*Config, error) {
 
 	d := yaml.NewDecoder(file)
 
-	if err := d.Decode(&config); err != nil {
+	if err := d.Decode(&Configuration); err != nil {
 		return nil, err
 	}
 
-	return config, nil
+	return Configuration, nil
 }

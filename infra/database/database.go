@@ -4,7 +4,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"path/filepath"
 
 	"fdms/infra/config"
 
@@ -15,20 +14,8 @@ import (
 var pgxConfig *pgxpool.Config
 
 func NewDatabase() (*pgxpool.Pool, error) {
-	var err error
 
-	path, err := os.Getwd()
-
-	path = filepath.Join(path, "config", "settings.yml")
-	
-	config, err := config.NewConfig(path)
-
-	if err != nil {
-		log.Fatal("No se pudo obtener archivo de configuracion, verificar filepath")
-		os.Exit(1)
-	}
-
-	pgxConfig, err = pgxpool.ParseConfig(config.Database.ConnectionString)
+	pgxConfig, err := pgxpool.ParseConfig(config.Configuration.Database.ConnectionString)
 
 	if err != nil {
 		log.Fatal("No se pudo parsear el archivo de configuracion, verificar el yaml")
