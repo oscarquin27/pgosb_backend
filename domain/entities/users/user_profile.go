@@ -1,8 +1,6 @@
 package user_entity
 
 import (
-	"time"
-
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -49,7 +47,7 @@ type UserProfile struct {
 	Gender     string `json:"gender"`
 	Phone	   string `json:"phone"`
 	Secondary_Phone string `json:"secondary_phone"`
-	Birth_date time.Time `json:"birth_date"`
+	Birth_date string `json:"birth_date"`
 	Age 	   string `json:"age"`
 	Zip_code   string `json:"zip_code"`
 	Residence  string `json:"residence"`
@@ -65,7 +63,7 @@ type UserProfile struct {
 	Code 		string `json:"code"`
 	Personal_code string `json:"personal_code"`
 	Rank 		string `json:"rank"`
-	Promotion_date time.Time `json:"promotion_date"`
+	Promotion_date string `json:"promotion_date"`
 	Promotion   string `json:"promotion"`
 	Condition string `json:"condition"`
 	Division string `json:"division"`

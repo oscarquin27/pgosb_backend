@@ -39,12 +39,16 @@ func ConvertFromInt2(i pgtype.Int2) (string) {
 	return strconv.Itoa(int(i.Int16))
 }
 
-func ConvertToPgTypeDate(d time.Time) (pgtype.Date){
-	return pgtype.Date{Time: d}
+func ConvertToPgTypeDate(d string) (pgtype.Date){
+	t, err := time.Parse("2000-01-01", d)
+	if err != nil {
+		t = time.Now()
+	}
+	return pgtype.Date{Time: t}
 }
 
-func ConvertFromDate(d pgtype.Date) (time.Time) {
-	return d.Time
+func ConvertFromDate(d pgtype.Date) (string) {
+	return d.Time.String()
 }
 
 func ConvertToPgTypeBool(b bool) (pgtype.Bool){

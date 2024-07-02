@@ -508,7 +508,7 @@ func (u *LocationsImpl) GetStation(id int64) (*station.Station, error){
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, "select station_id, municipality_id, name, coordinates from locations.fire_stations where station_id = $1", id)
+	rows, err := conn.Query(ctx, "select station_id, municipality_id, name, coordinates, description, code, abbreviation, phones, state_id, parish_id, sector, community, street, address from locations.fire_stations where station_id = $1", id)
 
 	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[station.Station])
 
@@ -534,7 +534,7 @@ func (u *LocationsImpl) GetAllStations() ([]station.Station, error){
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, "select station_id, municipality_id, name, coordinates from locations.fire_stations")
+	rows, err := conn.Query(ctx, "select station_id, municipality_id, name, coordinates, description, code, abbreviation, phones, state_id, parish_id, sector, community, street, address from locations.fire_stations")
 
 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[station.Station])
 

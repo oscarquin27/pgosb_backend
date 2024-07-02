@@ -102,7 +102,7 @@ func Run(db *pgxpool.Pool) {
   station := v1.Group("/location/station")
   {
     station.GET("/:id", locationController.GetStation)
-    station.GET("", locationController.GetAllStations)
+    station.GET("all", locationController.GetAllStations)
     station.POST("/create", locationController.CreateStation)
     station.PUT("/update", locationController.UpdateStation)
     station.DELETE("/:id", locationController.DeleteStation)   
@@ -117,7 +117,7 @@ func Run(db *pgxpool.Pool) {
     vehicle.DELETE("/:id", vehicleController.DeleteVehicle)  
   }
 
-  unity := v1.Group("unity")
+  unity := v1.Group("unit")
   {
     unity.GET("/:id", unityController.GetUnity)
     unity.GET("/all", unityController.GetAllUnities)
