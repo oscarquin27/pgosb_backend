@@ -16,6 +16,9 @@ type Config struct {
 		ClientId string `yaml:"client_id"`
 		ClientSecret string `yaml:"client_secret"`
 	}
+	Http struct {
+		Port string `yaml:"port"`
+	}
 }
 
 var Configuration *Config
@@ -24,7 +27,8 @@ func NewConfig() (*Config, error) {
 	
 	path, err := os.Getwd()
 
-	path = filepath.Join(path, "config", "settings.yml")
+
+	path = filepath.Join(path, "bin", "config", "settings.yml")
 
 
 	file, err := os.Open(path)

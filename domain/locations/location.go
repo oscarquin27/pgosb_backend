@@ -35,6 +35,8 @@ type LocationsRepository interface {
 	CreateStation(state *station.Station) (error)
 	UpdateStation(state *station.Station) (error)
 	DeleteStation(id int64) (error)
+	MapToDto(station.Station) (station.StationDto)
+	MapFromDto(station.StationDto) (station.Station)
 }
 
 type LocationsImpl struct {

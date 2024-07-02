@@ -8,13 +8,14 @@ import (
 	layout_service "fdms/domain/layouts"
 	location_service "fdms/domain/locations"
 	role_service "fdms/domain/roles"
-	unity_service "fdms/domain/unities"
+	unity_service "fdms/domain/units"
 	user_service "fdms/domain/users"
 	vehicle_service "fdms/domain/vehicles"
+	config "fdms/infra/config"
 	layout_routes "fdms/routes/layouts"
 	location_routes "fdms/routes/locations"
 	role_routes "fdms/routes/roles"
-	unity_routes "fdms/routes/unities"
+	unity_routes "fdms/routes/units"
 	user_routes "fdms/routes/user"
 	vehicle_routes "fdms/routes/vehicles"
 )
@@ -130,5 +131,5 @@ func Run(db *pgxpool.Pool) {
     layout.GET("/:entity", layoutController.GetLayout)
   }
   
-  router.Run(":5001")
+  router.Run(":" + config.Configuration.Http.Port)
 }
