@@ -13,7 +13,7 @@ type Config struct {
 		ConnectionString string `yaml:"connection_string"`
 	}
 	Keycloak struct {
-		ClientId string `yaml:"client_id"`
+		ClientId     string `yaml:"client_id"`
 		ClientSecret string `yaml:"client_secret"`
 	}
 	Http struct {
@@ -24,12 +24,10 @@ type Config struct {
 var Configuration *Config
 
 func NewConfig() (*Config, error) {
-	
-	path, err := os.Getwd()
 
+	//path, err := os.Getwd()
 
-	path = filepath.Join(path, "bin", "config", "settings.yml")
-
+	path := filepath.Join("config", "settings.yml")
 
 	file, err := os.Open(path)
 
