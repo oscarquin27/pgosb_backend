@@ -1,32 +1,32 @@
 package routes
 
 import (
-	entities "fdms/domain/entities/unities"
-	unity "fdms/domain/unities"
+	entities "fdms/domain/entities/units"
+	unity "fdms/domain/units"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
-type UnityController struct {
-	unityService unity.UnityRepository
+type UnitController struct {
+	unityService unity.UnitRepository
 }
 
-func NewUnityController(unityService unity.UnityRepository) *UnityController {
-	return &UnityController{
+func NewUnityController(unityService unity.UnitRepository) *UnitController {
+	return &UnitController{
 		unityService : unityService,
 	}
 }
 
-func (u *UnityController) GetUnity(c *gin.Context){
+func (u *UnitController) GetUnity(c *gin.Context){
 
 	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	vehicle, err := u.unityService.GetUnity(id)
+	vehicle, err := u.unityService.GetUnit(id)
 
 	if err != nil {
-		if err == entities.ErrorUnityNotFound {
+		if err == entities.ErrorUnitNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
 			return
 		}
@@ -38,12 +38,12 @@ func (u *UnityController) GetUnity(c *gin.Context){
 	return
 }
 
-func (u *UnityController) GetAllUnities(c *gin.Context){
+func (u *UnitController) GetAllUnities(c *gin.Context){
 
 	vehicle, err := u.unityService.GetAll()
 
 	if err != nil {
-		if err == entities.ErrorUnityNotFound {
+		if err == entities.ErrorUnitNotFound {
 			c.JSON(http.StatusNotFound, err.Error())
 			return
 		}
@@ -55,8 +55,8 @@ func (u *UnityController) GetAllUnities(c *gin.Context){
 	return
 }
 
-func (u *UnityController) CreateUnity(c *gin.Context){
-	var user entities.Unity
+func (u *UnitController) CreateUnity(c *gin.Context){
+	var user entities.Unit
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
@@ -72,8 +72,8 @@ func (u *UnityController) CreateUnity(c *gin.Context){
 }
 
 
-func (u *UnityController) UpdateUnity(c *gin.Context){
-	var user entities.Unity
+func (u *UnitController) UpdateUnity(c *gin.Context){
+	var user entities.Unit
 
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -89,14 +89,14 @@ func (u *UnityController) UpdateUnity(c *gin.Context){
 	c.JSON(http.StatusOK, "Unidad actualizada satisfactoriamente")
 }
 
-func (u *UnityController) DeleteUnity(c *gin.Context){
+func (u *UnitController) DeleteUnity(c *gin.Context){
 
 	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	err := u.unityService.Delete(id)
 
 	if err != nil {
-		if err == entities.ErrorUnityNotUpdated {
+		if err == entities.ErrorUnitNotUpdated {
 			c.JSON(http.StatusConflict, err.Error())
 			return
 		}

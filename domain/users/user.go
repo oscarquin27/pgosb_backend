@@ -10,9 +10,11 @@ import (
 type UserRepository interface {
 	GetUser(id int64) (*entities.User, error)
 	GetAll() ([]entities.User, error)
-	Create(user *entities.UserCreateDto) (error)
-	Update(user *entities.UserUpdateDto) (error)
+	Create(user *entities.User) (error)
+	Update(user *entities.User) (error)
 	Delete(id int64) (error)
+	MapToDto(user *entities.User) (entities.UserDto)
+	MapFromDto(user *entities.UserDto) (entities.User)
 }
 
 type UserImpl struct {

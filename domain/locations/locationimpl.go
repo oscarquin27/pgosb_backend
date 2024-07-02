@@ -7,6 +7,7 @@ import (
 	parish "fdms/domain/entities/parish"
 	state "fdms/domain/entities/states"
 	station "fdms/domain/entities/stations"
+	"fdms/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -558,7 +559,9 @@ func (u *LocationsImpl) CreateStation(r *station.Station) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "insert into locations.fire_station (municipality_id, name, coordinates) values ($1, $2, $3)", r.Municipality_id, r.Name, r.Coordinates)
+	rows, err := conn.Exec(ctx, `insert into locations.fire_station 
+	(municipality_id, name, coordinates, description, code, abbreviation, phones, state_id, parish_id, sector, community, street, address) 
+	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`, r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address)
 	
 	if err != nil {
 		return err
@@ -581,7 +584,7 @@ func (u *LocationsImpl) UpdateStation(r *station.Station) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "update locations.fire_station set municipality_id = $1, name = $2, coordinates = $3 where station_id = $3", r.Municipality_id, r.Name, r.Coordinates, r.Id)
+	rows, err := conn.Exec(ctx, "update locations.fire_station set municipality_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, state_id = $8, parish_id = $9, sector = $10, community = $11, street = $12, address = $13 where station_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address ,r.Id)
 	
 	if err != nil {
 		return err
@@ -616,3 +619,44 @@ func (u *LocationsImpl) DeleteStation(id int64) (error) {
 
 	return station.ErrorStationNotDeleted
 }
+
+func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
+	station := station.StationDto{}
+
+	station.Municipality_id = utils.ConvertFromInt4(s.Municipality_id)
+	station.Name = utils.ConvertFromText(s.Name)
+	station.Coordinates = utils.ConvertFromText(s.Coordinates)
+	station.Description = utils.ConvertFromText(s.Description)
+	station.Code = utils.ConvertFromText(s.Code)
+	station.Abbreviation = utils.ConvertFromText(s.Abbreviation)
+	station.Phones = s.Phones
+	station.State_id = utils.ConvertFromInt4(s.State_id)
+	station.Parish_id = utils.ConvertFromInt4(s.Parish_id)
+	station.Sector = utils.ConvertFromText(s.Sector)
+	station.Community = utils.ConvertFromText(s.Community)
+	station.Street = utils.ConvertFromText(s.Street)
+	station.Address = utils.ConvertFromText(s.Address)
+
+	return station
+}
+
+func (u *LocationsImpl) MapFromDto(s station.StationDto) (station.Station) {
+	station := station.Station{}
+
+	station.Municipality_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Municipality_id))
+	station.Name = utils.ConvertToPgTypeText(s.Name)
+	station.Coordinates = utils.ConvertToPgTypeText(s.Coordinates)
+	station.Description = utils.ConvertToPgTypeText(s.Description)
+	station.Code = utils.ConvertToPgTypeText(s.Code)
+	station.Abbreviation = utils.ConvertToPgTypeText(s.Abbreviation)
+	station.Phones = s.Phones
+	station.State_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.State_id))
+	station.Parish_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Parish_id))
+	station.Sector = utils.ConvertToPgTypeText(s.Sector)
+	station.Community = utils.ConvertToPgTypeText(s.Community)
+	station.Street = utils.ConvertToPgTypeText(s.Street)
+	station.Address = utils.ConvertToPgTypeText(s.Address)
+
+	return station
+}
+

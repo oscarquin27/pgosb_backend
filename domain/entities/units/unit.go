@@ -1,17 +1,17 @@
-package unity_entity
+package unit_entity
 
 import "github.com/jackc/pgx/v5/pgtype"
 
 
-type Unity struct {
-	Id pgtype.Int8 `json:"id"`
+type Unit struct {
+	Id pgtype.Int4 `json:"id"`
 	Plate pgtype.Text `json:"plate"`
 	Zone pgtype.Text `json:"zone"`
 	Station pgtype.Text `json:"station"`
-	Unity_type pgtype.Text `json:"unity_type"`
+	Unit_type pgtype.Text `json:"unit_type"`
 	Make pgtype.Text `json:"make"`
-	Drivers pgtype.Int8 `json:"drivers"`
-	Unity_condition pgtype.Text `json:"unity_condition"`
+	Drivers pgtype.Int4 `json:"drivers"`
+	Unit_condition pgtype.Text `json:"unit_condition"`
 	Vehicle_serial pgtype.Text `json:"vehicle_serial"`
 	Motor_serial pgtype.Text `json:"motor_serial"`
 	Capacity pgtype.Text `json:"capacity"`
