@@ -147,7 +147,7 @@ func (u *UserImpl) Create(user *entities.User) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion_date, promotion, condition, division, profession, institution, user_system, zip_code)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32);
+VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::date, $26, $27, $28, $29, $30, $31, $32);
 `, 
 	user.UserIdentification.Id_role,
 	user.UserProfile.User_name,
@@ -281,7 +281,7 @@ func (u *UserImpl) Update(user *entities.User) (error) {
 		return nil
 	}
 
-	return entities.ErrorUserNotCreated
+	return entities.ErrorUserNotUpdated
 }
 
 func (u *UserImpl) Delete(id int64) (error) {
@@ -337,7 +337,7 @@ func (u *UserImpl) MapFromDto(userDto *entities.UserDto) (entities.User) {
 	user.UserProfile.Gender = utils.ConvertToPgTypeText(userDto.Gender)
 	user.UserProfile.Phone = utils.ConvertToPgTypeText(userDto.Phone)
 	user.UserProfile.Secondary_Phone = utils.ConvertToPgTypeText(userDto.Secondary_Phone)
-	user.UserProfile.Birth_date = utils.ConvertToPgTypeDate(userDto.Birth_date)	
+	user.UserProfile.Birth_date = userDto.Birth_date
 	user.UserProfile.Age = utils.ConvertToPgTypeInt2(age)
 	user.UserProfile.Residence = utils.ConvertToPgTypeText(userDto.Residence)
 	user.UserProfile.Coordinates = utils.ConvertToPgTypeText(userDto.Coordinates)
@@ -352,7 +352,7 @@ func (u *UserImpl) MapFromDto(userDto *entities.UserDto) (entities.User) {
 	user.UserProfile.Code = utils.ConvertToPgTypeText(userDto.Code)
 	user.UserProfile.Personal_code = utils.ConvertToPgTypeText(userDto.Personal_code)
 	user.UserProfile.Rank = utils.ConvertToPgTypeText(userDto.Rank)
-	user.Promotion_date = utils.ConvertToPgTypeDate(userDto.Promotion_date)
+	user.Promotion_date = userDto.Promotion_date
 	user.UserProfile.Promotion = utils.ConvertToPgTypeText(userDto.Promotion)
 	user.UserProfile.Condition = utils.ConvertToPgTypeText(userDto.Condition)
 	user.UserProfile.Division = utils.ConvertToPgTypeText(userDto.Division)
@@ -377,7 +377,7 @@ func (u *UserImpl) MapToDto(user *entities.User) (entities.UserDto) {
 	userDto.UserProfileDto.Gender = utils.ConvertFromText(user.Gender)
 	userDto.UserProfileDto.Phone = utils.ConvertFromText(user.Phone)
 	userDto.UserProfileDto.Secondary_Phone = utils.ConvertFromText(user.Secondary_Phone)
-	userDto.UserProfileDto.Birth_date = utils.ConvertFromDate(user.Birth_date)	
+	userDto.UserProfileDto.Birth_date = user.Birth_date
 	userDto.UserProfileDto.Age = utils.ConvertFromInt2(user.Age)
 	userDto.UserProfileDto.Residence = utils.ConvertFromText(user.Residence)
 	userDto.UserProfileDto.Coordinates = utils.ConvertFromText(user.Coordinates)
@@ -392,7 +392,7 @@ func (u *UserImpl) MapToDto(user *entities.User) (entities.UserDto) {
 	userDto.UserProfileDto.Code = utils.ConvertFromText(user.Code)
 	userDto.UserProfileDto.Personal_code = utils.ConvertFromText(user.Personal_code)
 	userDto.UserProfileDto.Rank = utils.ConvertFromText(user.Rank)
-	userDto.Promotion_date = utils.ConvertFromDate(user.Promotion_date)
+	userDto.Promotion_date = user.Promotion_date
 	userDto.UserProfileDto.Promotion = utils.ConvertFromText(user.Promotion)
 	userDto.UserProfileDto.Condition = utils.ConvertFromText(user.Condition)
 	userDto.UserProfileDto.Division = utils.ConvertFromText(user.Division)

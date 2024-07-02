@@ -16,7 +16,7 @@ func ParseInt(s string) (int){
 }
 
 func ConvertToPgTypeInt4(i int) (pgtype.Int4) {
-	return pgtype.Int4{Int32: int32(i)}
+	return pgtype.Int4{Int32: int32(i), Valid: true}
 }
 
 func ConvertFromInt4(i pgtype.Int4) (string) {
@@ -24,7 +24,7 @@ func ConvertFromInt4(i pgtype.Int4) (string) {
 }
 
 func ConvertToPgTypeText(s string) (pgtype.Text){
-	return pgtype.Text{String: s}
+	return pgtype.Text{String: s, Valid: true}
 }
 
 func ConvertFromText(s pgtype.Text) (string) {
@@ -32,7 +32,7 @@ func ConvertFromText(s pgtype.Text) (string) {
 }
 
 func ConvertToPgTypeInt2(i int) (pgtype.Int2) {
-	return pgtype.Int2{Int16: int16(i)}
+	return pgtype.Int2{Int16: int16(i), Valid: true}
 }
 
 func ConvertFromInt2(i pgtype.Int2) (string) {
@@ -44,7 +44,7 @@ func ConvertToPgTypeDate(d string) (pgtype.Date){
 	if err != nil {
 		t = time.Now()
 	}
-	return pgtype.Date{Time: t}
+	return pgtype.Date{Time: t, Valid: true}
 }
 
 func ConvertFromDate(d pgtype.Date) (string) {
@@ -60,7 +60,7 @@ func ConvertFromBool(b pgtype.Bool) (bool){
 }
 
 func ConvertToPgTypeNumeric(i int) (pgtype.Numeric){
-	return pgtype.Numeric{Int: big.NewInt(int64(i))}
+	return pgtype.Numeric{Int: big.NewInt(int64(i)), Valid: true}
 }
 
 func ConvertFromNumeric(i pgtype.Numeric) (string){

@@ -108,7 +108,7 @@ func Run(db *pgxpool.Pool) {
     station.DELETE("/:id", locationController.DeleteStation)   
   }
   
-  vehicle := v1.Group("vehicles")
+  vehicle := v1.Group("/vehicles")
   {
     vehicle.GET("/:id", vehicleController.GetVehicle)
     vehicle.GET("/all", vehicleController.GetAllVehicle)

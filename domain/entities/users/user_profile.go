@@ -13,7 +13,7 @@ type UserProfile struct {
 	Gender     pgtype.Text `json:"gender"`
 	Phone	   pgtype.Text `json:"phone"`
 	Secondary_Phone pgtype.Text `json:"secondary_phone"`
-	Birth_date pgtype.Date `json:"birth_date"`
+	Birth_date string `json:"birth_date"`
 	Age 	   pgtype.Int2 `json:"age"`
 	Zip_code   pgtype.Text `json:"zip_code"`
 	Residence  pgtype.Text `json:"residence"`
@@ -29,7 +29,7 @@ type UserProfile struct {
 	Code 		pgtype.Text `json:"code"`
 	Personal_code pgtype.Text `json:"personal_code"`
 	Rank 		pgtype.Text `json:"rank"`
-	Promotion_date pgtype.Date `json:"promotion_date"`
+	Promotion_date string `json:"promotion_date"`
 	Promotion   pgtype.Text `json:"promotion"`
 	Condition pgtype.Text `json:"condition"`
 	Division pgtype.Text `json:"division"`
