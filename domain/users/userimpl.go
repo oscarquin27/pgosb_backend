@@ -4,6 +4,7 @@ import (
 	"context"
 	entities "fdms/domain/entities/users"
 	"fdms/utils"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -29,7 +30,7 @@ func (u *UserImpl) GetUser(id int64) (*entities.User, error) {
 	gender, 
 	phone, 
 	secondary_phone, 
-	birth_date, 
+	birth_date::text, 
 	age,
 	zip_code,
 	residence, 
@@ -45,7 +46,7 @@ func (u *UserImpl) GetUser(id int64) (*entities.User, error) {
 	code, 
 	personal_code, 
 	rank, 
-	promotion_date, 
+	promotion_date::text, 
 	promotion, 
 	condition, 
 	division, 
@@ -92,7 +93,7 @@ func (u *UserImpl) GetAll() ([]entities.User, error) {
 	gender, 
 	phone, 
 	secondary_phone, 
-	birth_date, 
+	birth_date::text, 
 	age,
 	zip_code,
 	residence, 
@@ -108,7 +109,7 @@ func (u *UserImpl) GetAll() ([]entities.User, error) {
 	code, 
 	personal_code, 
 	rank, 
-	promotion_date, 
+	promotion_date::text, 
 	promotion, 
 	condition, 
 	division, 
@@ -146,6 +147,10 @@ func (u *UserImpl) Create(user *entities.User) (error) {
 		return err
 	}
 
+	if user.UserProfile.Promotion_date == "" {
+		user.UserProfile.Promotion_date = time.Now().Format("2000-01-01")
+	}
+
 	rows, err := conn.Exec(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion_date, promotion, condition, division, profession, institution, user_system, zip_code)
 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::date, $26, $27, $28, $29, $30, $31, $32);
 `, 
@@ -173,7 +178,7 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 	user.UserProfile.Code,
 	user.UserProfile.Personal_code,
 	user.UserProfile.Rank,
-	user.Promotion_date,
+	user.UserProfile.Promotion_date,
 	user.UserProfile.Promotion,
 	user.UserProfile.Condition,
 	user.UserProfile.Division,
@@ -326,6 +331,10 @@ func (u *UserImpl) MapFromDto(userDto *entities.UserDto) (entities.User) {
 	pant := utils.ParseInt(userDto.Pant_size)
 
 	shoe := utils.ParseInt(userDto.Shoe_size)
+
+	if len(user.Promotion_date) <= 0 {
+		user.Promotion_date = time.Now().String()
+	}
 
 	user.UserIdentification.Id = utils.ConvertToPgTypeInt4(id)
 	user.UserIdentification.Id_role = utils.ConvertToPgTypeInt4(id_role)

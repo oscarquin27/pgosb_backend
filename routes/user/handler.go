@@ -60,9 +60,10 @@ func (u *UserController) GetAllUser(c *gin.Context){
 
 func (u *UserController) Create(c *gin.Context){
 	var userDto entities.UserDto
-
+	
 	if err := c.BindJSON(&userDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
+		 c.JSON(http.StatusBadRequest, err.Error())
+		 return
 	}
 
 	user := u.userService.MapFromDto(&userDto)
