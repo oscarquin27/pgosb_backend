@@ -559,9 +559,22 @@ func (u *LocationsImpl) CreateStation(r *station.Station) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, `insert into locations.fire_station 
+	rows, err := conn.Exec(ctx, `insert into locations.fire_stations 
 	(municipality_id, name, coordinates, description, code, abbreviation, phones, state_id, parish_id, sector, community, street, address) 
-	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`, r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address)
+	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`, 
+	r.Municipality_id, 
+	r.Name, 
+	r.Coordinates, 
+	r.Description, 
+	r.Code, 
+	r.Abbreviation, 
+	r.Phones, 
+	r.State_id, 
+	r.Parish_id, 
+	r.Sector, 
+	r.Community, 
+	r.Street, 
+	r.Address)
 	
 	if err != nil {
 		return err
@@ -584,7 +597,7 @@ func (u *LocationsImpl) UpdateStation(r *station.Station) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "update locations.fire_station set municipality_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, state_id = $8, parish_id = $9, sector = $10, community = $11, street = $12, address = $13 where station_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address ,r.Id)
+	rows, err := conn.Exec(ctx, "update locations.fire_stations set municipality_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, state_id = $8, parish_id = $9, sector = $10, community = $11, street = $12, address = $13 where station_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address ,r.Id)
 	
 	if err != nil {
 		return err
@@ -607,7 +620,7 @@ func (u *LocationsImpl) DeleteStation(id int64) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "delete from locations.fire_station where station_id = $1", id)
+	rows, err := conn.Exec(ctx, "delete from locations.fire_stations where station_id = $1", id)
 
 	if err != nil {
 		return err
@@ -643,6 +656,7 @@ func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
 func (u *LocationsImpl) MapFromDto(s station.StationDto) (station.Station) {
 	station := station.Station{}
 
+	station.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	station.Municipality_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Municipality_id))
 	station.Name = utils.ConvertToPgTypeText(s.Name)
 	station.Coordinates = utils.ConvertToPgTypeText(s.Coordinates)

@@ -56,10 +56,12 @@ func (u *UnitController) GetAllUnities(c *gin.Context){
 }
 
 func (u *UnitController) CreateUnity(c *gin.Context){
-	var user entities.Unit
-	if err := c.BindJSON(&user); err != nil {
+	var userDto entities.UnitDto
+	if err := c.BindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	user := u.unityService.MapFromDto(userDto)
 
 	err := u.unityService.Create(&user)
 
@@ -73,11 +75,13 @@ func (u *UnitController) CreateUnity(c *gin.Context){
 
 
 func (u *UnitController) UpdateUnity(c *gin.Context){
-	var user entities.Unit
+	var userDto entities.UnitDto
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.BindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	user := u.unityService.MapFromDto(userDto)
 
 	err := u.unityService.Update(&user)
 

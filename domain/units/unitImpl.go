@@ -3,6 +3,7 @@ package unit_domain
 import (
 	"context"
 	entities "fdms/domain/entities/units"
+	"fdms/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -23,10 +24,10 @@ func (u *UnitImpl) GetUnit(id int64) (*entities.Unit, error) {
 	plate, 
 	zone, 
 	station, 
-	unity_type, 
+	unit_type, 
 	make, 
 	drivers, 
-	unity_condition, 
+	unit_condition, 
 	vehicle_serial, 
 	motor_serial, 
 	capacity, 
@@ -34,7 +35,7 @@ func (u *UnitImpl) GetUnit(id int64) (*entities.Unit, error) {
 	fuel_type, 
 	water_capacity, 
 	observations
-	FROM vehicles.unity
+	FROM vehicles.unit
  	where id = $1;`, id)
 
 	unity, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[entities.Unit])
@@ -142,7 +143,7 @@ func (u *UnitImpl) Update(unity *entities.Unit) (error) {
 	}
 
 	rows, err := conn.Exec(ctx,`
-		UPDATE vehicles.unity
+		UPDATE vehicles.unit
 		SET plate=$1, 
 			zone=$2, 
 			station=$3, 
@@ -207,4 +208,25 @@ func (u *UnitImpl) Delete(id int64) (error) {
 	}
 
 	return entities.ErrorUnitNotDeleted
+}
+
+func (u *UnitImpl) MapFromDto(s entities.UnitDto) (entities.Unit) {
+	var unit entities.Unit
+	
+	unit.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
+	unit.Plate = utils.ConvertToPgTypeText(s.Plate)
+	unit.Zone = utils.ConvertToPgTypeText(s.Zone)
+	unit.Station = utils.ConvertToPgTypeText(s.Station)
+	unit.Unit_type = utils.ConvertToPgTypeText(s.Unit_type)
+	unit.Make = utils.ConvertToPgTypeText(s.Make)
+	unit.Drivers = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Drivers))
+	unit.Unit_condition = utils.ConvertToPgTypeText(s.Unit_condition)
+	unit.Vehicle_serial = utils.ConvertToPgTypeText(s.Vehicle_serial)
+	unit.Motor_serial = utils.ConvertToPgTypeText(s.Motor_serial)
+	unit.Capacity = utils.ConvertToPgTypeText(s.Capacity)
+	unit.Fuel_type = utils.ConvertToPgTypeText(s.Fuel_type)
+	unit.Water_capacity = utils.ConvertToPgTypeText(s.Water_capacity)
+	unit.Observations = utils.ConvertToPgTypeText(s.Observations)
+
+	return unit
 }

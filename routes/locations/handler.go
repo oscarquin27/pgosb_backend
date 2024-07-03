@@ -412,10 +412,13 @@ func (u *LocationController) GetAllStations(c *gin.Context){
 }
 
 func (u *LocationController) CreateStation(c *gin.Context){
-	var location station.Station
-	if err := c.BindJSON(&location); err != nil {
+	var locationDto station.StationDto
+
+	if err := c.BindJSON(&locationDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	location := u.locationService.MapFromDto(locationDto)
 
 	err := u.locationService.CreateStation(&location)
 
@@ -428,11 +431,13 @@ func (u *LocationController) CreateStation(c *gin.Context){
 }
 
 func (u *LocationController) UpdateStation(c *gin.Context){
-	var location station.Station
+	var locationDto station.StationDto
 
-	if err := c.BindJSON(&location); err != nil {
+	if err := c.BindJSON(&locationDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
+
+	location := u.locationService.MapFromDto(locationDto)
 
 	err := u.locationService.UpdateStation(&location)
 
@@ -448,7 +453,7 @@ func (u *LocationController) DeleteStation(c *gin.Context){
 
 	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	err := u.locationService.DeleteParish(id)
+	err := u.locationService.DeleteStation(id)
 
 	if err != nil {
 		if err == station.ErrorStationNotDeleted {

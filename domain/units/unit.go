@@ -13,6 +13,7 @@ type UnitRepository interface {
 	Create(user *entities.Unit) (error)
 	Update(user *entities.Unit) (error)
 	Delete(id int64) (error)
+	MapFromDto(u entities.UnitDto) (entities.Unit)
 }
 
 type UnitImpl struct {
