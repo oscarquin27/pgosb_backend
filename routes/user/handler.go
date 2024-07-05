@@ -1,8 +1,8 @@
 package routes
 
 import (
+	user_application "fdms/application/user"
 	entities "fdms/domain/entities/users"
-	users "fdms/domain/users"
 	"net/http"
 	"strconv"
 
@@ -10,38 +10,38 @@ import (
 )
 
 type UserController struct {
-	userService users.UserRepository
+	userService user_application.UserService
 }
 
-func NewUserController(userService users.UserRepository) *UserController {
+func NewUserController(userService user_application.UserService) *UserController {
 	return &UserController{
-		userService : userService,
+		userService: userService,
 	}
 }
 
-func (u *UserController) GetUser(c *gin.Context){
+func (u *UserController) GetUser(c *gin.Context) {
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	// id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	user, err := u.userService.GetUser(id)
+	// user, err := u.userService.GetUser(id)
 
-	if err != nil {
-		if err == entities.ErrorUserNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
+	// if err != nil {
+	// 	if err == entities.ErrorUserNotFound {
+	// 		c.JSON(http.StatusNotFound, err.Error())
+	// 		return
+	// 	}
 
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
+	// 	c.JSON(http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
-	userDto := u.userService.MapToDto(user)
+	// userDto := u.userService.MapToDto(user)
 
-	c.JSON(http.StatusOK, userDto)
+	// c.JSON(http.StatusOK, userDto)
 	return
 }
 
-func (u *UserController) GetAllUser(c *gin.Context){
+func (u *UserController) GetAllUser(c *gin.Context) {
 
 	user, err := u.userService.GetAll()
 
@@ -58,49 +58,48 @@ func (u *UserController) GetAllUser(c *gin.Context){
 	return
 }
 
-func (u *UserController) Create(c *gin.Context){
-	var userDto entities.UserDto
-	
-	if err := c.BindJSON(&userDto); err != nil {
-		 c.JSON(http.StatusBadRequest, err.Error())
-		 return
-	}
+func (u *UserController) Create(c *gin.Context) {
+	// var userDto entities.UserDto
 
-	user := u.userService.MapFromDto(&userDto)
+	// if err := c.BindJSON(&userDto); err != nil {
+	// 	c.JSON(http.StatusBadRequest, err.Error())
+	// 	return
+	// }
 
-	err := u.userService.Create(&user)
+	// user := u.userService.MapFromDto(&userDto)
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
-	}
+	// err := u.userService.Create(&user)
+
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
 	c.JSON(http.StatusOK, "Usuario creado satisfactoriamente")
 }
 
+func (u *UserController) Update(c *gin.Context) {
+	// var userDto entities.UserDto
 
-func (u *UserController) Update(c *gin.Context){
-	var userDto entities.UserDto
+	// if err := c.BindJSON(&userDto); err != nil {
+	// 	c.JSON(http.StatusBadRequest, err.Error())
+	// }
 
-	if err := c.BindJSON(&userDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-	}
+	// user := u.userService.MapFromDto(&userDto)
 
-	user := u.userService.MapFromDto(&userDto)
+	// err := u.userService.Update(&user)
 
-	err := u.userService.Update(&user)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, err.Error())
+	// 	return
+	// }
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
-	}
-
-	c.JSON(http.StatusOK, "Usuario actualizado satisfactoriamente")
+	// c.JSON(http.StatusOK, "Usuario actualizado satisfactoriamente")
 }
 
-func (u *UserController) Delete(c *gin.Context){
+func (u *UserController) Delete(c *gin.Context) {
 
-	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	err := u.userService.Delete(id)
 

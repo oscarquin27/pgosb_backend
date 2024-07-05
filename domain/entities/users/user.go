@@ -1,12 +1,7 @@
-package user_entity
+package user_domain
 
 type User struct {
-	UserIdentification
-	UserProfile
-	UserStatus
-}
-
-type UserDto struct {
-	UserIdentificationDto
-	UserProfileDto
+	UserIdentificationEntity
+	UserProfileEntity
+	UserStatusEntity
 }
