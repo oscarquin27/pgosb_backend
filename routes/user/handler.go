@@ -15,11 +15,11 @@ type UserController struct {
 
 func NewUserController(userService users.UserRepository) *UserController {
 	return &UserController{
-		userService : userService,
+		userService: userService,
 	}
 }
 
-func (u *UserController) GetUser(c *gin.Context){
+func (u *UserController) GetUser(c *gin.Context) {
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
@@ -38,10 +38,12 @@ func (u *UserController) GetUser(c *gin.Context){
 	userDto := u.userService.MapToDto(user)
 
 	c.JSON(http.StatusOK, userDto)
-	return
+
 }
 
-func (u *UserController) GetAllUser(c *gin.Context){
+func (u *UserController) GetAllUser(c *gin.Context) {
+
+	//time.Sleep(12000 * time.Millisecond)
 
 	user, err := u.userService.GetAll()
 
@@ -54,16 +56,22 @@ func (u *UserController) GetAllUser(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	return
+
+	usersDto := []entities.UserDto{}
+
+	for _, us := range user {
+		newUser := u.userService.MapToDto(&us)
+		usersDto = append(usersDto, newUser)
+	}
+	c.JSON(http.StatusOK, usersDto)
 }
 
-func (u *UserController) Create(c *gin.Context){
+func (u *UserController) Create(c *gin.Context) {
 	var userDto entities.UserDto
-	
+
 	if err := c.BindJSON(&userDto); err != nil {
-		 c.JSON(http.StatusBadRequest, err.Error())
-		 return
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	user := u.userService.MapFromDto(&userDto)
@@ -72,14 +80,13 @@ func (u *UserController) Create(c *gin.Context){
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
+		return
 	}
 
 	c.JSON(http.StatusOK, "Usuario creado satisfactoriamente")
 }
 
-
-func (u *UserController) Update(c *gin.Context){
+func (u *UserController) Update(c *gin.Context) {
 	var userDto entities.UserDto
 
 	if err := c.BindJSON(&userDto); err != nil {
@@ -92,15 +99,15 @@ func (u *UserController) Update(c *gin.Context){
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
+		return
 	}
 
 	c.JSON(http.StatusOK, "Usuario actualizado satisfactoriamente")
 }
 
-func (u *UserController) Delete(c *gin.Context){
+func (u *UserController) Delete(c *gin.Context) {
 
-	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	err := u.userService.Delete(id)
 
@@ -114,5 +121,5 @@ func (u *UserController) Delete(c *gin.Context){
 		return
 	}
 	c.JSON(http.StatusOK, "Usuario eliminado satisfactoriamente")
-	return
+
 }

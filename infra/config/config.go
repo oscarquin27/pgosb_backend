@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"path/filepath"
@@ -8,26 +9,38 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Database struct {
+	ConnectionString string `yaml:"connection_string"`
+}
+type Keycloak struct {
+	Address       string `yaml:"address"`
+	AdminUser     string `yaml:"admin_user"`
+	AdminPassword string `yaml:"admin_password"`
+	ClientId      string `yaml:"client_id"`
+	ClientSecret  string `yaml:"client_secret"`
+	Realm         string `yaml:"realm"`
+}
+type Http struct {
+	Port string `yaml:"port"`
+}
+
 type Config struct {
-	Database struct {
-		ConnectionString string `yaml:"connection_string"`
-	}
-	Keycloak struct {
-		ClientId     string `yaml:"client_id"`
-		ClientSecret string `yaml:"client_secret"`
-	}
-	Http struct {
-		Port string `yaml:"port"`
-	}
+	Database Database
+	Keycloak Keycloak
+	Http     Http
 }
 
 var Configuration *Config
 
-func NewConfig() (*Config, error) {
+func Get() *Config {
+	return Configuration
+}
+
+func LoadConfig() (*Config, error) {
 
 	//path, err := os.Getwd()
 
-	path := filepath.Join("config", "settings.yml")
+	path := filepath.Join("./config", "settings.yml")
 
 	file, err := os.Open(path)
 
@@ -45,4 +58,12 @@ func NewConfig() (*Config, error) {
 	}
 
 	return Configuration, nil
+}
+
+func init() {
+	fmt.Println("Inicio Config Package")
+	_, err := LoadConfig()
+	if err != nil {
+		panic(err)
+	}
 }

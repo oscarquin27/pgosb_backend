@@ -1,0 +1,41 @@
+{
+    "user_name": "orlando",
+    "email": "orlandoenriqueiii@gmail.com",
+    "first_name": "Orlando",
+    "last_name": "Torres",
+    "phone": "04140121871",
+    "secondary_phone": "04126043516",
+    "zip_code": "0244",
+    "marital_status": "Solter@",
+    "birth_date": "29-11-1993",
+    "gender": "M",
+    "sector": "El Sector",
+    "community": "Urbanizacion",
+    "street": "Calle",
+    "beach": "Playa",
+    "address": "Direccion",
+    "state": "Amazonas",
+    "municipality": "Autonomo Alto Orinoco",
+    "parish": " Ucata ",
+    "height": "1.70",
+    "weight": "70",
+    "blood_type": "A+",
+    "shirt_size": "XS",
+    "pant_size": "XS",
+    "shoe_size": "41",
+    "skills": [
+        "aaaa"
+    ],
+    "allergies": [
+        "aaaaa"
+    ],
+    "code": "75",
+    "in_date": "1992-10-12",
+    "out_date": "1994-12-12",
+    "rank": "Rango 2",
+    "institution": "Institución 2",
+    "user_system": true,
+    "profesion": "Profesión 2",
+    "id_rol": "Usuario",
+    "division": "División 2"
+}

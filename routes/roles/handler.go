@@ -2,6 +2,7 @@ package routes
 
 import (
 	entities "fdms/domain/entities/roles"
+	role_entity "fdms/domain/entities/roles"
 	roles "fdms/domain/roles"
 	"net/http"
 	"strconv"
@@ -15,15 +16,15 @@ type RoleController struct {
 
 func NewRoleController(roleService roles.RoleRepository) *RoleController {
 	return &RoleController{
-		roleService : roleService,
+		roleService: roleService,
 	}
 }
 
-func (u *RoleController) GetRole(c *gin.Context){
+func (u *RoleController) GetRole(c *gin.Context) {
 
-	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	user, err := u.roleService.GetRole(id)
+	role, err := u.roleService.GetRole(id)
 
 	if err != nil {
 		if err == entities.ErrorRoleNotFound {
@@ -34,13 +35,15 @@ func (u *RoleController) GetRole(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	return
+
+	roleResult, _ := role_entity.RoleToDto(*role)
+
+	c.JSON(http.StatusOK, roleResult)
 }
 
-func (u *RoleController) GetAllRoles(c *gin.Context){
+func (u *RoleController) GetAllRoles(c *gin.Context) {
 
-	user, err := u.roleService.GetAll()
+	role, err := u.roleService.GetAll()
 
 	if err != nil {
 		if err == entities.ErrorRoleNotFound {
@@ -51,11 +54,19 @@ func (u *RoleController) GetAllRoles(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, user)
-	return
+
+	var rolesResult []role_entity.RoleDto
+
+	for _, r := range role {
+		newRole, _ := role_entity.RoleToDto(r)
+		rolesResult = append(rolesResult, newRole)
+	}
+
+	c.JSON(http.StatusOK, rolesResult)
+
 }
 
-func (u *RoleController) Create(c *gin.Context){
+func (u *RoleController) Create(c *gin.Context) {
 	var role entities.Role
 	if err := c.BindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -65,14 +76,13 @@ func (u *RoleController) Create(c *gin.Context){
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
+		return
 	}
 
 	c.JSON(http.StatusOK, "Rol creado satisfactoriamente")
 }
 
-
-func (u *RoleController) Update(c *gin.Context){
+func (u *RoleController) Update(c *gin.Context) {
 	var role entities.Role
 
 	if err := c.BindJSON(&role); err != nil {
@@ -83,15 +93,15 @@ func (u *RoleController) Update(c *gin.Context){
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
-		return 
+		return
 	}
 
 	c.JSON(http.StatusOK, "Rol actualizado satisfactoriamente")
 }
 
-func (u *RoleController) Delete(c *gin.Context){
+func (u *RoleController) Delete(c *gin.Context) {
 
-	id,_ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	err := u.roleService.Delete(id)
 
@@ -105,5 +115,4 @@ func (u *RoleController) Delete(c *gin.Context){
 		return
 	}
 	c.JSON(http.StatusOK, "Rol eliminado satisfactoriamente")
-	return
 }

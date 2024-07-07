@@ -5,12 +5,14 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
 type RoleRepository interface {
 	GetRole(id int64) (*role.Role, error)
+	GetRoleSchema(id int64) (*string, error)
 	GetAll() ([]role.Role, error)
-	Create(user *role.Role) (error)
-	Update(user *role.Role) (error)
-	Delete(id int64) (error)
+	Create(user *role.Role) error
+	Update(user *role.Role) error
+	Delete(id int64) error
 }
 
 type RoleImpl struct {
@@ -19,6 +21,6 @@ type RoleImpl struct {
 
 func NewRoleService(db *pgxpool.Pool) RoleRepository {
 	return &RoleImpl{
-		db : db,
+		db: db,
 	}
 }

@@ -12,6 +12,9 @@ import (
 	user_service "fdms/domain/users"
 	vehicle_service "fdms/domain/vehicles"
 	config "fdms/infra/config"
+	auth_routes "fdms/routes/auth"
+	"fdms/routes/auth/modules"
+	"fdms/routes/auth/permission"
 	layout_routes "fdms/routes/layouts"
 	location_routes "fdms/routes/locations"
 	role_routes "fdms/routes/roles"
@@ -23,113 +26,136 @@ import (
 var router *gin.Engine
 
 func Run(db *pgxpool.Pool) {
-  router := gin.Default()
-  conf := cors.DefaultConfig()
-  
-  conf.AllowAllOrigins = true
-  
-  router.Use(cors.New(conf))
+	router := gin.Default()
+	conf := cors.DefaultConfig()
 
-  v1 := router.Group("/api/v1")
+	conf.AllowCredentials = true
+	conf.AllowOrigins = []string{"http://localhost:5173"}
 
-  userService := user_service.NewUserService(db)
-  roleService := role_service.NewRoleService(db)
-  locationService := location_service.NewLocationService(db)
-  vehicleService := vehicle_service.NewVehicleService(db)
-  unityService := unity_service.NewUnityService(db)
-  layoutService := layout_service.NewLayoutService(db)
-  userController := user_routes.NewUserController(userService)
-  roleController := role_routes.NewRoleController(roleService)
-  locationController := location_routes.NewLocationController(locationService)
-  vehicleController := vehicle_routes.NewVehicleController(vehicleService)
-  unityController := unity_routes.NewUnityController(unityService)
-  layoutController := layout_routes.NewLayoutController(layoutService)
+	router.Use(cors.New(conf))
 
-  user := v1.Group("/user")
-  {
-    user.GET("/:id", userController.GetUser)
-    user.GET("/all", userController.GetAllUser)
-    user.POST("/create", userController.Create)
-    user.PUT("/update", userController.Update)
-    user.DELETE("/:id", userController.Delete)
-  }
+	v1 := router.Group("/api/v1")
 
-  role := v1.Group("/role")
-  {
-    role.GET("/:id", roleController.GetRole) 
-    role.GET("/all", roleController.GetAllRoles) 	
-    role.POST("/create", roleController.Create) 
-    role.PUT("/update", roleController.Update)  
-    role.DELETE("/:id", roleController.Delete)  
-  }
+	userService := user_service.NewUserService(db)
+	roleService := role_service.NewRoleService(db)
+	locationService := location_service.NewLocationService(db)
+	vehicleService := vehicle_service.NewVehicleService(db)
+	unityService := unity_service.NewUnityService(db)
+	layoutService := layout_service.NewLayoutService(db)
+	userController := user_routes.NewUserController(userService)
+	roleController := role_routes.NewRoleController(roleService)
+	locationController := location_routes.NewLocationController(locationService)
+	vehicleController := vehicle_routes.NewVehicleController(vehicleService)
+	unityController := unity_routes.NewUnityController(unityService)
+	layoutController := layout_routes.NewLayoutController(layoutService)
 
-  state := v1.Group("/location/state")
-  {
-    state.GET("/:id", locationController.GetState)
-    state.GET("/all", locationController.GetAllStates)
-    state.POST("/create", locationController.CreateState)
-    state.PUT("/update", locationController.UpdateState)
-    state.DELETE("/:id", locationController.DeleteState)
-  }
+	authGroup := v1.Group("/auth")
+	{
+		authGroup.POST("/login", auth_routes.Login)
+		authGroup.PUT("/login", auth_routes.RefreshSession)
+		authGroup.POST("/loguot", auth_routes.LogOut)
 
-  city := v1.Group("/location/city")
-  {
-    city.GET("/:id", locationController.GetCity)
-    city.GET("/all", locationController.GetAllCity)
-    city.POST("/create", locationController.CreateCity)
-    city.PUT("/update", locationController.UpdateCity)
-    city.DELETE("/:id", locationController.DeleteCity)
-  }
+	}
 
-  municipality := v1.Group("/location/municipality")
-  {
-    municipality.GET("/:id", locationController.GetMunicipality)
-    municipality.GET("/all", locationController.GetAllMunicipality)
-    municipality.POST("/create", locationController.CreateMunicipality)
-    municipality.PUT("/update", locationController.UpdateMunicipality)
-    municipality.DELETE("/:id", locationController.DeleteMunicipality)
-  }
+	user := v1.Group("/user", auth_routes.AuthMiddleware())
+	{
+		user.GET("/:id",
+			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
+			userController.GetUser)
 
-  parish := v1.Group("/location/parish")
-  {
-    parish.GET("/:id", locationController.GetParish)
-    parish.GET("/all", locationController.GetAllParish)
-    parish.POST("/create", locationController.CreateParish)
-    parish.PUT("/update", locationController.UpdateParish)
-    parish.DELETE("/:id", locationController.DeleteParish)
-  }
+		user.GET("/all",
+			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
+			userController.GetAllUser)
 
-  station := v1.Group("/location/station")
-  {
-    station.GET("/:id", locationController.GetStation)
-    station.GET("all", locationController.GetAllStations)
-    station.POST("/create", locationController.CreateStation)
-    station.PUT("/update", locationController.UpdateStation)
-    station.DELETE("/:id", locationController.DeleteStation)   
-  }
-  
-  vehicle := v1.Group("/vehicles")
-  {
-    vehicle.GET("/:id", vehicleController.GetVehicle)
-    vehicle.GET("/all", vehicleController.GetAllVehicle)
-    vehicle.POST("/create", vehicleController.CreateVehicle)
-    vehicle.PUT("/update", vehicleController.UpdateVehicle)
-    vehicle.DELETE("/:id", vehicleController.DeleteVehicle)  
-  }
+		user.POST("/create",
+			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Write, userService, roleService),
+			userController.Create)
 
-  unity := v1.Group("unit")
-  {
-    unity.GET("/:id", unityController.GetUnity)
-    unity.GET("/all", unityController.GetAllUnities)
-    unity.POST("/create", unityController.CreateUnity)
-    unity.PUT("/update", unityController.UpdateUnity)
-    unity.DELETE("/:id", unityController.DeleteUnity)  
-  }
+		user.PUT("/update",
+			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Update, userService, roleService),
+			userController.Update)
 
-  layout := v1.Group("layout")
-  {
-    layout.GET("/:entity", layoutController.GetLayout)
-  }
-  
-  router.Run(":" + config.Configuration.Http.Port)
+		user.DELETE("/:id",
+			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Delete, userService, roleService),
+			userController.Delete)
+	}
+
+	role := v1.Group("/role")
+	{
+		role.GET("/:id", roleController.GetRole)
+		role.GET("/all", roleController.GetAllRoles)
+		role.POST("/create", roleController.Create)
+		role.PUT("/update", roleController.Update)
+		role.DELETE("/:id", roleController.Delete)
+	}
+
+	state := v1.Group("/location/state")
+	{
+		state.GET("/:id", locationController.GetState)
+		state.GET("/all", locationController.GetAllStates)
+		state.POST("/create", locationController.CreateState)
+		state.PUT("/update", locationController.UpdateState)
+		state.DELETE("/:id", locationController.DeleteState)
+	}
+
+	city := v1.Group("/location/city")
+	{
+		city.GET("/:id", locationController.GetCity)
+		city.GET("/all", locationController.GetAllCity)
+		city.POST("/create", locationController.CreateCity)
+		city.PUT("/update", locationController.UpdateCity)
+		city.DELETE("/:id", locationController.DeleteCity)
+	}
+
+	municipality := v1.Group("/location/municipality")
+	{
+		municipality.GET("/:id", locationController.GetMunicipality)
+		municipality.GET("/all", locationController.GetAllMunicipality)
+		municipality.POST("/create", locationController.CreateMunicipality)
+		municipality.PUT("/update", locationController.UpdateMunicipality)
+		municipality.DELETE("/:id", locationController.DeleteMunicipality)
+	}
+
+	parish := v1.Group("/location/parish")
+	{
+		parish.GET("/:id", locationController.GetParish)
+		parish.GET("/all", locationController.GetAllParish)
+		parish.POST("/create", locationController.CreateParish)
+		parish.PUT("/update", locationController.UpdateParish)
+		parish.DELETE("/:id", locationController.DeleteParish)
+	}
+
+	station := v1.Group("/location/station")
+	{
+		station.GET("/:id", locationController.GetStation)
+		station.GET("all", locationController.GetAllStations)
+		station.POST("/create", locationController.CreateStation)
+		station.PUT("/update", locationController.UpdateStation)
+		station.DELETE("/:id", locationController.DeleteStation)
+	}
+
+	vehicle := v1.Group("/vehicles")
+	{
+		vehicle.GET("/:id", vehicleController.GetVehicle)
+		vehicle.GET("/all", vehicleController.GetAllVehicle)
+		vehicle.POST("/create", vehicleController.CreateVehicle)
+		vehicle.PUT("/update", vehicleController.UpdateVehicle)
+		vehicle.DELETE("/:id", vehicleController.DeleteVehicle)
+	}
+
+	unity := v1.Group("unit")
+	{
+		unity.GET("/:id", unityController.GetUnity)
+		unity.GET("/all", unityController.GetAllUnities)
+		unity.POST("/create", unityController.CreateUnity)
+		unity.PUT("/update", unityController.UpdateUnity)
+		unity.DELETE("/:id", unityController.DeleteUnity)
+	}
+
+	layout := v1.Group("layout")
+	{
+		layout.GET("/:entity", layoutController.GetLayout)
+	}
+
+	router.Run(":" + config.Configuration.Http.Port)
 }
