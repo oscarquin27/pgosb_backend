@@ -2,14 +2,13 @@ package role_domain
 
 import (
 	"context"
-	role "fdms/domain/entities/roles"
 	role_entity "fdms/domain/entities/roles"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 )
 
-func (u *RoleImpl) GetRole(id int64) (*role.Role, error) {
+func (u *RoleImpl) GetRole(id int64) (*role_entity.Role, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -25,10 +24,10 @@ func (u *RoleImpl) GetRole(id int64) (*role.Role, error) {
 		return nil, err
 	}
 
-	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[role.Role])
+	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[role_entity.Role])
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, role.ErrorRoleNotFound
+			return nil, role_entity.ErrorRoleNotFound
 		}
 		return nil, err
 	}
@@ -54,7 +53,7 @@ func (u *RoleImpl) GetRoleSchema(id int64) (*string, error) {
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, role.ErrorRoleNotFound
+			return nil, role_entity.ErrorRoleNotFound
 		}
 
 		return nil, err
@@ -65,7 +64,7 @@ func (u *RoleImpl) GetRoleSchema(id int64) (*string, error) {
 	return &schema, nil
 }
 
-func (u *RoleImpl) GetAll() ([]role.Role, error) {
+func (u *RoleImpl) GetAll() ([]role_entity.Role, error) {
 	ctx := context.Background() // Or use a specific context
 
 	conn, err := u.db.Acquire(ctx)
@@ -84,9 +83,9 @@ func (u *RoleImpl) GetAll() ([]role.Role, error) {
 	}
 	defer rows.Close()
 
-	var roles []role.Role
+	var roles []role_entity.Role
 	for rows.Next() {
-		var role role.Role
+		var role role_entity.Role
 		err := rows.Scan(&role.ID, &role.RoleName, &role.StRole, &role.AccessSchema, &role.CreatedAt, &role.UpdatedAt)
 		if err != nil {
 			return nil, err
@@ -97,7 +96,7 @@ func (u *RoleImpl) GetAll() ([]role.Role, error) {
 	return roles, nil
 }
 
-func (u *RoleImpl) Create(role *role.Role) error {
+func (u *RoleImpl) Create(role *role_entity.Role) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -117,7 +116,7 @@ func (u *RoleImpl) Create(role *role.Role) error {
 	return nil
 }
 
-func (u *RoleImpl) Update(role *role.Role) error {
+func (u *RoleImpl) Update(role *role_entity.Role) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -160,5 +159,5 @@ func (u *RoleImpl) Delete(id int64) error {
 		return nil
 	}
 
-	return role.ErrorRoleNotDeleted
+	return role_entity.ErrorRoleNotDeleted
 }
