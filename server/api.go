@@ -53,7 +53,7 @@ func Run(db *pgxpool.Pool) {
 	{
 		authGroup.POST("/login", auth_routes.Login)
 		authGroup.PUT("/login", auth_routes.RefreshSession)
-		authGroup.POST("/loguot", auth_routes.LogOut)
+		authGroup.POST("/logout", auth_routes.LogOut)
 
 	}
 

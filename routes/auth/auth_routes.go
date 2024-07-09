@@ -83,7 +83,7 @@ func Login(c *gin.Context) {
 
 func LogOut(c *gin.Context) {
 
-	sessionId, err := c.Cookie("SESSION_STATE")
+	sessionId, err := c.Cookie(PGOSB_SESSION_STATE_COOKIE)
 
 	if err != nil {
 		fmt.Println(err)

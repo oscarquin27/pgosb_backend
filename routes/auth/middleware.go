@@ -1,6 +1,7 @@
 package auth_routes
 
 import (
+	"context"
 	"crypto/rsa"
 	"encoding/base64"
 	"errors"
@@ -30,6 +31,8 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		accessTokenCookie, err := c.Request.Cookie("PGOSB_ACCESS_TOKEN")
 
+		fmt.Println("TOKEN:", accessTokenCookie)
+
 		if err != nil || accessTokenCookie.Value == "" {
 			fmt.Println("No se pudo obtener cookie de token", err)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
@@ -44,14 +47,17 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		err = keycloakAuthService.InspectToken(c.Request.Context(), accessTokenCookie.Value)
+		ctx := context.TODO()
+
+		err = keycloakAuthService.InspectToken(ctx, accessTokenCookie.Value)
 
 		if err != nil {
+			fmt.Println(err)
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token not pass Inspect"})
 			return
 		}
 
-		certs, err := keycloakAuthService.GetCerts(c.Request.Context())
+		certs, err := keycloakAuthService.GetCerts(ctx)
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Problem Getting Certs"})
