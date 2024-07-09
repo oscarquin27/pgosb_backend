@@ -61,7 +61,7 @@ func CreateUser() {
 
 	ctx := context.Background()
 
-	err := keycloakService.CreateUser(ctx, *usernamePtr, *emailPtr, "USERID125544MMFD", *passwordPtr)
+	_, err := keycloakService.CreateUser(ctx, *usernamePtr, *emailPtr, "USERID125544MMFD", *passwordPtr)
 
 	if err != nil {
 		fmt.Println("SE CAGO", err)

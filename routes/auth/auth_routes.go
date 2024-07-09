@@ -37,9 +37,9 @@ func SetCookies(jwt string, refreshJwt string, sessionState string, expiresIn in
 }
 
 func ClearCookies(c *gin.Context) {
-	c.SetCookie(PGOSB_ACCESS_TOKEN_COOKIE, "", 0, "/", CookieDomain, false, false)
-	c.SetCookie(PGOSB_REFRESH_TOKEN_COOKIE, "", 0, "/", CookieDomain, false, false)
-	c.SetCookie(PGOSB_SESSION_STATE_COOKIE, "", 0, "/", CookieDomain, false, false)
+	// c.SetCookie(PGOSB_ACCESS_TOKEN_COOKIE, "", 0, "/", CookieDomain, false, false)
+	// c.SetCookie(PGOSB_REFRESH_TOKEN_COOKIE, "", 0, "/", CookieDomain, false, false)
+	// c.SetCookie(PGOSB_SESSION_STATE_COOKIE, "", 0, "/", CookieDomain, false, false)
 }
 
 func Login(c *gin.Context) {

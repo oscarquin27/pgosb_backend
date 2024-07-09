@@ -23,7 +23,7 @@ func NewService(c *gocloak.GoCloak) *KeycloakAuthenticationService {
 // ... (Custom error types remain the same) ...
 
 // 1. Create User
-func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username, email, userID, password string) error {
+func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username, email, userID, password string) (string, error) {
 
 	token, err := s.client.LoginAdmin(ctx,
 		keycloakConfig.AdminUser,
@@ -31,7 +31,7 @@ func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username
 		"master",
 	)
 	if err != nil {
-		return fmt.Errorf("error getting token: %w", err)
+		return "", fmt.Errorf("error getting token: %w", err)
 	}
 
 	user := gocloak.User{
@@ -42,12 +42,13 @@ func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username
 		Attributes:  &map[string][]string{"pgosb_id": {userID}},
 	}
 
-	_, err = s.client.CreateUser(ctx, token.AccessToken, keycloakConfig.Realm, user)
+	userId, err := s.client.CreateUser(ctx, token.AccessToken, keycloakConfig.Realm, user)
+
 	if err != nil {
-		return fmt.Errorf("error creating user: %w", err)
+		return "", fmt.Errorf("error creating user: %w", err)
 	}
 
-	return nil
+	return userId, nil
 }
 
 // 2. Inspect Token
@@ -142,6 +143,22 @@ func (s *KeycloakAuthenticationService) GetCerts(ctx context.Context) (*gocloak.
 	return s.client.GetCerts(ctx, keycloakConfig.Realm)
 }
 
+func (s *KeycloakAuthenticationService) DeleteUser(ctx context.Context, userId string ) (error) {
+	
+	token, err := s.client.LoginAdmin(ctx,
+	keycloakConfig.AdminUser,
+	keycloakConfig.AdminPassword,
+		"master",
+	)
+
+	if err != nil {
+		return fmt.Errorf("error getting token: %w", err)
+	}
+
+	err = s.client.DeleteUser(ctx, token.AccessToken, "pgosb", userId)
+
+	return err
+}
 func init() {
 	fmt.Println("Inicio Package Authentication")
 	keycloakConfig = &config.Get().Keycloak

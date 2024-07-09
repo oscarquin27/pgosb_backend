@@ -53,7 +53,7 @@ func ConvertFromDate(d pgtype.Date) string {
 }
 
 func ConvertToPgTypeBool(b bool) pgtype.Bool {
-	return pgtype.Bool{Bool: b}
+	return pgtype.Bool{Bool: b, Valid: true}
 }
 
 func ConvertFromBool(b pgtype.Bool) bool {
