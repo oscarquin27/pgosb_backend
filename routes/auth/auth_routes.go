@@ -52,7 +52,7 @@ func Login(c *gin.Context) {
 			Code:    "BadCredendials",
 			Message: err.Error(),
 		}
-		ClearCookies(c)
+		//ClearCookies(c)
 		c.JSON(http.StatusBadRequest, errMessage)
 		return
 	}

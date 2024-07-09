@@ -59,9 +59,7 @@ func Run(db *pgxpool.Pool) {
 
 	user := v1.Group("/user", auth_routes.AuthMiddleware())
 	{
-		user.GET("/:id",
-			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
-			userController.GetUser)
+		user.GET("/:id", userController.GetUser)
 
 		user.GET("/all",
 			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
@@ -83,6 +81,7 @@ func Run(db *pgxpool.Pool) {
 	role := v1.Group("/role")
 	{
 		role.GET("/:id", roleController.GetRole)
+
 		role.GET("/all", roleController.GetAllRoles)
 		role.POST("/create", roleController.Create)
 		role.PUT("/update", roleController.Update)
