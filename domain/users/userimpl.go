@@ -3,12 +3,23 @@ package user_domain
 import (
 	"context"
 	entities "fdms/domain/entities/users"
+	"fdms/infra/config"
+	authentication "fdms/infra/keycloak"
 	"fdms/utils"
 	"strconv"
 	"time"
 
+	"github.com/Nerzal/gocloak/v13"
 	"github.com/jackc/pgx/v5"
 )
+
+var keycloakAuthService authentication.KeycloakAuthenticationService
+var keycloakClient gocloak.GoCloak
+
+func init() {
+	keycloakClient = *gocloak.NewClient(config.Get().Keycloak.Address)
+	keycloakAuthService = *authentication.NewService(&keycloakClient)
+}
 
 func (u *UserImpl) GetUser(id int64) (*entities.User, error) {
 	ctx := context.Background()
@@ -147,12 +158,28 @@ func (u *UserImpl) Create(user *entities.User) error {
 		return err
 	}
 
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
+
+	if err != nil {
+		return err
+	}
+
 	if user.UserProfile.Promotion_date == "" {
 		user.UserProfile.Promotion_date = time.Now().Format("2000-01-01")
 	}
+	
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		} else {
+			tx.Commit(ctx)
+		}
+	}()
+	
+	var userId int
 
-	rows, err := conn.Exec(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion_date, promotion, condition, division, profession, institution, user_system, zip_code)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::date, $26, $27, $28, $29, $30, $31, $32);
+	err = tx.QueryRow(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion_date, promotion, condition, division, profession, institution, user_system, zip_code)
+VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25::date, $26, $27, $28, $29, $30, $31, $32) returning id;
 `,
 		user.UserIdentification.Id_role,
 		user.UserProfile.User_name,
@@ -185,17 +212,23 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 		user.UserProfile.Profession,
 		user.UserProfile.Institution,
 		user.UserProfile.User_system,
-		user.UserProfile.Zip_code)
+		user.UserProfile.Zip_code).Scan(&userId)
 
-	if err != nil {
-		return err
+	if user.User_system.Bool {
+		keycloakId, err := keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(userId), "12345")
+		
+		if err != nil {
+			return entities.ErrorUserNotCreated
+		}
+
+		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, userId)
+
+		if err != nil {
+			return entities.ErrorUserNotCreated
+		}
 	}
-
-	if rows.RowsAffected() > 0 {
-		return nil
-	}
-
-	return entities.ErrorUserNotCreated
+	
+	return nil
 }
 
 func (u *UserImpl) Update(user *entities.User) error {
@@ -209,7 +242,25 @@ func (u *UserImpl) Update(user *entities.User) error {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, `
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
+
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		} else {
+			tx.Commit(ctx)
+		}
+	}()
+	
+	var keycloakId string
+
+	previous, err := u.GetUser(user.Id)
+
+	err = tx.QueryRow(ctx, `
 		UPDATE users.user
 		SET id_role = $1,
 			user_name = $2,
@@ -243,7 +294,7 @@ func (u *UserImpl) Update(user *entities.User) error {
 			institution = $30,
 			user_system = $31,
 			zip_code = $32
-		WHERE id = $33`,
+		WHERE id = $33 returning id_keycloak`,
 		user.UserIdentification.Id_role,
 		user.UserProfile.User_name,
 		user.UserProfile.First_name,
@@ -276,17 +327,22 @@ func (u *UserImpl) Update(user *entities.User) error {
 		user.UserProfile.Institution,
 		user.UserProfile.User_system,
 		user.UserProfile.Zip_code,
-		user.UserIdentification.Id)
+		user.UserIdentification.Id).Scan(&keycloakId)
+
+	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
+		err = keycloakAuthService.DeleteUser(ctx, keycloakId)
+
+	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool {
+		keycloakId, err = keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")		
+
+		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, user.UserIdentification.Id)
+	}
 
 	if err != nil {
-		return err
+		return entities.ErrorUserNotUpdated
 	}
 
-	if rows.RowsAffected() > 0 {
-		return nil
-	}
-
-	return entities.ErrorUserNotUpdated
+	return nil
 }
 
 func (u *UserImpl) Delete(id int64) error {
