@@ -30,7 +30,7 @@ func Run(db *pgxpool.Pool) {
 	conf := cors.DefaultConfig()
 
 	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"http://localhost:5173"}
+	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.122:5173"}
 
 	router.Use(cors.New(conf))
 
