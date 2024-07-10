@@ -23,8 +23,6 @@ import (
 	vehicle_routes "fdms/routes/vehicles"
 )
 
-var router *gin.Engine
-
 func Run(db *pgxpool.Pool) {
 	router := gin.Default()
 	conf := cors.DefaultConfig()

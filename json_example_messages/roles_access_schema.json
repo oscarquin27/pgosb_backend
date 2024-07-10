@@ -1,0 +1,51 @@
+{
+    "services": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "users": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "roles": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "units": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "stations": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "locations": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    },
+    "assistential_centers": {
+        "add": true,
+        "print": true,
+        "delete": true,
+        "export": true,
+        "update": true
+    }
+}

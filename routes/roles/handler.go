@@ -87,6 +87,7 @@ func (u *RoleController) Update(c *gin.Context) {
 
 	if err := c.BindJSON(&role); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	err := u.roleService.Update(&role)
