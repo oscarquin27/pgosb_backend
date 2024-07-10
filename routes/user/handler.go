@@ -3,8 +3,8 @@ package routes
 import (
 	entities "fdms/domain/entities/users"
 	users "fdms/domain/users"
+	"fdms/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +21,7 @@ func NewUserController(userService users.UserRepository) *UserController {
 
 func (u *UserController) GetUser(c *gin.Context) {
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id := utils.ParseInt(c.Param("id"))
 
 	user, err := u.userService.GetUser(id)
 
@@ -67,14 +67,12 @@ func (u *UserController) GetAllUser(c *gin.Context) {
 }
 
 func (u *UserController) Create(c *gin.Context) {
-	var userDto entities.UserDto
+	var user entities.User
 
-	if err := c.BindJSON(&userDto); err != nil {
+	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	user := u.userService.MapFromDto(&userDto)
 
 	err := u.userService.Create(&user)
 
@@ -87,13 +85,11 @@ func (u *UserController) Create(c *gin.Context) {
 }
 
 func (u *UserController) Update(c *gin.Context) {
-	var userDto entities.UserDto
+	var user entities.User
 
-	if err := c.BindJSON(&userDto); err != nil {
+	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
-
-	user := u.userService.MapFromDto(&userDto)
 
 	err := u.userService.Update(&user)
 
@@ -107,7 +103,7 @@ func (u *UserController) Update(c *gin.Context) {
 
 func (u *UserController) Delete(c *gin.Context) {
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
+	id := utils.ParseInt(c.Param("id"))
 
 	err := u.userService.Delete(id)
 

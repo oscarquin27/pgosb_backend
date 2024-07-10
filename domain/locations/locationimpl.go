@@ -7,7 +7,6 @@ import (
 	parish "fdms/domain/entities/parish"
 	state "fdms/domain/entities/states"
 	station "fdms/domain/entities/stations"
-	"fdms/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -636,19 +635,19 @@ func (u *LocationsImpl) DeleteStation(id int64) (error) {
 func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
 	station := station.StationDto{}
 
-	station.Municipality_id = utils.ConvertFromInt4(s.Municipality_id)
-	station.Name = utils.ConvertFromText(s.Name)
-	station.Coordinates = utils.ConvertFromText(s.Coordinates)
-	station.Description = utils.ConvertFromText(s.Description)
-	station.Code = utils.ConvertFromText(s.Code)
-	station.Abbreviation = utils.ConvertFromText(s.Abbreviation)
+	station.Municipality_id = s.Municipality_id
+	station.Name = s.Name
+	station.Coordinates = s.Coordinates
+	station.Description = s.Description
+	station.Code = s.Code
+	station.Abbreviation = s.Abbreviation
 	station.Phones = s.Phones
-	station.State_id = utils.ConvertFromInt4(s.State_id)
-	station.Parish_id = utils.ConvertFromInt4(s.Parish_id)
-	station.Sector = utils.ConvertFromText(s.Sector)
-	station.Community = utils.ConvertFromText(s.Community)
-	station.Street = utils.ConvertFromText(s.Street)
-	station.Address = utils.ConvertFromText(s.Address)
+	station.State_id = s.State_id
+	station.Parish_id = s.Parish_id
+	station.Sector = s.Sector
+	station.Community = s.Community
+	station.Street = s.Street
+	station.Address = s.Address
 
 	return station
 }
@@ -656,20 +655,20 @@ func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
 func (u *LocationsImpl) MapFromDto(s station.StationDto) (station.Station) {
 	station := station.Station{}
 
-	station.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	station.Municipality_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Municipality_id))
-	station.Name = utils.ConvertToPgTypeText(s.Name)
-	station.Coordinates = utils.ConvertToPgTypeText(s.Coordinates)
-	station.Description = utils.ConvertToPgTypeText(s.Description)
-	station.Code = utils.ConvertToPgTypeText(s.Code)
-	station.Abbreviation = utils.ConvertToPgTypeText(s.Abbreviation)
+	station.Id = s.Id
+	station.Municipality_id = s.Municipality_id
+	station.Name = s.Name
+	station.Coordinates = s.Coordinates
+	station.Description = s.Description
+	station.Code = s.Code
+	station.Abbreviation = s.Abbreviation
 	station.Phones = s.Phones
-	station.State_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.State_id))
-	station.Parish_id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Parish_id))
-	station.Sector = utils.ConvertToPgTypeText(s.Sector)
-	station.Community = utils.ConvertToPgTypeText(s.Community)
-	station.Street = utils.ConvertToPgTypeText(s.Street)
-	station.Address = utils.ConvertToPgTypeText(s.Address)
+	station.State_id = s.State_id
+	station.Parish_id = s.Parish_id
+	station.Sector = s.Sector
+	station.Community = s.Community
+	station.Street = s.Street
+	station.Address = s.Address
 
 	return station
 }

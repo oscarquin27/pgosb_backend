@@ -21,7 +21,7 @@ func init() {
 	keycloakAuthService = *authentication.NewService(&keycloakClient)
 }
 
-func (u *UserImpl) GetUser(id int64) (*entities.User, error) {
+func (u *UserImpl) GetUser(id int) (*entities.User, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -214,8 +214,8 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 		user.UserProfile.User_system,
 		user.UserProfile.Zip_code).Scan(&userId)
 
-	if user.User_system.Bool {
-		keycloakId, err := keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(userId), "12345")
+	if user.User_system {
+		keycloakId, err := keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name, user.UserProfile.Email, strconv.Itoa(userId), "12345")
 		
 		if err != nil {
 			return entities.ErrorUserNotCreated
@@ -329,11 +329,11 @@ func (u *UserImpl) Update(user *entities.User) error {
 		user.UserProfile.Zip_code,
 		user.UserIdentification.Id).Scan(&keycloakId)
 
-	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
+	if previous.UserProfile.User_system && !user.UserProfile.User_system {
 		err = keycloakAuthService.DeleteUser(ctx, keycloakId)
 
-	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool {
-		keycloakId, err = keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")		
+	} else if !previous.UserProfile.User_system && user.UserProfile.User_system || keycloakId == "" {
+		keycloakId, err = keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name, user.UserProfile.Email, strconv.Itoa(int(user.UserIdentification.Id)), "12345")		
 
 		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, user.UserIdentification.Id)
 	}
@@ -345,7 +345,7 @@ func (u *UserImpl) Update(user *entities.User) error {
 	return nil
 }
 
-func (u *UserImpl) Delete(id int64) error {
+func (u *UserImpl) Delete(id int) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -372,59 +372,43 @@ func (u *UserImpl) Delete(id int64) error {
 func (u *UserImpl) MapFromDto(userDto *entities.UserDto) entities.User {
 	user := entities.User{}
 
-	newId, _ := strconv.ParseInt(userDto.Id, 10, 64)
-
-	id_role := utils.ParseInt(userDto.Id_role)
-
-	age := utils.ParseInt(userDto.Age)
-
-	height := utils.ParseInt(userDto.Height)
-
-	weight := utils.ParseInt(userDto.Weight)
-
-	shirt := utils.ParseInt(userDto.Shirt_size)
-
-	pant := utils.ParseInt(userDto.Pant_size)
-
-	shoe := utils.ParseInt(userDto.Shoe_size)
-
 	if len(user.Promotion_date) <= 0 {
 		user.Promotion_date = time.Now().String()
 	}
 
-	user.UserIdentification.Id = newId
-	user.UserIdentification.Id_role = utils.ConvertToPgTypeInt4(id_role)
-	user.UserProfile.User_name = utils.ConvertToPgTypeText(userDto.User_name)
-	user.UserProfile.First_name = utils.ConvertToPgTypeText(userDto.First_name)
-	user.UserProfile.Last_name = utils.ConvertToPgTypeText(userDto.Last_name)
-	user.UserProfile.Email = utils.ConvertToPgTypeText(userDto.Email)
-	user.UserProfile.Photo = utils.ConvertToPgTypeText(userDto.Photo)
-	user.UserProfile.Gender = utils.ConvertToPgTypeText(userDto.Gender)
-	user.UserProfile.Phone = utils.ConvertToPgTypeText(userDto.Phone)
-	user.UserProfile.Secondary_Phone = utils.ConvertToPgTypeText(userDto.Secondary_Phone)
+	user.UserIdentification.Id = utils.ParseInt(userDto.Id)
+	user.UserIdentification.Id_role = utils.ParseInt(userDto.Id_role)
+	user.UserProfile.User_name = userDto.User_name
+	user.UserProfile.First_name = userDto.First_name
+	user.UserProfile.Last_name = userDto.Last_name
+	user.UserProfile.Email = userDto.Email
+	user.UserProfile.Photo = userDto.Photo
+	user.UserProfile.Gender = userDto.Gender
+	user.UserProfile.Phone = userDto.Phone
+	user.UserProfile.Secondary_Phone = userDto.Secondary_Phone
 	user.UserProfile.Birth_date = userDto.Birth_date
-	user.UserProfile.Age = utils.ConvertToPgTypeInt2(age)
-	user.UserProfile.Residence = utils.ConvertToPgTypeText(userDto.Residence)
-	user.UserProfile.Coordinates = utils.ConvertToPgTypeText(userDto.Coordinates)
-	user.UserProfile.Marital_status = utils.ConvertToPgTypeText(userDto.Marital_status)
-	user.UserProfile.Height = utils.ConvertToPgTypeNumeric(height)
-	user.UserProfile.Weight = utils.ConvertToPgTypeNumeric(weight)
-	user.UserProfile.Shirt_size = utils.ConvertToPgTypeNumeric(shirt)
-	user.UserProfile.Pant_size = utils.ConvertToPgTypeNumeric(pant)
-	user.UserProfile.Shoe_size = utils.ConvertToPgTypeNumeric(shoe)
-	user.UserProfile.Blood_type = utils.ConvertToPgTypeText(userDto.Blood_type)
+	user.UserProfile.Age = utils.ParseInt(userDto.Age)
+	user.UserProfile.Residence = userDto.Residence
+	user.UserProfile.Coordinates = userDto.Coordinates
+	user.UserProfile.Marital_status = userDto.Marital_status
+	user.UserProfile.Height = utils.ParseFloat(userDto.Height)
+	user.UserProfile.Weight = utils.ParseFloat(userDto.Weight)
+	user.UserProfile.Shirt_size = userDto.Shirt_size
+	user.UserProfile.Pant_size = userDto.Pant_size
+	user.UserProfile.Shoe_size = utils.ParseInt(userDto.Shoe_size)
+	user.UserProfile.Blood_type = userDto.Blood_type
 	user.UserProfile.Allergies = entities.MapAFromArray(userDto.Allergies)
-	user.UserProfile.Code = utils.ConvertToPgTypeText(userDto.Code)
-	user.UserProfile.Personal_code = utils.ConvertToPgTypeText(userDto.Personal_code)
-	user.UserProfile.Rank = utils.ConvertToPgTypeText(userDto.Rank)
+	user.UserProfile.Code = userDto.Code
+	user.UserProfile.Personal_code = userDto.Personal_code
+	user.UserProfile.Rank = userDto.Rank
 	user.Promotion_date = userDto.Promotion_date
-	user.UserProfile.Promotion = utils.ConvertToPgTypeText(userDto.Promotion)
-	user.UserProfile.Condition = utils.ConvertToPgTypeText(userDto.Condition)
-	user.UserProfile.Division = utils.ConvertToPgTypeText(userDto.Division)
-	user.UserProfile.Profession = utils.ConvertToPgTypeText(userDto.Profession)
-	user.UserProfile.Institution = utils.ConvertToPgTypeText(userDto.Profession)
-	user.UserProfile.User_system = utils.ConvertToPgTypeBool(userDto.User_system)
-	user.UserProfile.Zip_code = utils.ConvertToPgTypeText(userDto.Zip_code)
+	user.UserProfile.Promotion = userDto.Promotion
+	user.UserProfile.Condition = userDto.Condition
+	user.UserProfile.Division = userDto.Division
+	user.UserProfile.Profession = userDto.Profession
+	user.UserProfile.Institution = userDto.Profession
+	user.UserProfile.User_system = userDto.User_system
+	user.UserProfile.Zip_code = userDto.Zip_code
 
 	// user.UserProfile.Skills = userDto.Skills
 
@@ -434,39 +418,39 @@ func (u *UserImpl) MapFromDto(userDto *entities.UserDto) entities.User {
 func (u *UserImpl) MapToDto(user *entities.User) entities.UserDto {
 	userDto := entities.UserDto{}
 	//var err error
-	userDto.Id = strconv.FormatInt(user.Id, 10)
-	userDto.UserIdentificationDto.Id_role = utils.ConvertFromInt4(user.Id_role)
-	userDto.UserProfileDto.User_name = utils.ConvertFromText(user.User_name)
-	userDto.UserProfileDto.First_name = utils.ConvertFromText(user.First_name)
-	userDto.UserProfileDto.Last_name = utils.ConvertFromText(user.Last_name)
-	userDto.UserProfileDto.Email = utils.ConvertFromText(user.Email)
-	userDto.UserProfileDto.Photo = utils.ConvertFromText(user.Photo)
-	userDto.UserProfileDto.Gender = utils.ConvertFromText(user.Gender)
-	userDto.UserProfileDto.Phone = utils.ConvertFromText(user.Phone)
-	userDto.UserProfileDto.Secondary_Phone = utils.ConvertFromText(user.Secondary_Phone)
+	userDto.Id = utils.ConvertFromInt(user.Id)
+	userDto.UserIdentificationDto.Id_role = utils.ConvertFromInt(user.Id_role)
+	userDto.UserProfileDto.User_name = user.User_name
+	userDto.UserProfileDto.First_name = user.First_name
+	userDto.UserProfileDto.Last_name = user.Last_name
+	userDto.UserProfileDto.Email = user.Email
+	userDto.UserProfileDto.Photo = user.Photo
+	userDto.UserProfileDto.Gender = user.Gender
+	userDto.UserProfileDto.Phone = user.Phone
+	userDto.UserProfileDto.Secondary_Phone = user.Secondary_Phone
 	userDto.UserProfileDto.Birth_date = user.Birth_date
-	userDto.UserProfileDto.Age = utils.ConvertFromInt2(user.Age)
-	userDto.UserProfileDto.Residence = utils.ConvertFromText(user.Residence)
-	userDto.UserProfileDto.Coordinates = utils.ConvertFromText(user.Coordinates)
-	userDto.UserProfileDto.Marital_status = utils.ConvertFromText(user.Marital_status)
-	userDto.UserProfileDto.Height = utils.ConvertFromNumeric(user.Height)
-	userDto.UserProfileDto.Weight = utils.ConvertFromNumeric(user.Weight)
-	userDto.UserProfileDto.Shirt_size = utils.ConvertFromNumeric(user.Shirt_size)
-	userDto.UserProfileDto.Pant_size = utils.ConvertFromNumeric(user.Pant_size)
-	userDto.UserProfileDto.Shoe_size = utils.ConvertFromNumeric(user.Shoe_size)
-	userDto.UserProfileDto.Blood_type = utils.ConvertFromText(user.Blood_type)
+	userDto.UserProfileDto.Age = utils.ConvertFromInt(user.Age)
+	userDto.UserProfileDto.Residence = user.Residence
+	userDto.UserProfileDto.Coordinates = user.Coordinates
+	userDto.UserProfileDto.Marital_status = user.Marital_status
+	userDto.UserProfileDto.Height = utils.ConvertFromDecimal(user.Height)
+	userDto.UserProfileDto.Weight = utils.ConvertFromDecimal(user.Weight)
+	userDto.UserProfileDto.Shirt_size = user.Shirt_size
+	userDto.UserProfileDto.Pant_size = user.Pant_size
+	userDto.UserProfileDto.Shoe_size = utils.ConvertFromInt(user.Shoe_size)
+	userDto.UserProfileDto.Blood_type = user.Blood_type
 	userDto.UserProfileDto.Allergies = entities.MapToArray(user.Allergies)
-	userDto.UserProfileDto.Code = utils.ConvertFromText(user.Code)
-	userDto.UserProfileDto.Personal_code = utils.ConvertFromText(user.Personal_code)
-	userDto.UserProfileDto.Rank = utils.ConvertFromText(user.Rank)
+	userDto.UserProfileDto.Code = user.Code
+	userDto.UserProfileDto.Personal_code = user.Personal_code
+	userDto.UserProfileDto.Rank = user.Rank
 	userDto.Promotion_date = user.Promotion_date
-	userDto.UserProfileDto.Promotion = utils.ConvertFromText(user.Promotion)
-	userDto.UserProfileDto.Condition = utils.ConvertFromText(user.Condition)
-	userDto.UserProfileDto.Division = utils.ConvertFromText(user.Division)
-	userDto.UserProfileDto.Profession = utils.ConvertFromText(user.Profession)
-	userDto.UserProfileDto.Institution = utils.ConvertFromText(user.Profession)
-	userDto.UserProfileDto.User_system = utils.ConvertFromBool(user.User_system)
-	userDto.UserProfileDto.Zip_code = utils.ConvertFromText(user.Zip_code)
+	userDto.UserProfileDto.Promotion = user.Promotion
+	userDto.UserProfileDto.Condition = user.Condition
+	userDto.UserProfileDto.Division = user.Division
+	userDto.UserProfileDto.Profession = user.Profession
+	userDto.UserProfileDto.Institution = user.Profession
+	userDto.UserProfileDto.User_system = user.User_system
+	userDto.UserProfileDto.Zip_code = user.Zip_code
 
 	// userDto.UserProfileDto.Skills = user.Skills
 

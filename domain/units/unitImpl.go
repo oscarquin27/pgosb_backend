@@ -3,7 +3,6 @@ package unit_domain
 import (
 	"context"
 	entities "fdms/domain/entities/units"
-	"fdms/utils"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -213,20 +212,20 @@ func (u *UnitImpl) Delete(id int64) (error) {
 func (u *UnitImpl) MapFromDto(s entities.UnitDto) (entities.Unit) {
 	var unit entities.Unit
 	
-	unit.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	unit.Plate = utils.ConvertToPgTypeText(s.Plate)
-	unit.Zone = utils.ConvertToPgTypeText(s.Zone)
-	unit.Station = utils.ConvertToPgTypeText(s.Station)
-	unit.Unit_type = utils.ConvertToPgTypeText(s.Unit_type)
-	unit.Make = utils.ConvertToPgTypeText(s.Make)
-	unit.Drivers = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Drivers))
-	unit.Unit_condition = utils.ConvertToPgTypeText(s.Unit_condition)
-	unit.Vehicle_serial = utils.ConvertToPgTypeText(s.Vehicle_serial)
-	unit.Motor_serial = utils.ConvertToPgTypeText(s.Motor_serial)
-	unit.Capacity = utils.ConvertToPgTypeText(s.Capacity)
-	unit.Fuel_type = utils.ConvertToPgTypeText(s.Fuel_type)
-	unit.Water_capacity = utils.ConvertToPgTypeText(s.Water_capacity)
-	unit.Observations = utils.ConvertToPgTypeText(s.Observations)
+	unit.Id = s.Id
+	unit.Plate = s.Plate
+	unit.Zone = s.Zone
+	unit.Station = s.Station
+	unit.Unit_type = s.Unit_type
+	unit.Make = s.Make
+	unit.Drivers = s.Drivers
+	unit.Unit_condition = s.Unit_condition
+	unit.Vehicle_serial = s.Vehicle_serial
+	unit.Motor_serial = s.Motor_serial
+	unit.Capacity = s.Capacity
+	unit.Fuel_type = s.Fuel_type
+	unit.Water_capacity = s.Water_capacity
+	unit.Observations = s.Observations
 
 	return unit
 }

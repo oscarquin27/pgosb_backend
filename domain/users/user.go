@@ -8,11 +8,11 @@ import (
 
 
 type UserRepository interface {
-	GetUser(id int64) (*entities.User, error)
+	GetUser(id int) (*entities.User, error)
 	GetAll() ([]entities.User, error)
 	Create(user *entities.User) (error)
 	Update(user *entities.User) (error)
-	Delete(id int64) (error)
+	Delete(id int) (error)
 	MapToDto(user *entities.User) (entities.UserDto)
 	MapFromDto(user *entities.UserDto) (entities.User)
 }

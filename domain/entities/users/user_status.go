@@ -1,15 +1,15 @@
 package user_entity
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 type UserStatus struct {
-	Status_user pgtype.Text `json:"status_user"`
-	Last_connection pgtype.Timestamp `json:"last_connection"`
-	Created_at pgtype.Timestamp `json:"created_at"`
-	Updated_at pgtype.Timestamp `json:"updated_at"`
-	Ip pgtype.Text `json:"ip"`
+	Status_user string `json:"status_user"`
+	Last_connection time.Time `json:"last_connection"`
+	Created_at time.Time `json:"created_at"`
+	Updated_at time.Time `json:"updated_at"`
+	Ip string `json:"ip"`
 }
 
 type UserStatusDto struct {

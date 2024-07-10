@@ -18,7 +18,7 @@ func (u *LayoutImpl) GetLayout(entity string) ([]layout.Layout, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, "select id, column_name, display_name, group_name, visibility, entity_name from layouts.layout where entity_name = $1", entity)
+	rows, err := conn.Query(ctx, "select id, column_name, display_name, group_name, visibility, entity_name, type from layouts.layout where entity_name = $1", entity)
 
 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[layout.Layout])
 

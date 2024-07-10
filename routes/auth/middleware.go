@@ -10,7 +10,7 @@ import (
 	"fdms/infra/config"
 	authentication "fdms/infra/keycloak"
 	"fdms/routes/auth/permission"
-	"strconv"
+	"fdms/utils"
 	"strings"
 
 	"fmt"
@@ -130,12 +130,7 @@ func PermissionAuthMiddleware(moduleName string, perm string,
 			return
 		}
 
-		id, err := strconv.ParseInt(userId, 10, 32)
-
-		if err != nil {
-			c.AbortWithStatus(http.StatusInternalServerError)
-			return
-		}
+		id := utils.ParseInt(userId)
 
 		user, err := userService.GetUser(id)
 
@@ -144,7 +139,7 @@ func PermissionAuthMiddleware(moduleName string, perm string,
 			return
 		}
 
-		rolSchema, err := roleService.GetRoleSchema(int64(user.Id_role.Int32))
+		rolSchema, err := roleService.GetRoleSchema(int64(user.Id_role))
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
