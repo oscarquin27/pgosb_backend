@@ -2,7 +2,8 @@ package keycloak
 
 import (
 	"context"
-	"fdms/infra/config"
+	"fdms/src/infrastructure/config"
+
 	"fmt"
 	"time"
 

@@ -2,10 +2,9 @@ package postgres
 
 import (
 	"context"
+	"fdms/src/infrastructure/config"
 	"log"
 	"os"
-
-	"fdms/infra/config"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
