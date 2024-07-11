@@ -13,8 +13,6 @@ import (
 	vehicle_service "fdms/domain/vehicles"
 	config "fdms/infra/config"
 	auth_routes "fdms/routes/auth"
-	"fdms/routes/auth/modules"
-	"fdms/routes/auth/permission"
 	layout_routes "fdms/routes/layouts"
 	location_routes "fdms/routes/locations"
 	role_routes "fdms/routes/roles"
@@ -28,7 +26,7 @@ func Run(db *pgxpool.Pool) {
 	conf := cors.DefaultConfig()
 
 	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.122:5173"}
+	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.122:5173", "http://192.168.120.110:5173"}
 
 	router.Use(cors.New(conf))
 
@@ -55,24 +53,24 @@ func Run(db *pgxpool.Pool) {
 
 	}
 
-	user := v1.Group("/user", auth_routes.AuthMiddleware())
+	user := v1.Group("/user")
 	{
 		user.GET("/:id", userController.GetUser)
 
 		user.GET("/all",
-			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
+			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
 			userController.GetAllUser)
 
 		user.POST("/create",
-			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Write, userService, roleService),
+			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Write, userService, roleService),
 			userController.Create)
 
 		user.PUT("/update",
-			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Update, userService, roleService),
+			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Update, userService, roleService),
 			userController.Update)
 
 		user.DELETE("/:id",
-			auth_routes.PermissionAuthMiddleware(modules.Users, permission.Delete, userService, roleService),
+			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Delete, userService, roleService),
 			userController.Delete)
 	}
 

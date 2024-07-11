@@ -9,4 +9,5 @@ type Layout struct {
 	Group_name pgtype.Text `json:"group_name"`
 	Entity_name pgtype.Text `json:"entity_name"`
 	Visibility pgtype.Bool `json:"visibility"`
+	Type pgtype.Text `json:"type"`
 }

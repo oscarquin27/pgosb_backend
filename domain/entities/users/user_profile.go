@@ -15,7 +15,7 @@ type UserProfile struct {
 	Gender          pgtype.Text    `json:"gender"`
 	Phone           pgtype.Text    `json:"phone"`
 	Secondary_Phone pgtype.Text    `json:"secondary_phone"`
-	Birth_date      string         `json:"birth_date"`
+	Birth_date      pgtype.Text     `json:"birth_date"`
 	Age             pgtype.Int2    `json:"age"`
 	Zip_code        pgtype.Text    `json:"zip_code"`
 	Residence       pgtype.Text    `json:"residence"`
@@ -23,23 +23,31 @@ type UserProfile struct {
 	Marital_status  pgtype.Text    `json:"marital_status"`
 	Height          pgtype.Numeric `json:"height"`
 	Weight          pgtype.Numeric `json:"weight"`
-	Shirt_size      pgtype.Numeric `json:"shirt_size"`
-	Pant_size       pgtype.Numeric `json:"pant_size"`
+	Shirt_size      pgtype.Text `json:"shirt_size"`
+	Pant_size       pgtype.Text `json:"pant_size"`
 	Shoe_size       pgtype.Numeric `json:"shoe_size"`
 	Blood_type      pgtype.Text    `json:"blood_type"`
-	Allergies       []Allergy      `json:"allergies"`
+	Allergies       []string      `json:"allergies"`
 
 	Code           pgtype.Text `json:"code"`
 	Personal_code  pgtype.Text `json:"personal_code"`
 	Rank           pgtype.Text `json:"rank"`
-	Promotion_date string      `json:"promotion_date"`
 	Promotion      pgtype.Text `json:"promotion"`
 	Condition      pgtype.Text `json:"condition"`
 	Division       pgtype.Text `json:"division"`
 	Profession     pgtype.Text `json:"profession"`
 	Institution    pgtype.Text `json:"institution"`
 	User_system    pgtype.Bool `json:"user_system"`
-
+	Skills		   []string	   `json:"skills"`
+	State 		   pgtype.Text `json:"state"`
+	Municipality   pgtype.Text `json:"municipality"`
+	Parish         pgtype.Text `json:"parish"`
+	Sector         pgtype.Text `json:"sector"`
+	Community      pgtype.Text `json:"community"`
+	Street         pgtype.Text `json:"street"`
+	Beach          pgtype.Text `json:"beach"`
+	Address        pgtype.Text `json:"address"`
+	Legal_id       pgtype.Text `json:"legal_id"`
 	// Skills          []string       `json:"skills"`
 
 }
@@ -69,15 +77,22 @@ type UserProfileDto struct {
 	Code            string   `json:"code"`
 	Personal_code   string   `json:"personal_code"`
 	Rank            string   `json:"rank"`
-	Promotion_date  string   `json:"promotion_date"`
 	Promotion       string   `json:"promotion"`
 	Condition       string   `json:"condition"`
 	Division        string   `json:"division"`
 	Profession      string   `json:"profession"`
 	Institution     string   `json:"institution"`
 	User_system     bool     `json:"user_system"`
-
-	// Skills          []string `json:"skills"`
+	Skills		   []string	 `json:"skills"`
+	State 		    string   `json:"state"`
+	Municipality    string   `json:"municipality"`
+	Parish          string   `json:"parish"`
+	Sector          string   `json:"sector"`
+	Community       string   `json:"community"`
+	Street          string   `json:"street"`
+	Beach           string   `json:"beach"`
+	Address         string   `json:"address"`
+	Legal_id       	string	 `json:"legal_id"`
 
 }
 

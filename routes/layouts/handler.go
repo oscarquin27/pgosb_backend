@@ -4,7 +4,6 @@ import (
 	layout_errors "fdms/domain/entities/layouts"
 	layouts "fdms/domain/layouts"
 	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,8 +19,6 @@ func NewLayoutController(layoutService layouts.LayoutRepository) *LayoutControll
 }
 
 func (u *LayoutController) GetLayout(c *gin.Context) {
-
-	time.Sleep(3500 * time.Millisecond)
 
 	entity := c.Param("entity")
 

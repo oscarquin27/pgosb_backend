@@ -67,14 +67,12 @@ func (u *UserController) GetAllUser(c *gin.Context) {
 }
 
 func (u *UserController) Create(c *gin.Context) {
-	var userDto entities.UserDto
+	var user entities.User
 
-	if err := c.BindJSON(&userDto); err != nil {
+	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
-
-	user := u.userService.MapFromDto(&userDto)
 
 	err := u.userService.Create(&user)
 
@@ -87,13 +85,12 @@ func (u *UserController) Create(c *gin.Context) {
 }
 
 func (u *UserController) Update(c *gin.Context) {
-	var userDto entities.UserDto
+	var user entities.User
 
-	if err := c.BindJSON(&userDto); err != nil {
+	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
-
-	user := u.userService.MapFromDto(&userDto)
 
 	err := u.userService.Update(&user)
 
