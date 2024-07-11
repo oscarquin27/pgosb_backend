@@ -392,17 +392,43 @@ func (u *UserImpl) Delete(id int64) error {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "delete from users.user where id = $1", id)
+	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
-		return nil
+	defer func() {
+		if err != nil {
+			tx.Rollback(ctx)
+		} else {
+			tx.Commit(ctx)
+		}
+	}()
+	
+	var keycloakId pgtype.Text
+
+	err = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", id).Scan(&keycloakId)
+	
+	if err != nil {
+		return err
 	}
 
-	return entities.ErrorUserNotDeleted
+	if keycloakId.String != "" {
+		err = keycloakAuthService.DeleteUser(ctx, keycloakId.String)
+
+		if err != nil {
+			return err 
+		}
+	}
+
+	_, err = tx.Exec(ctx, "delete from users.user where id = $1", id)
+		
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (u *UserImpl) MapFromDto(userDto *entities.UserDto) entities.User {
