@@ -1,14 +1,25 @@
-package unit_domain
+package repository
 
 import (
 	"context"
-	entities "fdms/domain/entities/units"
-	"fdms/src/utils"
+	"fdms/src/models"
+	"fdms/src/services"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func (u *UnitImpl) GetUnit(id int64) (*entities.Unit, error) {
+type UnitRepository struct {
+	db *pgxpool.Pool
+}
+
+func NewUnityService(db *pgxpool.Pool) services.UnitService {
+	return &UnitRepository{
+		db: db,
+	}
+}
+
+func (u *UnitRepository) Get(id int64) (*models.Unit, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -37,11 +48,15 @@ func (u *UnitImpl) GetUnit(id int64) (*entities.Unit, error) {
 	FROM vehicles.unit
  	where id = $1;`, id)
 
-	unity, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[entities.Unit])
+	if err != nil {
+		return nil, err
+	}
+
+	unity, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Unit])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, entities.ErrorUnitNotFound
+			return nil, models.ErrorUnitNotFound
 		}
 
 		return nil, err
@@ -50,7 +65,7 @@ func (u *UnitImpl) GetUnit(id int64) (*entities.Unit, error) {
 	return &unity, nil
 }
 
-func (u *UnitImpl) GetAll() ([]entities.Unit, error) {
+func (u *UnitRepository) GetAll() ([]models.Unit, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -78,11 +93,15 @@ func (u *UnitImpl) GetAll() ([]entities.Unit, error) {
 	observations
 	FROM vehicles.unit`)
 
-	unity, err := pgx.CollectRows(rows, pgx.RowToStructByName[entities.Unit])
+	if err != nil {
+		return nil, err
+	}
+
+	unity, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Unit])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, entities.ErrorUnitNotFound
+			return nil, models.ErrorUnitNotFound
 		}
 
 		return nil, err
@@ -91,7 +110,7 @@ func (u *UnitImpl) GetAll() ([]entities.Unit, error) {
 	return unity, nil
 }
 
-func (u *UnitImpl) Create(unity *entities.Unit) error {
+func (u *UnitRepository) Create(unity *models.Unit) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -128,10 +147,10 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14);
 		return nil
 	}
 
-	return entities.ErrorUnitNotCreated
+	return models.ErrorUnitNotCreated
 }
 
-func (u *UnitImpl) Update(unity *entities.Unit) error {
+func (u *UnitRepository) Update(unity *models.Unit) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -183,10 +202,10 @@ func (u *UnitImpl) Update(unity *entities.Unit) error {
 		return nil
 	}
 
-	return entities.ErrorUnitNotUpdated
+	return models.ErrorUnitNotUpdated
 }
 
-func (u *UnitImpl) Delete(id int64) error {
+func (u *UnitRepository) Delete(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -206,26 +225,5 @@ func (u *UnitImpl) Delete(id int64) error {
 		return nil
 	}
 
-	return entities.ErrorUnitNotDeleted
-}
-
-func (u *UnitImpl) MapFromDto(s entities.UnitDto) entities.Unit {
-	var unit entities.Unit
-
-	unit.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	unit.Plate = utils.ConvertToPgTypeText(s.Plate)
-	unit.Zone = utils.ConvertToPgTypeText(s.Zone)
-	unit.Station = utils.ConvertToPgTypeText(s.Station)
-	unit.Unit_type = utils.ConvertToPgTypeText(s.Unit_type)
-	unit.Make = utils.ConvertToPgTypeText(s.Make)
-	unit.Drivers = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Drivers))
-	unit.Unit_condition = utils.ConvertToPgTypeText(s.Unit_condition)
-	unit.Vehicle_serial = utils.ConvertToPgTypeText(s.Vehicle_serial)
-	unit.Motor_serial = utils.ConvertToPgTypeText(s.Motor_serial)
-	unit.Capacity = utils.ConvertToPgTypeText(s.Capacity)
-	unit.Fuel_type = utils.ConvertToPgTypeText(s.Fuel_type)
-	unit.Water_capacity = utils.ConvertToPgTypeText(s.Water_capacity)
-	unit.Observations = utils.ConvertToPgTypeText(s.Observations)
-
-	return unit
+	return models.ErrorUnitNotDeleted
 }

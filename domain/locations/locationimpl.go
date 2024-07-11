@@ -7,13 +7,13 @@ import (
 	parish "fdms/domain/entities/parish"
 	state "fdms/domain/entities/states"
 	station "fdms/domain/entities/stations"
-	"fdms/utils"
+	"fdms/src/utils"
 
 	"github.com/jackc/pgx/v5"
 )
 
 func (u *LocationsImpl) GetState(id int64) (*state.State, error) {
-	
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -38,8 +38,8 @@ func (u *LocationsImpl) GetState(id int64) (*state.State, error) {
 	return &r, nil
 }
 
-func (u *LocationsImpl) GetAllStates()([]state.State, error){
-	
+func (u *LocationsImpl) GetAllStates() ([]state.State, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -64,7 +64,7 @@ func (u *LocationsImpl) GetAllStates()([]state.State, error){
 	return r, nil
 }
 
-func (u *LocationsImpl) CreateState(r *state.State) (error) {
+func (u *LocationsImpl) CreateState(r *state.State) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -75,7 +75,7 @@ func (u *LocationsImpl) CreateState(r *state.State) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "insert into locations.state (name, coordinates) values ($1, $2)", r.Coordinates, r.Name)
-	
+
 	if err != nil {
 		return err
 	}
@@ -84,11 +84,10 @@ func (u *LocationsImpl) CreateState(r *state.State) (error) {
 		return nil
 	}
 
-
 	return state.ErrorStateNotCreated
 }
 
-func (u *LocationsImpl) UpdateState(r *state.State) (error) {
+func (u *LocationsImpl) UpdateState(r *state.State) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -99,7 +98,7 @@ func (u *LocationsImpl) UpdateState(r *state.State) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "update locations.state set name = $1, coordinates = $2 where state_id = $3", r.Name, r.Coordinates, r.Id)
-	
+
 	if err != nil {
 		return err
 	}
@@ -111,7 +110,7 @@ func (u *LocationsImpl) UpdateState(r *state.State) (error) {
 	return state.ErrorStateNotUpdated
 }
 
-func (u *LocationsImpl) DeleteState(id int64) (error) {
+func (u *LocationsImpl) DeleteState(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -134,8 +133,8 @@ func (u *LocationsImpl) DeleteState(id int64) (error) {
 	return state.ErrorStateNotDeleted
 }
 
-func (u *LocationsImpl) GetCity(id int64) (*city.City, error){
-	
+func (u *LocationsImpl) GetCity(id int64) (*city.City, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -157,11 +156,11 @@ func (u *LocationsImpl) GetCity(id int64) (*city.City, error){
 		return nil, err
 	}
 
-	return &r, nil	
+	return &r, nil
 }
 
-func (u *LocationsImpl) GetAllCity() ([]city.City, error){
-	
+func (u *LocationsImpl) GetAllCity() ([]city.City, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -183,10 +182,10 @@ func (u *LocationsImpl) GetAllCity() ([]city.City, error){
 		return nil, err
 	}
 
-	return r, nil	
+	return r, nil
 }
 
-func (u *LocationsImpl) CreateCity(r *city.City) (error) {
+func (u *LocationsImpl) CreateCity(r *city.City) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -197,7 +196,7 @@ func (u *LocationsImpl) CreateCity(r *city.City) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "insert into locations.state (state_id, name, area_code, zip_code, coordinates) values ($1, $2, $3, $4)", r.State_Id, r.Name, r.Area_Code, r.Zip_Code, r.Coordinates)
-	
+
 	if err != nil {
 		return err
 	}
@@ -209,7 +208,7 @@ func (u *LocationsImpl) CreateCity(r *city.City) (error) {
 	return city.ErrorCityNotCreated
 }
 
-func (u *LocationsImpl) UpdateCity(r *city.City) (error) {
+func (u *LocationsImpl) UpdateCity(r *city.City) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -220,7 +219,7 @@ func (u *LocationsImpl) UpdateCity(r *city.City) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "update locations.cities set name = $1, area_code = $2, zip_code = $3, coordinates = $4 where city_id = $5", r.Name, r.Area_Code, r.Zip_Code, r.Coordinates, r.Id)
-	
+
 	if err != nil {
 		return err
 	}
@@ -232,7 +231,7 @@ func (u *LocationsImpl) UpdateCity(r *city.City) (error) {
 	return city.ErrorCityNotUpdated
 }
 
-func (u *LocationsImpl) DeleteCity(id int64) (error) {
+func (u *LocationsImpl) DeleteCity(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -255,8 +254,8 @@ func (u *LocationsImpl) DeleteCity(id int64) (error) {
 	return city.ErrorCityNotDeleted
 }
 
-func (u *LocationsImpl) GetMunicipality(id int64) (*municipality.Municipality, error){
-	
+func (u *LocationsImpl) GetMunicipality(id int64) (*municipality.Municipality, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -278,11 +277,11 @@ func (u *LocationsImpl) GetMunicipality(id int64) (*municipality.Municipality, e
 		return nil, err
 	}
 
-	return &r, nil	
+	return &r, nil
 }
 
-func (u *LocationsImpl) GetAllMunicipality() ([]municipality.Municipality, error){
-	
+func (u *LocationsImpl) GetAllMunicipality() ([]municipality.Municipality, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -304,10 +303,10 @@ func (u *LocationsImpl) GetAllMunicipality() ([]municipality.Municipality, error
 		return nil, err
 	}
 
-	return r, nil	
+	return r, nil
 }
 
-func (u *LocationsImpl) CreateMunicipality(r *municipality.Municipality) (error) {
+func (u *LocationsImpl) CreateMunicipality(r *municipality.Municipality) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -318,7 +317,7 @@ func (u *LocationsImpl) CreateMunicipality(r *municipality.Municipality) (error)
 	}
 
 	rows, err := conn.Exec(ctx, "insert into locations.municipalities (state_id, name, coordinates) values ($1, $2, $3, $4)", r.State_Id, r.Name, r.Coordinates)
-	
+
 	if err != nil {
 		return err
 	}
@@ -330,7 +329,7 @@ func (u *LocationsImpl) CreateMunicipality(r *municipality.Municipality) (error)
 	return city.ErrorCityNotCreated
 }
 
-func (u *LocationsImpl) UpdateMunicipality(r *municipality.Municipality) (error) {
+func (u *LocationsImpl) UpdateMunicipality(r *municipality.Municipality) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -341,7 +340,7 @@ func (u *LocationsImpl) UpdateMunicipality(r *municipality.Municipality) (error)
 	}
 
 	rows, err := conn.Exec(ctx, "update locations.mnunicipalities set state_id = $1, name = $2, coordinates = $3 where municipality_id = $4", r.Name, r.State_Id, r.Coordinates, r.Id)
-	
+
 	if err != nil {
 		return err
 	}
@@ -353,7 +352,7 @@ func (u *LocationsImpl) UpdateMunicipality(r *municipality.Municipality) (error)
 	return municipality.ErrorMunicipalityNotCreated
 }
 
-func (u *LocationsImpl) DeleteMunicipality(id int64) (error) {
+func (u *LocationsImpl) DeleteMunicipality(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -376,8 +375,8 @@ func (u *LocationsImpl) DeleteMunicipality(id int64) (error) {
 	return municipality.ErrorMunicipalityNotDeleted
 }
 
-func (u *LocationsImpl) GetParish(id int64) (*parish.Parish, error){
-	
+func (u *LocationsImpl) GetParish(id int64) (*parish.Parish, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -399,11 +398,11 @@ func (u *LocationsImpl) GetParish(id int64) (*parish.Parish, error){
 		return nil, err
 	}
 
-	return &r, nil	
+	return &r, nil
 }
 
-func (u *LocationsImpl) GetAllParish() ([]parish.Parish, error){
-	
+func (u *LocationsImpl) GetAllParish() ([]parish.Parish, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -425,10 +424,10 @@ func (u *LocationsImpl) GetAllParish() ([]parish.Parish, error){
 		return nil, err
 	}
 
-	return r, nil	
+	return r, nil
 }
 
-func (u *LocationsImpl) CreateParish(r *parish.Parish) (error) {
+func (u *LocationsImpl) CreateParish(r *parish.Parish) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -439,7 +438,7 @@ func (u *LocationsImpl) CreateParish(r *parish.Parish) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "insert into locations.parish (state_id, municipality_id, name, coordinates) values ($1, $2, $3, $4)", r.State_Id, r.Municipality_Id, r.Name)
-	
+
 	if err != nil {
 		return err
 	}
@@ -451,7 +450,7 @@ func (u *LocationsImpl) CreateParish(r *parish.Parish) (error) {
 	return city.ErrorCityNotCreated
 }
 
-func (u *LocationsImpl) UpdateParish(r *parish.Parish) (error) {
+func (u *LocationsImpl) UpdateParish(r *parish.Parish) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -462,7 +461,7 @@ func (u *LocationsImpl) UpdateParish(r *parish.Parish) (error) {
 	}
 
 	rows, err := conn.Exec(ctx, "update locations.parish set state_id = $1, municipality_id = $2, name = $3, coordinates = $4 where parish_id = $4", r.State_Id, r.Municipality_Id, r.Name, r.Coordinates, r.Id)
-	
+
 	if err != nil {
 		return err
 	}
@@ -474,7 +473,7 @@ func (u *LocationsImpl) UpdateParish(r *parish.Parish) (error) {
 	return parish.ErrorParishNotUpdated
 }
 
-func (u *LocationsImpl) DeleteParish(id int64) (error) {
+func (u *LocationsImpl) DeleteParish(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -497,8 +496,8 @@ func (u *LocationsImpl) DeleteParish(id int64) (error) {
 	return parish.ErrorParishNotDeleted
 }
 
-func (u *LocationsImpl) GetStation(id int64) (*station.Station, error){
-	
+func (u *LocationsImpl) GetStation(id int64) (*station.Station, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -520,11 +519,11 @@ func (u *LocationsImpl) GetStation(id int64) (*station.Station, error){
 		return nil, err
 	}
 
-	return &r, nil	
+	return &r, nil
 }
 
-func (u *LocationsImpl) GetAllStations() ([]station.Station, error){
-	
+func (u *LocationsImpl) GetAllStations() ([]station.Station, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -546,10 +545,10 @@ func (u *LocationsImpl) GetAllStations() ([]station.Station, error){
 		return nil, err
 	}
 
-	return r, nil	
+	return r, nil
 }
 
-func (u *LocationsImpl) CreateStation(r *station.Station) (error) {
+func (u *LocationsImpl) CreateStation(r *station.Station) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -561,21 +560,21 @@ func (u *LocationsImpl) CreateStation(r *station.Station) (error) {
 
 	rows, err := conn.Exec(ctx, `insert into locations.fire_stations 
 	(municipality_id, name, coordinates, description, code, abbreviation, phones, state_id, parish_id, sector, community, street, address) 
-	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`, 
-	r.Municipality_id, 
-	r.Name, 
-	r.Coordinates, 
-	r.Description, 
-	r.Code, 
-	r.Abbreviation, 
-	r.Phones, 
-	r.State_id, 
-	r.Parish_id, 
-	r.Sector, 
-	r.Community, 
-	r.Street, 
-	r.Address)
-	
+	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+		r.Municipality_id,
+		r.Name,
+		r.Coordinates,
+		r.Description,
+		r.Code,
+		r.Abbreviation,
+		r.Phones,
+		r.State_id,
+		r.Parish_id,
+		r.Sector,
+		r.Community,
+		r.Street,
+		r.Address)
+
 	if err != nil {
 		return err
 	}
@@ -587,7 +586,7 @@ func (u *LocationsImpl) CreateStation(r *station.Station) (error) {
 	return station.ErrorStationFound
 }
 
-func (u *LocationsImpl) UpdateStation(r *station.Station) (error) {
+func (u *LocationsImpl) UpdateStation(r *station.Station) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -597,8 +596,8 @@ func (u *LocationsImpl) UpdateStation(r *station.Station) (error) {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "update locations.fire_stations set municipality_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, state_id = $8, parish_id = $9, sector = $10, community = $11, street = $12, address = $13 where station_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address ,r.Id)
-	
+	rows, err := conn.Exec(ctx, "update locations.fire_stations set municipality_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, state_id = $8, parish_id = $9, sector = $10, community = $11, street = $12, address = $13 where station_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address, r.Id)
+
 	if err != nil {
 		return err
 	}
@@ -610,7 +609,7 @@ func (u *LocationsImpl) UpdateStation(r *station.Station) (error) {
 	return station.ErrorStationNotUpdated
 }
 
-func (u *LocationsImpl) DeleteStation(id int64) (error) {
+func (u *LocationsImpl) DeleteStation(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -633,7 +632,7 @@ func (u *LocationsImpl) DeleteStation(id int64) (error) {
 	return station.ErrorStationNotDeleted
 }
 
-func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
+func (u *LocationsImpl) MapToDto(s station.Station) station.StationDto {
 	station := station.StationDto{}
 
 	station.Municipality_id = utils.ConvertFromInt4(s.Municipality_id)
@@ -653,7 +652,7 @@ func (u *LocationsImpl) MapToDto(s station.Station) (station.StationDto) {
 	return station
 }
 
-func (u *LocationsImpl) MapFromDto(s station.StationDto) (station.Station) {
+func (u *LocationsImpl) MapFromDto(s station.StationDto) station.Station {
 	station := station.Station{}
 
 	station.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
@@ -673,4 +672,3 @@ func (u *LocationsImpl) MapFromDto(s station.StationDto) (station.Station) {
 
 	return station
 }
-

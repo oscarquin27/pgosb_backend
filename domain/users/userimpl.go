@@ -5,7 +5,7 @@ import (
 	entities "fdms/domain/entities/users"
 	"fdms/infra/config"
 	authentication "fdms/infra/keycloak"
-	"fdms/utils"
+	"fdms/src/utils"
 	"strconv"
 
 	"github.com/Nerzal/gocloak/v13"
@@ -179,7 +179,7 @@ func (u *UserImpl) Create(user *entities.User) error {
 			tx.Commit(ctx)
 		}
 	}()
-	
+
 	var userId int
 
 	err = tx.QueryRow(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion, condition, division, profession, institution, user_system, zip_code, skills, state, municipality, parish, sector, community, street, beach, address, legal_id)
@@ -233,7 +233,7 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 
 	if user.User_system.Bool {
 		keycloakId, err := keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(userId), "12345")
-		
+
 		if err != nil {
 			return entities.ErrorUserNotCreated
 		}
@@ -244,7 +244,7 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 			return entities.ErrorUserNotCreated
 		}
 	}
-	
+
 	return nil
 }
 
@@ -272,7 +272,7 @@ func (u *UserImpl) Update(user *entities.User) error {
 			tx.Commit(ctx)
 		}
 	}()
-	
+
 	var keycloakId pgtype.Text
 
 	previous, err := u.GetUser(user.Id)
@@ -369,7 +369,7 @@ func (u *UserImpl) Update(user *entities.User) error {
 		err = keycloakAuthService.DeleteUser(ctx, keycloakId.String)
 
 	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool || keycloakId.String == "" {
-		keycloakId.String, err = keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")		
+		keycloakId.String, err = keycloakAuthService.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
 
 		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, user.UserIdentification.Id)
 	}
@@ -405,11 +405,11 @@ func (u *UserImpl) Delete(id int64) error {
 			tx.Commit(ctx)
 		}
 	}()
-	
+
 	var keycloakId pgtype.Text
 
 	err = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", id).Scan(&keycloakId)
-	
+
 	if err != nil {
 		return err
 	}
@@ -418,12 +418,12 @@ func (u *UserImpl) Delete(id int64) error {
 		err = keycloakAuthService.DeleteUser(ctx, keycloakId.String)
 
 		if err != nil {
-			return err 
+			return err
 		}
 	}
 
 	_, err = tx.Exec(ctx, "delete from users.user where id = $1", id)
-		
+
 	if err != nil {
 		return err
 	}
