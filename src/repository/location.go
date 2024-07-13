@@ -588,7 +588,7 @@ func (u *LocationRepository) CreateStation(r *models.Station) error {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, `insert into locations.fire_modelss 
+	rows, err := conn.Exec(ctx, `insert into locations.fire_stations
 	(models_id, name, coordinates, description, code, abbreviation, phones, models_id, models_id, sector, community, street, address) 
 	values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
 		r.Municipality_id,
@@ -626,7 +626,7 @@ func (u *LocationRepository) UpdateStation(r *models.Station) error {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "update locations.fire_modelss set models_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, models_id = $8, models_id = $9, sector = $10, community = $11, street = $12, address = $13 where models_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address, r.Id)
+	rows, err := conn.Exec(ctx, "update locations.fire_stations set models_id = $1, name = $2, coordinates = $3, description = $4, code = $5, abbreviation = $6, phones = $7, models_id = $8, models_id = $9, sector = $10, community = $11, street = $12, address = $13 where models_id = $14", r.Municipality_id, r.Name, r.Coordinates, r.Description, r.Code, r.Abbreviation, r.Phones, r.State_id, r.Parish_id, r.Sector, r.Community, r.Street, r.Address, r.Id)
 
 	if err != nil {
 		return err
@@ -649,7 +649,7 @@ func (u *LocationRepository) DeleteStation(id int64) error {
 		return err
 	}
 
-	rows, err := conn.Exec(ctx, "delete from locations.fire_modelss where models_id = $1", id)
+	rows, err := conn.Exec(ctx, "delete from locations.fire_stations where models_id = $1", id)
 
 	if err != nil {
 		return err

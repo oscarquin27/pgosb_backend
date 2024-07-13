@@ -31,7 +31,7 @@ func (u *LayoutRepository) Get(entity string) ([]models.Layout, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, "select id, column_name, display_name, group_name, visibility, entity_name, type from modelss.models where entity_name = $1", entity)
+	rows, err := conn.Query(ctx, "select id, column_name, display_name, group_name, visibility, entity_name, type from layouts.layout where entity_name = $1", entity)
 
 	if err != nil {
 		return nil, err

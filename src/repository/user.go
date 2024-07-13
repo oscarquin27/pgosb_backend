@@ -378,11 +378,24 @@ func (u *UserRepository) Update(user *models.User) error {
 	}
 	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
 		err = u.auth.DeleteUser(ctx, keycloakId.String)
-
-	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool || keycloakId.String == "" {
+		if err != nil {
+			return err
+		}
+	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool && keycloakId.String == "" {
 		keycloakId.String, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
 
-		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, user.UserIdentification.Id)
+		if err != nil {
+			return models.ErrorUserNotUpdated
+		}
+		r, err := tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId.String, user.UserIdentification.Id)
+
+		if err != nil {
+			return err
+		}
+
+		if r.RowsAffected() <= 0 {
+			return models.ErrorUserNotUpdated
+		}
 	}
 
 	if err != nil {
