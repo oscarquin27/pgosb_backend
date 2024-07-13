@@ -1,11 +1,11 @@
 http:
   port: 5001
 database:
-  connection_string: "dbname=postgres user=postgres password=postgres host=192.168.120.110 port=5435 pool_max_conns=10"
+  connection_string: "dbname=postgres user=postgres password=postgres host=localhost port=5435 pool_max_conns=10"
 keycloak:
-  address: "http://192.168.120.110:8442"
+  address: "http://localhost:8442"
   admin_user: "admin"
   admin_password: "admin"
   client_id: "pgosb_admin_client"
-  client_secret: "8I77PevTtR1N2b208B9s8q6x4BGOz9Nn"
+  client_secret: "l1k4s45tKGdDx4m6GeZtBoZmYbxTfd8U"
   realm: "pgosb"
