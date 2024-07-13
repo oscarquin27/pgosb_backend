@@ -15,8 +15,21 @@ type Http struct {
 	Port string `yaml:"port"`
 }
 
+type LogSettings struct {
+	Console           bool   `yaml:"console"`
+	BeutifyConsoleLog bool   `yaml:"beutify_console"`
+	File              bool   `yaml:"file"`
+	Ruta              string `yaml:"route"`
+	MinLevel          string `yaml:"min_level"`
+	RotationMaxSizeMB int    `yaml:"rotation_max_size_mb"`
+	MaxAgeDay         int    `yaml:"max_age_day"`
+	MaxBackups        int    `yaml:"max_backups"`
+	Compress          bool   `yaml:"compress"`
+}
+
 type Config struct {
-	Database Database
-	Keycloak Keycloak
-	Http     Http
+	Database    Database    `yaml:"database"`
+	Keycloak    Keycloak    `yaml:"keycloak"`
+	Http        Http        `yaml:"http"`
+	LogSettings LogSettings `yaml:"log_settings"`
 }

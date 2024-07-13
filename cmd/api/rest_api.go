@@ -10,23 +10,39 @@ import (
 	vehicle_handlers "fdms/cmd/api/handlers/vehicles"
 	"fdms/src/infrastructure/config"
 	"fdms/src/infrastructure/keycloak"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/repository"
+	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+func ZerologMiddleware() gin.HandlerFunc {
+
+	return func(c *gin.Context) {
+		start := time.Now()
+
+		// Call the next handler
+		c.Next()
+
+		// Log the request
+		logger.Info().
+			Str("method", c.Request.Method).
+			Str("path", c.Request.URL.Path).
+			Str("ip", c.ClientIP()).
+			Dur("latency", time.Since(start)).
+			Int("status", c.Writer.Status()).
+			Msg("")
+	}
+}
+
 func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
+	gin.SetMode(gin.ReleaseMode)
+
 	router := gin.Default()
 	conf := cors.DefaultConfig()
-
-	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.122:5173", "http://192.168.120.110:5173"}
-
-	router.Use(cors.New(conf))
-
-	v1 := router.Group("/api/v1")
 
 	userService := repository.NewUserService(db, auth)
 	roleService := repository.NewRoleService(db)
@@ -44,6 +60,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	layoutController := layout_handlers.NewLayoutController(layoutService)
 
 	AuthController := auth_handlers.NewAuthController(auth)
+
+	conf.AllowCredentials = true
+	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.122:5173", "http://192.168.120.110:5173"}
+
+	router.Use(ZerologMiddleware())
+	router.Use(cors.New(conf))
+
+	v1 := router.Group("/api/v1")
 
 	authGroup := v1.Group("/auth")
 	{

@@ -2,12 +2,15 @@ package config
 
 import (
 	"fmt"
-	"log"
 	"os"
 	"path/filepath"
+	"runtime/pprof"
 
 	"gopkg.in/yaml.v3"
 )
+
+var threadProfile = pprof.Lookup("threadcreate")
+var goRoutineProfile = pprof.Lookup("goroutine")
 
 var Configuration *Config
 
@@ -15,7 +18,14 @@ func Get() *Config {
 	return Configuration
 }
 
-func LoadConfig() (*Config, error) {
+func GetNumbersOfThreads() int {
+	return threadProfile.Count()
+}
+func GetNumberOfGoRoutines() int {
+	return goRoutineProfile.Count()
+}
+
+func LoadConfig() *Config {
 
 	//path, err := os.Getwd()
 
@@ -24,8 +34,7 @@ func LoadConfig() (*Config, error) {
 	file, err := os.Open(path)
 
 	if err != nil {
-		log.Fatal("No se encontro el archivo de configuracion")
-		os.Exit(1)
+		panic(fmt.Sprintf("no se pudo leer el archivo de configuracion %v", err))
 	}
 
 	defer file.Close()
@@ -33,16 +42,14 @@ func LoadConfig() (*Config, error) {
 	d := yaml.NewDecoder(file)
 
 	if err := d.Decode(&Configuration); err != nil {
-		return nil, err
+		panic(fmt.Sprintf("no se pudo parsear el archivo de configuracion %v", err))
 	}
 
-	return Configuration, nil
+	return Configuration
 }
 
 func init() {
 	fmt.Println("Inicio Config Package")
-	_, err := LoadConfig()
-	if err != nil {
-		panic(err)
-	}
+	LoadConfig()
+
 }
