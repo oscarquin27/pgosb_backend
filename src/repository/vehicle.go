@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fdms/src/models"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -179,11 +180,16 @@ func (u *VehicleRepository) Update(vehicle *models.Vehicle) error {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
-		return nil
+	if rows.RowsAffected() > 1 {
+		return fmt.Errorf("se ha actualizado mas de un vehiculo")
 	}
 
-	return models.ErrorVehicleNotUpdated
+	if rows.RowsAffected() == 0 {
+		return models.ErrorVehicleNotUpdated
+	}
+
+	return nil
+
 }
 
 func (u *VehicleRepository) Delete(id int64) error {
