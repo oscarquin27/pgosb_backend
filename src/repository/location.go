@@ -418,6 +418,10 @@ func (u *LocationRepository) GetParish(id int64) (*models.Parish, error) {
 
 	rows, err := conn.Query(ctx, "select models_id, models_id, models_id, name, coordinates from locations.models where models_id = $1", id)
 
+	if err != nil {
+		return nil, err
+	}
+
 	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Parish])
 
 	if err != nil {
@@ -443,6 +447,10 @@ func (u *LocationRepository) GetAllParish() ([]models.Parish, error) {
 	}
 
 	rows, err := conn.Query(ctx, "select models_id, models_id, models_id, name, coordinates from locations.models")
+
+	if err != nil {
+		return nil, err
+	}
 
 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Parish])
 
@@ -539,6 +547,10 @@ func (u *LocationRepository) GetStation(id int64) (*models.Station, error) {
 
 	rows, err := conn.Query(ctx, "select models_id, models_id, name, coordinates, description, code, abbreviation, phones, models_id, models_id, sector, community, street, address from locations.fire_modelss where models_id = $1", id)
 
+	if err != nil {
+		return nil, err
+	}
+
 	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.Station])
 
 	if err != nil {
@@ -564,6 +576,10 @@ func (u *LocationRepository) GetAllStations() ([]models.Station, error) {
 	}
 
 	rows, err := conn.Query(ctx, "select models_id, models_id, name, coordinates, description, code, abbreviation, phones, models_id, models_id, sector, community, street, address from locations.fire_modelss")
+
+	if err != nil {
+		return nil, err
+	}
 
 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Station])
 
