@@ -4,6 +4,10 @@ import (
 	auth_handlers "fdms/cmd/api/handlers/auth"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	location_handlers "fdms/cmd/api/handlers/locations"
+	mission_handlers "fdms/cmd/api/handlers/mission"
+	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
+	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
+	mission_vehicle_handlers "fdms/cmd/api/handlers/mission_vehicles"
 	roles_handlers "fdms/cmd/api/handlers/roles"
 	units_handlers "fdms/cmd/api/handlers/units"
 	user_handlers "fdms/cmd/api/handlers/user"
@@ -51,7 +55,15 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	vehicleService := repository.NewVehicleService(db)
 	unityService := repository.NewUnityService(db)
 	layoutService := repository.NewLayoutService(db)
+	missionService := repository.NewMissionService(db)
+	missionServiceService := repository.NewMissionServiceService(db)
+	missionVehicleService := repository.NewMissionVehicleService(db)
+	missionPersonService := repository.NewMissionPersonService(db)
 
+	missionController := mission_handlers.NewMissionController(missionService)
+	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
+	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
+    missionPersonController := mission_person_handlers.NewMissionPersonController(missionPersonService)
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
 	locationController := location_handlers.NewLocationController(locationService)
@@ -175,6 +187,39 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	{
 		layout.GET("/:entity", layoutController.GetLayout)
 	}
+
+	mission := v1.Group("mission")
+	{
+		mission.GET("/:id", missionController.GetMission)
+		mission.POST("/create", missionController.Create)
+		mission.PUT("/update", missionController.Update)
+		mission.DELETE("/:id", missionController.Delete)
+	}
+
+	serviceMission := v1.Group("mission/service")
+	{
+		serviceMission.GET("/:id", missionServiceController.Get)
+		serviceMission.POST("/create", missionServiceController.Create)
+		serviceMission.PUT("/update", missionController.Update)
+		serviceMission.DELETE("/delete", missionController.Delete)
+	}
+
+	vehicleMission := v1.Group("mission/vehicle")
+	{
+		vehicleMission.GET("/:id", missionVehicleController.GetVehicle)
+		vehicleMission.POST("/create", missionVehicleController.Create)
+		vehicleMission.PUT("/update", missionVehicleController.Update)
+		vehicleMission.DELETE("/delete", missionVehicleController.Delete)		
+	}
+	
+	personMission := v1.Group("mission/person")
+	{
+		personMission.GET("/:id", missionPersonController.Get)
+		personMission.POST("/create", missionPersonController.Create)
+		personMission.PUT("/update", missionPersonController.Update)
+		personMission.DELETE("/delete", missionPersonController.Delete)		
+	}
+	
 
 	router.Run(":" + config.Configuration.Http.Port)
 }

@@ -14,7 +14,7 @@ type MissionController struct {
 	missionService services.MissionService
 }
 
-func NewLocationController(missionService services.MissionService) *MissionController {
+func NewMissionController(missionService services.MissionService) *MissionController {
 	return &MissionController{
 		missionService: missionService,
 	}
@@ -37,7 +37,7 @@ func (u *MissionController) GetMission(c *gin.Context) {
 	}
 
 
-	c.JSON(http.StatusOK, api_models.ModelToMissionJson(mission))
+	c.JSON(http.StatusOK, api_models.ModelToMissionJson(*mission))
 }
 
 func (u *MissionController) GetAllMissions(c *gin.Context) {

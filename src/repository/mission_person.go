@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fdms/src/models"
+	"fdms/src/services"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,7 +13,7 @@ type MissionPersonRepository struct {
 	db   *pgxpool.Pool
 }
 
-func NewMissionPersonService(db *pgxpool.Pool) *MissionPersonRepository {
+func NewMissionPersonService(db *pgxpool.Pool) services.MissionPersonService {
 	return &MissionPersonRepository{
 		db:   db,
 	}

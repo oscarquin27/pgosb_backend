@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fdms/src/models"
+	"fdms/src/services"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,7 +13,7 @@ type MissionVehicleRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewMissionVehicleService(db *pgxpool.Pool) *MissionVehicleRepository {
+func NewMissionVehicleService(db *pgxpool.Pool) services.MissionVehicleService {
 	return &MissionVehicleRepository{
 		db: db,
 	}
@@ -150,7 +151,7 @@ func (u *MissionVehicleRepository) Update(vehicle *models.MissionVehicle) error 
 	return models.ErrorVehicleNotUpdated
 }
 
-func (u *MissionVehicleRepository) Delete(id int64) error {
+func (u *MissionVehicleRepository) Delete(id int) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
