@@ -189,7 +189,6 @@ func (u *VehicleRepository) Update(vehicle *models.Vehicle) error {
 	}
 
 	return nil
-
 }
 
 func (u *VehicleRepository) Delete(id int64) error {
