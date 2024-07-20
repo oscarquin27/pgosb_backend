@@ -15,7 +15,33 @@ type MissionRepository struct {
 
 // GetAll implements services.MissionService.
 func (u *MissionRepository) GetAll() ([]models.Mission, error) {
-	panic("unimplemented")
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT id, created_at, code from missions.mission order by created_at desc`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Mission])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionNotFound
+		}
+
+		return nil, err
+	}
+
+	return services, nil
 }
 
 func NewMissionService(db *pgxpool.Pool) services.MissionService {
@@ -35,7 +61,7 @@ func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT id, created_at, code where mission_id = $1;`, id)
+	rows, err := conn.Query(ctx, `SELECT id, created_at, code from missions.mission where id = $1;`, id)
 
 	if err != nil {
 		return nil, err

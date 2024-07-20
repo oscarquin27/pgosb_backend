@@ -5,6 +5,7 @@ import (
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	location_handlers "fdms/cmd/api/handlers/locations"
 	mission_handlers "fdms/cmd/api/handlers/mission"
+	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
 	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
 	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
 	mission_vehicle_handlers "fdms/cmd/api/handlers/mission_vehicles"
@@ -59,11 +60,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionServiceService := repository.NewMissionServiceService(db)
 	missionVehicleService := repository.NewMissionVehicleService(db)
 	missionPersonService := repository.NewMissionPersonService(db)
+	missionInfraService := repository.NewMissionInfrastructureService(db)
 
 	missionController := mission_handlers.NewMissionController(missionService)
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
 	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
     missionPersonController := mission_person_handlers.NewMissionPersonController(missionPersonService)
+	missionInfraController := mission_infra_handlers.NewMissionController(missionInfraService)
+
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
 	locationController := location_handlers.NewLocationController(locationService)
@@ -191,6 +195,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	mission := v1.Group("mission")
 	{
 		mission.GET("/:id", missionController.GetMission)
+		mission.GET("/all", missionController.GetAllMissions)
 		mission.POST("/create", missionController.Create)
 		mission.PUT("/update", missionController.Update)
 		mission.DELETE("/:id", missionController.Delete)
@@ -200,8 +205,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	{
 		serviceMission.GET("/:id", missionServiceController.Get)
 		serviceMission.POST("/create", missionServiceController.Create)
-		serviceMission.PUT("/update", missionController.Update)
-		serviceMission.DELETE("/delete", missionController.Delete)
+		serviceMission.PUT("/update", missionServiceController.Update)
+		serviceMission.DELETE("/delete", missionServiceController.Delete)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")
@@ -210,6 +215,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		vehicleMission.POST("/create", missionVehicleController.Create)
 		vehicleMission.PUT("/update", missionVehicleController.Update)
 		vehicleMission.DELETE("/delete", missionVehicleController.Delete)		
+	}
+
+	infraMission := v1.Group("mission/infrastructure")
+	{
+		infraMission.GET("/:id", missionInfraController.GetInfrastructure)
+		infraMission.POST("/create", missionInfraController.Create)
+		infraMission.PUT("/update", missionInfraController.Update)
+		infraMission.DELETE("/delete", missionInfraController.Delete)		
 	}
 	
 	personMission := v1.Group("mission/person")

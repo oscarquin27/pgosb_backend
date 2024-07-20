@@ -43,7 +43,8 @@ func (u *MissionVehicleController) GetVehicle(c *gin.Context) {
 		missionDto = append(missionDto, *newMission)
 	}
 
-	c.JSON(http.StatusOK, missionDto)}
+	c.JSON(http.StatusOK, missionDto)
+}
 
 // func (u *MissionVehicleController) GetAllServices(c *gin.Context) {
 

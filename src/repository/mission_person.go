@@ -96,7 +96,7 @@ func (u *MissionPersonRepository) Create(p *models.MissionPerson) error {
 	address, 
 	pathology, 
 	observations, 
-	condition)
+	person_condition)
 	values (
 	$1,
 	$2,
@@ -118,7 +118,7 @@ func (u *MissionPersonRepository) Create(p *models.MissionPerson) error {
 	$18)`, p.ServiceId, p.UnitId, p.InfrastructureId, p.VehicleId, p.FirstName, p.LastName, p.Age, p.Gender, p.LegalId, p.Phone, p.Employment, p.State, p.Municipality, p.Parish, p.Address, p.Pathology, p.Observations, p.Condition)
 
 	if err != nil {
-		return models.ErrorMissionPersonNotCreated
+		return err
 	}
 
 	return nil
@@ -135,7 +135,7 @@ func (u *MissionPersonRepository) Update(p *models.MissionPerson) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, `UPDATE missions.person
+	rows, err := conn.Exec(ctx, `UPDATE missions.person
 	SET service_id = $1, 
 	    unit_id = $2, 
 	    infrastructure_id = $3, 
@@ -153,14 +153,16 @@ func (u *MissionPersonRepository) Update(p *models.MissionPerson) error {
 	    address = $15, 
 	    pathology = $16, 
 	    observations = $17, 
-	    condition = $18
+	    person_condition = $18
 		WHERE id = $19`, p.ServiceId, p.UnitId, p.InfrastructureId, p.VehicleId, p.FirstName, p.LastName, p.Age, p.Gender, p.LegalId, p.Phone, p.Employment, p.State, p.Municipality, p.Parish, p.Address, p.Pathology, p.Observations, p.Condition, p.Id)
 
 	if err != nil {
 		return err
 	}
 
-
+	if rows.RowsAffected() == 0 {
+		return models.ErrorMissionPersonNotUpdated
+	}
 	return nil
 }
 

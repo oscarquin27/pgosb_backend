@@ -83,7 +83,8 @@ func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error 
 	motor_serial, 
 	vehicle_verified)
 	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-`, vehicle.ServiceId, 
+`, vehicle.ServiceId,
+   vehicle.VehicleCondition,
    vehicle.Make, 
    vehicle.Model, 
    vehicle.Year, 

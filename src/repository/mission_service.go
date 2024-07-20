@@ -67,18 +67,21 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, `insert into missions.person (mission_id, 
+	rows, err := conn.Exec(ctx, `insert into missions.services (mission_id, 
 	antares_id, 
 	units, 
 	bombers, 
 	summary, 
 	description)
-	values ($1, $2, $3, $4, $5, $6, $7)`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description)
+	values ($1, $2, $3, $4, $5, $6)`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description)
 
 	if err != nil {
-		return models.ErrorMissionServiceNotCreated
+		return err
 	}
 
+	if rows.RowsAffected() == 0 {
+		return models.ErrorMissionServiceNotUpdated
+	}
 	return nil
 }
 
@@ -93,7 +96,7 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, `UPDATE missions.services
+	rows, err := conn.Exec(ctx, `UPDATE missions.services
 	SET mission_id = $1, 
 	antares_id = $2, 
 	units = $3, 
@@ -106,7 +109,10 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 		return err
 	}
 
-
+	if rows.RowsAffected() == 0 {
+		return models.ErrorMissionServiceNotUpdated
+	}
+	
 	return nil
 }
 
