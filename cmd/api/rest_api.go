@@ -176,6 +176,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		vehicle.POST("/create", vehicleController.CreateVehicle)
 		vehicle.PUT("/update", vehicleController.UpdateVehicle)
 		vehicle.DELETE("/:id", vehicleController.DeleteVehicle)
+		vehicle.GET("/types", vehicleController.GetVehicleType)
+		vehicle.POST("/types", vehicleController.GetVehicleModel)
 	}
 
 	unity := v1.Group("unit")

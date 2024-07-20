@@ -78,14 +78,20 @@ func (u *MissionServiceController) Create(c *gin.Context) {
 		return
 	}
 
-	err := u.missionService.Create(&mission)
+	mission.Id.Valid = true
+	mission.AntaresId.Valid = true
+	mission.MissionId.Valid = true
+	mission.Summary.Valid = true
+	mission.Description.Valid = true
+
+	id, err := u.missionService.Create(&mission)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, "Servicio creado satisfactoriamente")
+	c.JSON(http.StatusOK, id)
 }
 
 func (u *MissionServiceController) Update(c *gin.Context) {

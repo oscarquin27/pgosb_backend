@@ -35,48 +35,51 @@ func (u *UserRepository) Get(id int64) (*models.User, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT id, id_role, 
-	user_name, 
-	first_name, 
-	last_name, 
-	email, 
-	photo, 
-	gender, 
-	phone, 
-	secondary_phone, 
-	birth_date, 
-	age,
-	zip_code,
-	residence, 
-	coordinates, 
-	marital_status, 
-	height, 
-	weight, 
-	shirt_size, 
-	pant_size, 
-	shoe_size, 
-	blood_type, 
-	allergies, 
-	code, 
-	personal_code, 
-	rank, 
-	promotion, 
-	condition, 
-	division, 
-	profession, 
-	institution,
-	user_system, 
-	skills,
-	state,
-	municipality,
-	parish,
-	sector,
-	community,
-	street,
-	beach,
-	address,
-	legal_id
-FROM users.user where id = $1;`, id)
+	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role, 
+	u.user_name, 
+	u.first_name, 
+	u.last_name, 
+	u.email, 
+	u.photo, 
+	u.gender, 
+	u.phone, 
+	u.secondary_phone, 
+	u.birth_date, 
+	u.age,
+	u.zip_code,
+	u.residence, 
+	u.coordinates, 
+	u.marital_status, 
+	u.height, 
+	u.weight, 
+	u.shirt_size, 
+	u.pant_size, 
+	u.shoe_size, 
+	u.blood_type, 
+	u.allergies, 
+	u.code, 
+	u.personal_code, 
+	u.rank, 
+	u.promotion, 
+	u.condition, 
+	u.division, 
+	u.profession, 
+	u.institution,
+	u.user_system, 
+	u.skills,
+	u.state,
+	u.municipality,
+	u.parish,
+	u.sector,
+	u.community,
+	u.street,
+	u.beach,
+	u.address,
+	u.legal_id,
+	ra.role_name as role
+FROM users.user u 
+left join users.roles ra on ra.id = u.id_role
+where u.id = $1`, id)
 
 	if err != nil {
 		return nil, err
@@ -106,48 +109,50 @@ func (u *UserRepository) GetAll() ([]models.User, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT id, id_role, 
-	user_name, 
-	first_name, 
-	last_name, 
-	email, 
-	photo, 
-	gender, 
-	phone, 
-	secondary_phone, 
-	birth_date::text, 
-	age,
-	zip_code,
-	residence, 
-	coordinates, 
-	marital_status, 
-	height, 
-	weight, 
-	shirt_size, 
-	pant_size, 
-	shoe_size, 
-	blood_type, 
-	allergies, 
-	code, 
-	personal_code, 
-	rank, 
-	promotion, 
-	condition, 
-	division, 
-	profession, 
-	institution,
-	user_system, 
-	skills,
-	state,
-	municipality,
-	parish,
-	sector,
-	community,
-	street,
-	beach,
-	address,
-	legal_id
-FROM users.user`)
+	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role, 
+	u.user_name, 
+	u.first_name, 
+	u.last_name, 
+	u.email, 
+	u.photo, 
+	u.gender, 
+	u.phone, 
+	u.secondary_phone, 
+	u.birth_date, 
+	u.age,
+	u.zip_code,
+	u.residence, 
+	u.coordinates, 
+	u.marital_status, 
+	u.height, 
+	u.weight, 
+	u.shirt_size, 
+	u.pant_size, 
+	u.shoe_size, 
+	u.blood_type, 
+	u.allergies, 
+	u.code, 
+	u.personal_code, 
+	u.rank, 
+	u.promotion, 
+	u.condition, 
+	u.division, 
+	u.profession, 
+	u.institution,
+	u.user_system, 
+	u.skills,
+	u.state,
+	u.municipality,
+	u.parish,
+	u.sector,
+	u.community,
+	u.street,
+	u.beach,
+	u.address,
+	u.legal_id,
+	ra.role_name as role
+FROM users.user u
+left join users.roles ra on ra.id = u.id_role`)
 
 	if err != nil {
 		return nil, err
@@ -192,11 +197,18 @@ func (u *UserRepository) Create(user *models.User) error {
 	}()
 
 	var userId int
+	var idRol int
+
+    err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
+
+	if err != nil {
+		return err
+	}
 
 	err = tx.QueryRow(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion, condition, division, profession, institution, user_system, zip_code, skills, state, municipality, parish, sector, community, street, beach, address, legal_id)
 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41) returning id;
 `,
-		user.UserIdentification.Id_role,
+		idRol,
 		user.UserProfile.User_name,
 		user.UserProfile.First_name,
 		user.UserProfile.Last_name,
@@ -288,6 +300,10 @@ func (u *UserRepository) Update(user *models.User) error {
 
 	previous, err := u.Get(user.Id)
 
+	var idRol int
+	
+	err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
+
 	err = tx.QueryRow(ctx, `
 		UPDATE users.user
 		SET id_role = $1,
@@ -331,7 +347,7 @@ func (u *UserRepository) Update(user *models.User) error {
 			address = $40,
 			legal_id = $41
 		WHERE id = $31 returning id_keycloak`,
-		user.UserIdentification.Id_role,
+		idRol,
 		user.UserProfile.First_name,
 		user.UserProfile.Last_name,
 		user.UserProfile.Email,

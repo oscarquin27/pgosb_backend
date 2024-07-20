@@ -21,6 +21,7 @@ type MissionInfrastructure struct {
 	BuildArea           pgtype.Text    	   `json:"build_area"`
 	BuildAccess         pgtype.Text    	   `json:"build_access"`
 	Levels              pgtype.Int2    	   `json:"levels"`
+	Walls				pgtype.Text		   `json:"walls"`
 	People              pgtype.Int2    	   `json:"people"`
 	GoodsType           pgtype.Text    	   `json:"goods_type"`
 	BuildRoof           pgtype.Text    	   `json:"build_roof"`

@@ -13,6 +13,7 @@ type MissionInfrastructureJson struct {
 	BuildArea           string   `json:"build_area"`
 	BuildAccess         string   `json:"build_access"`
 	Levels              string   `json:"levels"`
+	Walls				string   `json:"walls"`
 	People              string   `json:"people"`
 	GoodsType           string   `json:"goods_type"`
 	BuildRoof           string   `json:"build_roof"`
@@ -37,6 +38,7 @@ func ModelToMissionInfrastructureJson(s models.MissionInfrastructure) *MissionIn
 	infra.BuildFloor = utils.ConvertFromText(s.BuildFloor)
 	infra.BuildRoomType = utils.ConvertFromText(s.BuildRoomType)
 	infra.Observations = utils.ConvertFromText(s.Observations)
+	infra.Walls = utils.ConvertFromText(s.Walls)
 
 	return &infra
 }
@@ -57,6 +59,7 @@ func (s *MissionInfrastructureJson) ToModel() models.MissionInfrastructure {
 	infra.BuildFloor = utils.ConvertToPgTypeText(s.BuildFloor)
 	infra.BuildRoomType = utils.ConvertToPgTypeText(s.BuildRoomType)
 	infra.Observations = utils.ConvertToPgTypeText(s.Observations)
-	
+	infra.Walls = utils.ConvertToPgTypeText(s.Walls)
+
 	return infra
 }

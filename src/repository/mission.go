@@ -4,6 +4,7 @@ import (
 	"context"
 	"fdms/src/models"
 	"fdms/src/services"
+	"fdms/src/utils"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -11,6 +12,12 @@ import (
 
 type MissionRepository struct {
 	db *pgxpool.Pool
+}
+
+func NewMissionService(db *pgxpool.Pool) services.MissionService {
+	return &MissionRepository{
+		db: db,
+	}
 }
 
 // GetAll implements services.MissionService.
@@ -44,11 +51,6 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 	return services, nil
 }
 
-func NewMissionService(db *pgxpool.Pool) services.MissionService {
-	return &MissionRepository{
-		db: db,
-	}
-}
 
 func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 	ctx := context.Background()
@@ -80,7 +82,7 @@ func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 	return &services, nil
 }
 
-func (u *MissionRepository) Create(s *models.Mission) error {
+func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -88,17 +90,19 @@ func (u *MissionRepository) Create(s *models.Mission) error {
 	defer conn.Release()
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = conn.Exec(ctx, `insert into missions.mission (code)
-	values ($1)`, s.Code)
+	var id int8
+
+	err = conn.QueryRow(ctx, `insert into missions.mission (code)
+	values ($1) returning id`, s.Code).Scan(&id)
 
 	if err != nil {
-		return models.ErrorMissionNotCreated
+		return nil, models.ErrorMissionNotCreated
 	}
 
-	return nil
+	return &models.Mission{Id: utils.ConvertToPgTypeInt4(int(id))}, nil
 }
 
 func (u *MissionRepository) Update(s *models.Mission) error {

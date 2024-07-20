@@ -11,4 +11,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o cmd/main cmd/main.go
 
 EXPOSE 5000
 
-CMD ["./cmd/main"]
+RUN cd ./cmd/
+CMD ["main"]

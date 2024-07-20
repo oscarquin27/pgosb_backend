@@ -46,6 +46,7 @@ func (u *MissionVehicleController) GetVehicle(c *gin.Context) {
 	c.JSON(http.StatusOK, missionDto)
 }
 
+
 // func (u *MissionVehicleController) GetAllServices(c *gin.Context) {
 
 // 	mission, err := u.missionService.()

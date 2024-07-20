@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"fdms/src/models"
+	"fdms/src/services"
 	"fmt"
 
 	"github.com/jackc/pgx/v5"
@@ -13,7 +14,7 @@ type VehicleRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewVehicleService(db *pgxpool.Pool) *VehicleRepository {
+func NewVehicleService(db *pgxpool.Pool) services.VehicleService {
 	return &VehicleRepository{
 		db: db,
 	}
@@ -60,6 +61,93 @@ func (u *VehicleRepository) Get(id int64) (*models.Vehicle, error) {
 	}
 
 	return &vehicle, nil
+}
+
+func (u *VehicleRepository) GetVehicleModels(make string) ([]models.Vehicle, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT 
+	id, 
+	make, 
+	model, 
+	year, 
+	drive, 
+	cylinders, 
+	engine_displacement, 
+	fuel_type, 
+	transmission, 
+	vehicle_size_class, 
+	base_model
+	FROM vehicles.vehicle
+ 	where lower(make) = lower($1)`, make)
+
+	if err != nil {
+		return nil, err
+	}
+
+	vehicle, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Vehicle])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorVehicleNotFound
+		}
+
+		return nil, err
+	}
+
+	return vehicle, nil
+}
+
+func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT 
+	distinct make as make from vehicles.vehicle;`)
+
+	defer rows.Close()
+
+	if err != nil {
+		return nil, err
+	}
+	
+	var tp string
+	var tps []string
+
+	for rows.Next() {
+		err := rows.Scan(&tp)
+
+		if err != nil {
+			return nil, err
+		}
+
+		tps = append(tps, tp)
+	}
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorVehicleNotFound
+		}
+
+		return nil, err
+	}
+
+	return tps, nil
 }
 
 func (u *VehicleRepository) GetAll() ([]models.Vehicle, error) {
