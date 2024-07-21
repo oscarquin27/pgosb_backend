@@ -27,9 +27,9 @@ func GetNumberOfGoRoutines() int {
 
 func LoadConfig() *Config {
 
-	//path, err := os.Getwd()
+	path, err := os.Getwd()
 
-	path := filepath.Join("./config", "settings.yml")
+	path = filepath.Join(path, "cmd", "config", "settings.yml")
 
 	file, err := os.Open(path)
 
