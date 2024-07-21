@@ -1,4 +1,4 @@
-package mission_handlers
+package mission_infra_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
@@ -10,18 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type MissionController struct {
-	missionService services.MissionService
+type MissionInfrastructureController struct {
+	missionService services.MissionInfrastructureService
 }
 
-func NewMissionController(missionService services.MissionService) *MissionController {
-	return &MissionController{
+func NewMissionController(missionService services.MissionInfrastructureService) *MissionInfrastructureController {
+	return &MissionInfrastructureController{
 		missionService: missionService,
 	}
 }
 
-func (u *MissionController) GetMission(c *gin.Context) {
-
+func (u *MissionInfrastructureController) GetInfrastructure(c *gin.Context) {
 	id := utils.ParseInt(c.Param("id"))
 
 	mission, err := u.missionService.Get(id)
@@ -36,57 +35,36 @@ func (u *MissionController) GetMission(c *gin.Context) {
 		return
 	}
 
-
-	c.JSON(http.StatusOK, api_models.ModelToMissionJson(*mission))
-}
-
-func (u *MissionController) GetAllMissions(c *gin.Context) {
-
-	mission, err := u.missionService.GetAll()
-
-	if err != nil {
-		if err == models.ErrorMissionNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	var missionDto []api_models.MissionJson
+	var missionDto []api_models.MissionInfrastructureJson
 
 	for _, s := range mission {
-		newMission := api_models.ModelToMissionJson(s)
+		newMission := api_models.ModelToMissionInfrastructureJson(s)
 		missionDto = append(missionDto, *newMission)
 	}
 
 	c.JSON(http.StatusOK, missionDto)
-
 }
 
-func (u *MissionController) Create(c *gin.Context) {
-	var mission models.Mission
+func (u *MissionInfrastructureController) Create(c *gin.Context) {
+	var mission models.MissionInfrastructure
 
 	if err := c.BindJSON(&mission); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	mission.Code.Valid = true
-	
-	id, err := u.missionService.Create(&mission)
+	err := u.missionService.Create(&mission)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	c.JSON(http.StatusOK, id)
+	c.JSON(http.StatusOK, "Infraestructura creada satisfactoriamente")
 }
 
-func (u *MissionController) Update(c *gin.Context) {
-	var mission models.Mission
+func (u *MissionInfrastructureController) Update(c *gin.Context) {
+	var mission models.MissionInfrastructure
 
 	if err := c.BindJSON(&mission); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
@@ -100,10 +78,10 @@ func (u *MissionController) Update(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, "Misión actualizada satisfactoriamente")
+	c.JSON(http.StatusOK, "Infraestructura actualizada satisfactoriamente")
 }
 
-func (u *MissionController) Delete(c *gin.Context) {
+func (u *MissionInfrastructureController) Delete(c *gin.Context) {
 
 	id := utils.ParseInt(c.Param("id"))
 
@@ -118,6 +96,6 @@ func (u *MissionController) Delete(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, "Misión eliminado satisfactoriamente")
+	c.JSON(http.StatusOK, "Infraestructura eliminada satisfactoriamente")
 
 }

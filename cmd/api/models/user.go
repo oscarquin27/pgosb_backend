@@ -52,6 +52,7 @@ type UserProfileJson struct {
 	Beach           string   `json:"beach"`
 	Address         string   `json:"address"`
 	Legal_id        string   `json:"legal_id"`
+	Role            string   `json:"role"`
 }
 
 type UserStatusJson struct {
@@ -122,7 +123,7 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Beach = utils.ConvertToPgTypeText(userDto.Beach)
 	user.UserProfile.Address = utils.ConvertToPgTypeText(userDto.Address)
 	user.UserProfile.Legal_id = utils.ConvertToPgTypeText(userDto.Legal_id)
-
+	user.UserProfile.Role = utils.ConvertToPgTypeText(userDto.Role)
 	return user
 }
 
@@ -171,6 +172,7 @@ func ModelToUserJson(user *models.User) *UserJson {
 	userDto.UserProfileJson.Beach = utils.ConvertFromText(user.Beach)
 	userDto.UserProfileJson.Address = utils.ConvertFromText(user.Address)
 	userDto.UserProfileJson.Legal_id = utils.ConvertFromText(user.Legal_id)
+	userDto.UserProfileJson.Role = utils.ConvertFromText(user.Role)
 
 	return &userDto
 }

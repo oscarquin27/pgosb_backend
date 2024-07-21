@@ -35,7 +35,7 @@ type UserProfile struct {
 	Shoe_size       pgtype.Numeric `json:"shoe_size"`
 	Blood_type      pgtype.Text    `json:"blood_type"`
 	Allergies       []string       `json:"allergies"`
-
+	Role			pgtype.Text    `json:"rol,omitempty"`
 	Code          pgtype.Text `json:"code"`
 	Personal_code pgtype.Text `json:"personal_code"`
 	Rank          pgtype.Text `json:"rank"`

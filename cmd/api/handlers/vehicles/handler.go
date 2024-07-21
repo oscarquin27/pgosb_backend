@@ -37,6 +37,49 @@ func (u *VehicleController) GetVehicle(c *gin.Context) {
 	c.JSON(http.StatusOK, vehicle)
 }
 
+func (u *VehicleController) GetVehicleModel(c *gin.Context) {
+
+	type modelRequest struct {
+		Model string `json:"model"`
+	}
+
+	var model modelRequest
+
+	if err := c.Bind(&model); err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
+
+	vehicle, err := u.vehicleService.GetVehicleModels(model.Model)
+
+	if err != nil {
+		if err == models.ErrorVehicleNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vehicle)
+}
+
+func (u *VehicleController) GetVehicleType(c *gin.Context) {
+
+	vehicle, err := u.vehicleService.GetVehicleTypes()
+
+	if err != nil {
+		if err == models.ErrorVehicleNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, vehicle)
+}
+
 func (u *VehicleController) GetAllVehicle(c *gin.Context) {
 
 	vehicle, err := u.vehicleService.GetAll()

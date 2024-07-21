@@ -25,7 +25,7 @@ type Unit struct {
 	Vehicle_serial pgtype.Text `json:"vehicle_serial"`
 	Motor_serial   pgtype.Text `json:"motor_serial"`
 	Capacity       pgtype.Text `json:"capacity"`
-	Details        pgtype.Text `json:"details"`
+	Details        []string    `json:"details"`
 	Fuel_type      pgtype.Text `json:"fuel_type"`
 	Water_capacity pgtype.Text `json:"water_capacity"`
 	Observations   pgtype.Text `json:"observations"`

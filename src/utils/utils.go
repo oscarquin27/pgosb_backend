@@ -31,11 +31,31 @@ func ConvertFromInt4Array(i []pgtype.Int4) []string {
 	return s
 }
 
+func ConvertFromInt2Array(i []pgtype.Int2) []string {
+	var s []string
+
+	for _, n := range(i) {
+		s = append(s, ConvertFromInt2(n))
+	}
+
+	return s
+}
+
 func ConvertToInt4Array(i []string) []pgtype.Int4 {
 	var s []pgtype.Int4
 
 	for _, n := range(i) {
 		s = append(s, ConvertToPgTypeInt4(ParseInt(n)))
+	}
+
+	return s
+}
+
+func ConvertToInt2Array(i []string) []pgtype.Int2 {
+	var s []pgtype.Int2
+
+	for _, n := range(i) {
+		s = append(s, ConvertToPgTypeInt2(ParseInt(n)))
 	}
 
 	return s

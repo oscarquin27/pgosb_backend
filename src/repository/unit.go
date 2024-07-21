@@ -19,6 +19,36 @@ func NewUnityService(db *pgxpool.Pool) services.UnitService {
 	}
 }
 
+func (u *UnitRepository) GetUnitTypes() ([]string, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT 
+	distinct unit_type as unit_type from locations.unit`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	units, err := pgx.CollectRows(rows, pgx.RowToStructByName[string])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorUnitNotFound
+		}
+
+		return nil, err
+	}
+
+	return units, nil
+}
+
 func (u *UnitRepository) Get(id int64) (*models.Unit, error) {
 	ctx := context.Background()
 

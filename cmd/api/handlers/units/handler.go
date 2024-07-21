@@ -35,7 +35,9 @@ func (u *UnitController) GetUnit(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, vehicle)
+	v := api_models.ModelToUnitJson(vehicle)
+
+	c.JSON(http.StatusOK, v)
 }
 
 func (u *UnitController) GetAllUnits(c *gin.Context) {
@@ -51,13 +53,22 @@ func (u *UnitController) GetAllUnits(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, vehicle)
+
+	vehicleDto := []api_models.UnitJson{}
+
+	for _, us := range vehicle {
+		newVehicle := api_models.ModelToUnitJson(&us)
+		vehicleDto = append(vehicleDto, *newVehicle)
+	}
+
+	c.JSON(http.StatusOK, vehicleDto)
 }
 
 func (u *UnitController) CreateUnit(c *gin.Context) {
 	var userDto api_models.UnitJson
 	if err := c.BindJSON(&userDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
+		return
 	}
 
 	user := userDto.ToModel()

@@ -3,6 +3,8 @@ package repository
 import (
 	"context"
 	"fdms/src/models"
+	"fdms/src/services"
+	"fdms/src/utils"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,7 +14,7 @@ type MissionServiceRepository struct {
 	db   *pgxpool.Pool
 }
 
-func NewMissionServiceService(db *pgxpool.Pool) *MissionServiceRepository {
+func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
 	return &MissionServiceRepository{
 		db:   db,
 	}
@@ -56,7 +58,7 @@ func (u *MissionServiceRepository) Get(id int) ([]models.MissionService, error) 
 }
 
 
-func (u *MissionServiceRepository) Create(s *models.MissionService) error {
+func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -64,22 +66,24 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) error {
 	defer conn.Release()
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = conn.Exec(ctx, `insert into missions.person (mission_id, 
+	var id int8 
+
+	err = conn.QueryRow(ctx, `insert into missions.services (mission_id, 
 	antares_id, 
 	units, 
 	bombers, 
 	summary, 
 	description)
-	values ($1, $2, $3, $4, $5, $6, $7)`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description)
+	values ($1, $2, $3, $4, $5, $6) returning id`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description).Scan(&id)
 
 	if err != nil {
-		return models.ErrorMissionServiceNotCreated
+		return nil, err
 	}
 
-	return nil
+	return &models.MissionService{Id: utils.ConvertToPgTypeInt4(int(id))}, nil
 }
 
 func (u *MissionServiceRepository) Update(s *models.MissionService) error {
@@ -93,7 +97,7 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, `UPDATE missions.services
+	rows, err := conn.Exec(ctx, `UPDATE missions.services
 	SET mission_id = $1, 
 	antares_id = $2, 
 	units = $3, 
@@ -106,7 +110,10 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 		return err
 	}
 
-
+	if rows.RowsAffected() == 0 {
+		return models.ErrorMissionServiceNotUpdated
+	}
+	
 	return nil
 }
 
