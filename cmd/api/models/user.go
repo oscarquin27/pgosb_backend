@@ -1,9 +1,13 @@
 package api_models
 
 import (
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/utils"
 	"strconv"
+	"time"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type UserIdentificationJson struct {
@@ -71,15 +75,32 @@ type UserJson struct {
 func (userDto *UserJson) ToModel() models.User {
 	user := models.User{}
 
+	layout := "02-01-2006" // Layout for both dates
+
+	// Parse birth date
+	birthDate, _ := time.Parse(layout, userDto.Birth_date)
+
+	// Get current date
+	currentDate := time.Now()
+
+	// Calculate years (simplified)
+	years := currentDate.Year() - birthDate.Year()
+
 	id_role := utils.ParseInt(userDto.Id_role)
 
-	age := utils.ParseInt(userDto.Age)
-
-	height := utils.ParseInt(userDto.Height)
+	//height := utils.ParseFloat(userDto.Height)
 
 	weight := utils.ParseInt(userDto.Weight)
 
 	shoe := utils.ParseInt(userDto.Shoe_size)
+
+	var altura pgtype.Numeric
+
+	err := altura.Scan(userDto.Height)
+
+	if err != nil {
+		logger.Error().Err(err).Msg("Error escanenado altura")
+	}
 
 	user.UserIdentification.Id = int64(utils.ParseInt(userDto.Id))
 	user.UserIdentification.Id_role = utils.ConvertToPgTypeInt4(id_role)
@@ -92,11 +113,11 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Phone = utils.ConvertToPgTypeText(userDto.Phone)
 	user.UserProfile.Secondary_Phone = utils.ConvertToPgTypeText(userDto.Secondary_Phone)
 	user.UserProfile.Birth_date = utils.ConvertToPgTypeText(userDto.Birth_date)
-	user.UserProfile.Age = utils.ConvertToPgTypeInt2(age)
+	user.UserProfile.Age = utils.ConvertToPgTypeInt2(years)
 	user.UserProfile.Residence = utils.ConvertToPgTypeText(userDto.Residence)
 	user.UserProfile.Coordinates = utils.ConvertToPgTypeText(userDto.Coordinates)
 	user.UserProfile.Marital_status = utils.ConvertToPgTypeText(userDto.Marital_status)
-	user.UserProfile.Height = utils.ConvertToPgTypeNumeric(height)
+	user.UserProfile.Height = altura
 	user.UserProfile.Weight = utils.ConvertToPgTypeNumeric(weight)
 	user.UserProfile.Shirt_size = utils.ConvertToPgTypeText(userDto.Shirt_size)
 	user.UserProfile.Pant_size = utils.ConvertToPgTypeText(userDto.Pant_size)
@@ -110,10 +131,10 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Condition = utils.ConvertToPgTypeText(userDto.Condition)
 	user.UserProfile.Division = utils.ConvertToPgTypeText(userDto.Division)
 	user.UserProfile.Profession = utils.ConvertToPgTypeText(userDto.Profession)
-	user.UserProfile.Institution = utils.ConvertToPgTypeText(userDto.Profession)
+	user.UserProfile.Institution = utils.ConvertToPgTypeText(userDto.Institution)
 	user.UserProfile.User_system = utils.ConvertToPgTypeBool(userDto.User_system)
 	user.UserProfile.Zip_code = utils.ConvertToPgTypeText(userDto.Zip_code)
-	userDto.UserProfileJson.Skills = user.Skills
+	user.Skills = userDto.Skills
 	user.UserProfile.State = utils.ConvertToPgTypeText(userDto.State)
 	user.UserProfile.Municipality = utils.ConvertToPgTypeText(userDto.Municipality)
 	user.UserProfile.Parish = utils.ConvertToPgTypeText(userDto.Parish)
@@ -128,6 +149,15 @@ func (userDto *UserJson) ToModel() models.User {
 }
 
 func ModelToUserJson(user *models.User) *UserJson {
+	f, err := user.Height.Float64Value()
+
+	if err != nil {
+		logger.Error().Err(err).Msg("Error conviertiendo")
+	}
+
+	value := f.Float64
+	strValue := strconv.FormatFloat(value, 'f', 2, 64)
+
 	userDto := UserJson{}
 	//var err error
 	userDto.Id = strconv.FormatInt(user.Id, 10)
@@ -145,7 +175,7 @@ func ModelToUserJson(user *models.User) *UserJson {
 	userDto.UserProfileJson.Residence = utils.ConvertFromText(user.Residence)
 	userDto.UserProfileJson.Coordinates = utils.ConvertFromText(user.Coordinates)
 	userDto.UserProfileJson.Marital_status = utils.ConvertFromText(user.Marital_status)
-	userDto.UserProfileJson.Height = utils.ConvertFromNumeric(user.Height)
+	userDto.UserProfileJson.Height = strValue
 	userDto.UserProfileJson.Weight = utils.ConvertFromNumeric(user.Weight)
 	userDto.UserProfileJson.Shirt_size = utils.ConvertFromText(user.Shirt_size)
 	userDto.UserProfileJson.Pant_size = utils.ConvertFromText(user.Pant_size)

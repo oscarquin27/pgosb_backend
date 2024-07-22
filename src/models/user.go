@@ -35,26 +35,26 @@ type UserProfile struct {
 	Shoe_size       pgtype.Numeric `json:"shoe_size"`
 	Blood_type      pgtype.Text    `json:"blood_type"`
 	Allergies       []string       `json:"allergies"`
-	Role			pgtype.Text    `json:"rol,omitempty"`
-	Code          pgtype.Text `json:"code"`
-	Personal_code pgtype.Text `json:"personal_code"`
-	Rank          pgtype.Text `json:"rank"`
-	Promotion     pgtype.Text `json:"promotion"`
-	Condition     pgtype.Text `json:"condition"`
-	Division      pgtype.Text `json:"division"`
-	Profession    pgtype.Text `json:"profession"`
-	Institution   pgtype.Text `json:"institution"`
-	User_system   pgtype.Bool `json:"user_system"`
-	Skills        []string    `json:"skills"`
-	State         pgtype.Text `json:"state"`
-	Municipality  pgtype.Text `json:"municipality"`
-	Parish        pgtype.Text `json:"parish"`
-	Sector        pgtype.Text `json:"sector"`
-	Community     pgtype.Text `json:"community"`
-	Street        pgtype.Text `json:"street"`
-	Beach         pgtype.Text `json:"beach"`
-	Address       pgtype.Text `json:"address"`
-	Legal_id      pgtype.Text `json:"legal_id"`
+	Role            pgtype.Text    `json:"rol,omitempty"`
+	Code            pgtype.Text    `json:"code"`
+	Personal_code   pgtype.Text    `json:"personal_code"`
+	Rank            pgtype.Text    `json:"rank"`
+	Promotion       pgtype.Text    `json:"promotion"`
+	Condition       pgtype.Text    `json:"condition"`
+	Division        pgtype.Text    `json:"division"`
+	Profession      pgtype.Text    `json:"profession"`
+	Institution     pgtype.Text    `json:"institution"`
+	User_system     pgtype.Bool    `json:"user_system"`
+	Skills          []string       `json:"skills"`
+	State           pgtype.Text    `json:"state"`
+	Municipality    pgtype.Text    `json:"municipality"`
+	Parish          pgtype.Text    `json:"parish"`
+	Sector          pgtype.Text    `json:"sector"`
+	Community       pgtype.Text    `json:"community"`
+	Street          pgtype.Text    `json:"street"`
+	Beach           pgtype.Text    `json:"beach"`
+	Address         pgtype.Text    `json:"address"`
+	Legal_id        pgtype.Text    `json:"legal_id"`
 	// Skills          []string       `json:"skills"`
 }
 type UserIdentification struct {

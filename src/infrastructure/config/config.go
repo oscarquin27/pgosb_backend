@@ -29,7 +29,7 @@ func LoadConfig() *Config {
 
 	path, err := os.Getwd()
 
-	path = filepath.Join(path, "cmd", "config", "settings.yml")
+	path = filepath.Join(path, "config", "settings.yml")
 
 	file, err := os.Open(path)
 

@@ -1,0 +1,6 @@
+{"level":"error","MSI":"","error":"no rows in result set","time":"2024-07-21T19:44:55.517015","message":"Error guardando al usuario"}
+{"level":"error","MSI":"","error":"usuario no creado","time":"2024-07-21T19:45:13.222302","message":"Error guardando al usuario"}
+{"level":"error","MSI":"","error":"usuario no creado","time":"2024-07-21T19:46:39.087349","message":"Error guardando al usuario"}
+{"level":"error","MSI":"","error":"ERROR: date/time field value out of range: \"29-11-1993\" (SQLSTATE 22008)","time":"2024-07-21T20:12:26.957429","message":"Error guardando al usuario"}
+{"level":"error","MSI":"","error":"ERROR: date/time field value out of range: \"29-11-1993\" (SQLSTATE 22008)","time":"2024-07-21T20:16:02.152248","message":"Error guardando al usuario"}
+{"level":"error","MSI":"","error":"error creating user: 409 Conflict: User exists with same username","time":"2024-07-21T20:22:04.609667","message":"Error guardando al usuario"}

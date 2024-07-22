@@ -2,6 +2,7 @@ package user_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
 	"net/http"
@@ -68,17 +69,20 @@ func (u *UserController) GetAllUser(c *gin.Context) {
 }
 
 func (u *UserController) Create(c *gin.Context) {
-	var user models.User
+	var user api_models.UserJson
 
 	if err := c.BindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.userService.Create(&user)
+	userEntity := user.ToModel()
 
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
+	result := u.userService.Create(&userEntity)
+
+	if !result.IsSuccessful {
+		logger.Error().Err(result.Err.AssociateException()).Msg("Error guardando al usuario")
+		c.JSON(http.StatusInternalServerError, result.Err.Message())
 		return
 	}
 
@@ -86,12 +90,14 @@ func (u *UserController) Create(c *gin.Context) {
 }
 
 func (u *UserController) Update(c *gin.Context) {
-	var user models.User
+	var userJson api_models.UserJson
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.BindJSON(&userJson); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	user := userJson.ToModel()
 
 	err := u.userService.Update(&user)
 

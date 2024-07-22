@@ -5,12 +5,15 @@ import (
 	"fdms/src/infrastructure/keycloak"
 	"fdms/src/models"
 	"fdms/src/services"
+	"fdms/src/utils/results"
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+const RolNotFound = "el rol no fue encontrado"
 
 type UserRepository struct {
 	db   *pgxpool.Pool
@@ -171,7 +174,10 @@ left join users.roles ra on ra.id = u.id_role`)
 	return user, nil
 }
 
-func (u *UserRepository) Create(user *models.User) error {
+func (u *UserRepository) Create(user *models.User) *results.Result {
+
+	result := results.NewResult("Create User", false, nil)
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -179,34 +185,75 @@ func (u *UserRepository) Create(user *models.User) error {
 	defer conn.Release()
 
 	if err != nil {
-		return err
+		return result.FailureWithError(err)
 	}
 
 	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
-		return err
+		return result.FailureWithError(err)
 	}
 
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		} else {
-			tx.Commit(ctx)
-		}
-	}()
+	defer tx.Rollback(ctx)
 
 	var userId int
 	var idRol int
 
-    err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
+	err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
 
-	if err != nil {
-		return err
+	if err == pgx.ErrNoRows {
+		return result.Failure().
+			WithCustomError(
+				results.NewErrorWithCode(RolNotFound, err.Error(), err))
 	}
 
-	err = tx.QueryRow(ctx, `insert into users.user (id_role, user_name, first_name, last_name, email, photo, gender, phone, secondary_phone, birth_date, age, residence, coordinates, marital_status, height, weight, shirt_size, pant_size, shoe_size, blood_type, allergies, code, personal_code, rank, promotion, condition, division, profession, institution, user_system, zip_code, skills, state, municipality, parish, sector, community, street, beach, address, legal_id)
-VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41) returning id;
+	if err != nil {
+		return result.FailureWithError(err)
+	}
+
+	err = tx.QueryRow(ctx, `insert into users.user 
+	(id_role, 
+	user_name, 
+	first_name, 
+	last_name, 
+	email, 
+	photo, 
+	gender, 
+	phone, 
+	secondary_phone, 
+	birth_date, 
+	age, 
+	residence, 
+	coordinates, 
+	marital_status, 
+	height, 
+	weight, 
+	shirt_size, 
+	pant_size, 
+	shoe_size, 
+	blood_type, 
+	allergies, 
+	code, 
+	personal_code, 
+	rank, 
+	promotion, 
+	condition, 
+	division, 
+	profession, 
+	institution, 
+	user_system, 
+	zip_code, 
+	skills, 
+	state, 
+	municipality, 
+	parish, 
+	sector, 
+	community, 
+	street, 
+	beach, 
+	address, 
+	legal_id)
+VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41) returning id;
 `,
 		idRol,
 		user.UserProfile.User_name,
@@ -251,24 +298,30 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10::date, $11, $12, $13, $14, $15, $
 		user.UserProfile.Legal_id).Scan(&userId)
 
 	if err != nil {
-		return models.ErrorUserNotCreated
+		return result.FailureWithError(err)
 	}
 
 	if user.User_system.Bool {
 		keycloakId, err := u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(userId), "12345")
 
 		if err != nil {
-			return models.ErrorUserNotCreated
+			return result.FailureWithError(err)
 		}
 
 		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, userId)
 
 		if err != nil {
-			return models.ErrorUserNotCreated
+			return result.FailureWithError(err)
 		}
 	}
 
-	return nil
+	err = tx.Commit(ctx)
+
+	if err != nil {
+		return result.FailureWithError(err)
+	}
+
+	return result.Success()
 }
 
 func (u *UserRepository) Update(user *models.User) error {
@@ -288,20 +341,14 @@ func (u *UserRepository) Update(user *models.User) error {
 		return err
 	}
 
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		} else {
-			tx.Commit(ctx)
-		}
-	}()
+	defer tx.Rollback(ctx)
 
 	var keycloakId pgtype.Text
 
 	previous, err := u.Get(user.Id)
 
 	var idRol int
-	
+
 	err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
 
 	err = tx.QueryRow(ctx, `
@@ -417,8 +464,8 @@ func (u *UserRepository) Update(user *models.User) error {
 	if err != nil {
 		return models.ErrorUserNotUpdated
 	}
+	return tx.Commit(ctx)
 
-	return nil
 }
 
 func (u *UserRepository) Delete(id int64) error {

@@ -125,7 +125,7 @@ func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	var tp string
 	var tps []string
 
@@ -137,14 +137,6 @@ func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
 		}
 
 		tps = append(tps, tp)
-	}
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorVehicleNotFound
-		}
-
-		return nil, err
 	}
 
 	return tps, nil
