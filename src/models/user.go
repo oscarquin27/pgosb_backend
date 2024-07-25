@@ -29,7 +29,7 @@ type UserProfile struct {
 	Coordinates     pgtype.Text    `json:"coordinates"`
 	Marital_status  pgtype.Text    `json:"marital_status"`
 	Height          pgtype.Numeric `json:"height"`
-	Weight          pgtype.Numeric `json:"weight"`
+	Weight          *float64       `json:"weight"`
 	Shirt_size      pgtype.Text    `json:"shirt_size"`
 	Pant_size       pgtype.Text    `json:"pant_size"`
 	Shoe_size       pgtype.Numeric `json:"shoe_size"`
@@ -43,7 +43,7 @@ type UserProfile struct {
 	Condition       pgtype.Text    `json:"condition"`
 	Division        pgtype.Text    `json:"division"`
 	Profession      pgtype.Text    `json:"profession"`
-	Institution     pgtype.Text    `json:"institution"`
+	Station         pgtype.Text    `json:"station"`
 	User_system     pgtype.Bool    `json:"user_system"`
 	Skills          []string       `json:"skills"`
 	State           pgtype.Text    `json:"state"`

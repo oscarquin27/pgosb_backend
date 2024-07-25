@@ -1,11 +1,23 @@
 http:
-  port: 5000
+  port: 5001
 database:
   connection_string: "dbname=postgres user=postgres password=postgres host=localhost port=5435 pool_max_conns=10"
 keycloak:
-  address: "https://pruebas.local.sypago.net:8443"
+  address: "http://localhost:8442"
   admin_user: "admin"
   admin_password: "admin"
   client_id: "pgosb_admin_client"
-  client_secret: "8I77PevTtR1N2b208B9s8q6x4BGOz9Nn"
+  client_secret: "l1k4s45tKGdDx4m6GeZtBoZmYbxTfd8U"
   realm: "pgosb"
+
+log_settings:
+  console: true 
+  beutify_console: false 
+  file: true 
+  route: "logs/application.log" 
+  min_level: "trace" 
+  rotation_max_size_mb: 100 
+  max_age_day: 7
+  max_backups: 3 
+  compress: true 
+

@@ -389,7 +389,9 @@ func (u *LocationController) GetStation(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, fire_station)
+
+	fire_station_json := api_models.ModelToStationJson(*fire_station)
+	c.JSON(http.StatusOK, fire_station_json)
 
 }
 
@@ -406,7 +408,15 @@ func (u *LocationController) GetAllStations(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
-	c.JSON(http.StatusOK, fire_station)
+
+	fireStations := []api_models.StationJson{}
+
+	for _, st := range fire_station {
+		newStation := api_models.ModelToStationJson(st)
+		fireStations = append(fireStations, *newStation)
+	}
+
+	c.JSON(http.StatusOK, fireStations)
 
 }
 
