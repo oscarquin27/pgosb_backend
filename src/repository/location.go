@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
 
@@ -80,22 +81,15 @@ func (u *LocationRepository) GetAllStates() ([]models.State, error) {
 }
 
 func (u *LocationRepository) CreateState(r *models.State) error {
-	ctx := context.Background()
+	m := mikro.NewMkModel(u.db)
 
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return err
-	}
-
-	rows, err := conn.Exec(ctx, "insert into locations.states (name, coordinates) values ($1, $2)", r.Coordinates, r.Name)
+	rows, err := m.Model(r).Omit("state_id").Insert("locations.states")
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
+	if rows > 0 {
 		return nil
 	}
 
@@ -103,22 +97,15 @@ func (u *LocationRepository) CreateState(r *models.State) error {
 }
 
 func (u *LocationRepository) UpdateState(r *models.State) error {
-	ctx := context.Background()
+	m := mikro.NewMkModel(u.db)
 
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return err
-	}
-
-	rows, err := conn.Exec(ctx, "update locations.states set name = $1, coordinates = $2 where state_id = $3", r.Name, r.Coordinates, r.Id)
+	rows, err := m.Model(r).Omit("state_id").Where("state_id", "=", r.Id).Update("locations.states")
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
+	if rows > 0 {
 		return nil
 	}
 

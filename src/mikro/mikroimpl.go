@@ -1,6 +1,7 @@
 package mikro
 
 import (
+	"context"
 	"reflect"
 	"strconv"
 	"strings"
@@ -24,7 +25,7 @@ func (mk *MkModel) Model(value interface{}) (*MkModel) {
 	}
 }
 
-func (mk *MkModel) Insert(table string) (string,error) {
+func (mk *MkModel) Insert(table string) (int64, error) {
 	var fields []string
 	var values []interface{}
 
@@ -34,8 +35,48 @@ func (mk *MkModel) Insert(table string) (string,error) {
 	}
 
 	sentence := buildInsert(fields, table)
+	
+	return executeSentence(mk.db, sentence, values)
+}
 
-	return sentence, nil
+func (mk *MkModel) Update(table string) (int64, error) {
+	var fields []string
+	var values []interface{}
+
+	for k, v := range mk.params {
+		fields = append(fields, k)
+		values = append(values, v)
+	}
+
+	if len(mk.conditionField) > 0 {
+		values = append(values, mk.conditionValue)
+	}
+
+	sentence := buildUpdate(fields, table, *mk)	
+
+	return executeSentence(mk.db, sentence, values)
+}
+
+func executeSentence(pg *pgxpool.Pool, sql string, values []interface{}) (int64, error){
+	ctx := context.Background()
+
+	conn, err := pg.Acquire(ctx)
+
+	if err != nil {
+		return 0, err
+	}
+
+	defer conn.Conn().Close(ctx)
+
+	rows, err := conn.Exec(ctx, sql, values...)
+
+	
+	if err != nil {
+		return 0, err
+	}
+
+	return rows.RowsAffected(), nil
+
 }
 
 //Omite el campo a ser actualizado
@@ -62,19 +103,7 @@ func (mk *MkModel) Where(field string, operator string, value any) (*MkModel) {
 	return mk
 }
 
-func (mk *MkModel) Update(table string) (string,error) {
-	var fields []string
-	var values []interface{}
 
-	for k, v := range mk.params {
-		fields = append(fields, k)
-		values = append(values, v)
-	}
-
-	sentence := buildUpdate(fields, table, *mk)
-
-	return sentence, nil
-}
 
 func buildInsert(fields []string, table string) string{
 	var sb strings.Builder
@@ -102,17 +131,17 @@ func buildUpdate(fields []string, table string, mk MkModel) string{
 	
 	sb.WriteString("update " + table + " set ")
 
+
 	for f, v := range fields {
 		if f < len(fields) - 1 {
 			sb.WriteString(v + " = " + "$"+strconv.Itoa(1 + f)+", ")
-		} else {
+		} else{
 			sb.WriteString(v + " = " + "$"+strconv.Itoa(1 + f))
 		}
 	}
 	
 	if len(mk.conditionField) > 0 {
 		sb.WriteString(" where " + mk.conditionField + " " + mk.conditionOperator + " $" + strconv.Itoa(len(fields)+1))
-		mk.params[mk.conditionField] = mk.conditionValue
 	}
 
 	return sb.String()
@@ -132,7 +161,7 @@ func extractParams(value interface{}) (map[string]interface{}) {
         if fieldName == "" {
             continue //Skip if tag not set
         }
-        fieldVal := val.Elem().Field(i)
+        fieldVal := val.Elem().Field(i).Interface()
 		
 		m[fieldName] = fieldVal
         
