@@ -44,7 +44,7 @@ type UserProfileJson struct {
 	Condition       string   `json:"condition"`
 	Division        string   `json:"division"`
 	Profession      string   `json:"profession"`
-	Institution     string   `json:"institution"`
+	Station         string   `json:"station"`
 	User_system     bool     `json:"user_system"`
 	Skills          []string `json:"skills"`
 	State           string   `json:"state"`
@@ -90,7 +90,7 @@ func (userDto *UserJson) ToModel() models.User {
 
 	//height := utils.ParseFloat(userDto.Height)
 
-	weight := utils.ParseInt(userDto.Weight)
+	weight := utils.ParseFloat(userDto.Weight)
 
 	shoe := utils.ParseInt(userDto.Shoe_size)
 
@@ -118,7 +118,7 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Coordinates = utils.ConvertToPgTypeText(userDto.Coordinates)
 	user.UserProfile.Marital_status = utils.ConvertToPgTypeText(userDto.Marital_status)
 	user.UserProfile.Height = altura
-	user.UserProfile.Weight = utils.ConvertToPgTypeNumeric(weight)
+	user.UserProfile.Weight = &weight
 	user.UserProfile.Shirt_size = utils.ConvertToPgTypeText(userDto.Shirt_size)
 	user.UserProfile.Pant_size = utils.ConvertToPgTypeText(userDto.Pant_size)
 	user.UserProfile.Shoe_size = utils.ConvertToPgTypeNumeric(shoe)
@@ -131,7 +131,7 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Condition = utils.ConvertToPgTypeText(userDto.Condition)
 	user.UserProfile.Division = utils.ConvertToPgTypeText(userDto.Division)
 	user.UserProfile.Profession = utils.ConvertToPgTypeText(userDto.Profession)
-	user.UserProfile.Institution = utils.ConvertToPgTypeText(userDto.Institution)
+	user.UserProfile.Station = utils.ConvertToPgTypeText(userDto.Station)
 	user.UserProfile.User_system = utils.ConvertToPgTypeBool(userDto.User_system)
 	user.UserProfile.Zip_code = utils.ConvertToPgTypeText(userDto.Zip_code)
 	user.Skills = userDto.Skills
@@ -158,6 +158,12 @@ func ModelToUserJson(user *models.User) *UserJson {
 	value := f.Float64
 	strValue := strconv.FormatFloat(value, 'f', 2, 64)
 
+	peso := 0.00
+
+	if user.Weight != nil {
+		peso = *user.Weight
+	}
+
 	userDto := UserJson{}
 	//var err error
 	userDto.Id = strconv.FormatInt(user.Id, 10)
@@ -176,7 +182,7 @@ func ModelToUserJson(user *models.User) *UserJson {
 	userDto.UserProfileJson.Coordinates = utils.ConvertFromText(user.Coordinates)
 	userDto.UserProfileJson.Marital_status = utils.ConvertFromText(user.Marital_status)
 	userDto.UserProfileJson.Height = strValue
-	userDto.UserProfileJson.Weight = utils.ConvertFromNumeric(user.Weight)
+	userDto.UserProfileJson.Weight = strconv.FormatFloat(peso, 'f', 2, 32)
 	userDto.UserProfileJson.Shirt_size = utils.ConvertFromText(user.Shirt_size)
 	userDto.UserProfileJson.Pant_size = utils.ConvertFromText(user.Pant_size)
 	userDto.UserProfileJson.Shoe_size = utils.ConvertFromNumeric(user.Shoe_size)
@@ -189,7 +195,7 @@ func ModelToUserJson(user *models.User) *UserJson {
 	userDto.UserProfileJson.Condition = utils.ConvertFromText(user.Condition)
 	userDto.UserProfileJson.Division = utils.ConvertFromText(user.Division)
 	userDto.UserProfileJson.Profession = utils.ConvertFromText(user.Profession)
-	userDto.UserProfileJson.Institution = utils.ConvertFromText(user.Institution)
+	userDto.UserProfileJson.Station = utils.ConvertFromText(user.Station)
 	userDto.UserProfileJson.User_system = utils.ConvertFromBool(user.User_system)
 	userDto.UserProfileJson.Zip_code = utils.ConvertFromText(user.Zip_code)
 	userDto.UserProfileJson.Skills = user.Skills

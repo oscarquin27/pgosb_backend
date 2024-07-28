@@ -65,15 +65,16 @@ func (u *UnitController) GetAllUnits(c *gin.Context) {
 }
 
 func (u *UnitController) CreateUnit(c *gin.Context) {
-	var userDto api_models.UnitJson
-	if err := c.BindJSON(&userDto); err != nil {
+	var unitDto api_models.UnitJson
+
+	if err := c.BindJSON(&unitDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	user := userDto.ToModel()
+	unit := unitDto.ToModel()
 
-	err := u.unityService.Create(&user)
+	err := u.unityService.Create(&unit)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -84,15 +85,15 @@ func (u *UnitController) CreateUnit(c *gin.Context) {
 }
 
 func (u *UnitController) UpdateUnit(c *gin.Context) {
-	var userDto api_models.UnitJson
+	var unitDto api_models.UnitJson
 
-	if err := c.BindJSON(&userDto); err != nil {
+	if err := c.BindJSON(&unitDto); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	user := userDto.ToModel()
+	unit := unitDto.ToModel()
 
-	err := u.unityService.Update(&user)
+	err := u.unityService.Update(&unit)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

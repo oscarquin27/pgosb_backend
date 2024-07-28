@@ -20,7 +20,7 @@ func ParseInt(s string) int {
 func ParseFloat(s string) float64 {
 	value, err := strconv.ParseFloat(s, 32)
 	if err != nil {
-		return 0.0
+		return 0.00
 	}
 	return value
 }

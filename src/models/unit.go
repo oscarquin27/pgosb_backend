@@ -16,11 +16,9 @@ var (
 type Unit struct {
 	Id             pgtype.Int4 `json:"id"`
 	Plate          pgtype.Text `json:"plate"`
-	Zone           pgtype.Text `json:"zone"`
 	Station        pgtype.Text `json:"station"`
 	Unit_type      pgtype.Text `json:"unit_type"`
 	Make           pgtype.Text `json:"make"`
-	Drivers        pgtype.Int4 `json:"drivers"`
 	Unit_condition pgtype.Text `json:"unit_condition"`
 	Vehicle_serial pgtype.Text `json:"vehicle_serial"`
 	Motor_serial   pgtype.Text `json:"motor_serial"`
@@ -29,4 +27,14 @@ type Unit struct {
 	Fuel_type      pgtype.Text `json:"fuel_type"`
 	Water_capacity pgtype.Text `json:"water_capacity"`
 	Observations   pgtype.Text `json:"observations"`
+	Hurt_capacity  pgtype.Int4 `json:"hurt_capacity"`
+	Doors          pgtype.Int4 `json:"doors"`
+	Performance    pgtype.Text `json:"performance"`
+	Load_capacity  pgtype.Int4 `json:"load_capacity"`
+	Model          pgtype.Text `json:"model"`
+	Alias          pgtype.Text `json:"alias"`
+	Color          pgtype.Text `json:"color"`
+	Year           pgtype.Text `json:"year"`
+	Purpose        pgtype.Text `json:"purpose"`
+	Init_kilometer pgtype.Int4 `json:"init_kilometer"`
 }
