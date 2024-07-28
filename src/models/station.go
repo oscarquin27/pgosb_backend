@@ -41,7 +41,7 @@ type Station struct {
 }
 
 type State struct {
-	Id          pgtype.Int8 `json:"id" db:"state_id"`
-	Name        pgtype.Text `json:"name"`
-	Coordinates pgtype.Text `json:"coordinates"`
+	Id          pgtype.Int4 `json:"id" db:"state_id" mk:"state_id"`
+	Name        pgtype.Text `json:"name" mk:"name"`
+	Coordinates pgtype.Text `json:"coordinates" mk:"coordinates"`
 }
