@@ -6,7 +6,7 @@ import (
 )
 
 type MissionServiceJson struct {
-	Id          string   `json:"id" binding:"required"`
+	Id          string   `json:"id"`
 	MissionId   string   `json:"mission_id"`
 	AntaresId   string   `json:"antares_id"`
 	Units       []string `json:"units"`
@@ -25,13 +25,12 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.Bombers = utils.ConvertFromInt2Array(s.Bombers)
 	service.Summary = utils.ConvertFromText(s.Summary)
 	service.Description = utils.ConvertFromText(s.Description)
-	
+
 	return &service
 }
 
-
 func (s *MissionServiceJson) ToModel() models.MissionService {
-    service := models.MissionService{}
+	service := models.MissionService{}
 
 	service.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	service.MissionId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.MissionId))

@@ -2,6 +2,7 @@ package mission_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils"
@@ -36,7 +37,6 @@ func (u *MissionController) GetMission(c *gin.Context) {
 		return
 	}
 
-
 	c.JSON(http.StatusOK, api_models.ModelToMissionJson(*mission))
 }
 
@@ -66,32 +66,39 @@ func (u *MissionController) GetAllMissions(c *gin.Context) {
 }
 
 func (u *MissionController) Create(c *gin.Context) {
-	var mission models.Mission
+	var mission api_models.MissionJson
 
 	if err := c.BindJSON(&mission); err != nil {
+		logger.Error().Err(err).Msg("Error parseando modelo de mission json")
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	mission.Code.Valid = true
-	
-	id, err := u.missionService.Create(&mission)
+	missionEntity := mission.ToModel()
+
+	id, err := u.missionService.Create(&missionEntity)
 
 	if err != nil {
+		logger.Error().Err(err).Msg("Error Creando Mission")
 		c.JSON(http.StatusInternalServerError, err.Error())
 		return
 	}
+	missionEntity.Id = id.Id
 
-	c.JSON(http.StatusOK, id)
+	returnMissionValue := api_models.ModelToMissionJson(missionEntity)
+
+	c.JSON(http.StatusOK, returnMissionValue)
 }
 
 func (u *MissionController) Update(c *gin.Context) {
-	var mission models.Mission
+	var missionJson api_models.MissionJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&missionJson); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	mission := missionJson.ToModel()
 
 	err := u.missionService.Update(&mission)
 

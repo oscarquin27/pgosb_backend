@@ -2,6 +2,7 @@ package mission_service_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils"
@@ -43,7 +44,8 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 		missionDto = append(missionDto, *newMission)
 	}
 
-	c.JSON(http.StatusOK, missionDto)}
+	c.JSON(http.StatusOK, missionDto)
+}
 
 // func (u *MissionServiceController) GetAllServices(c *gin.Context) {
 
@@ -71,12 +73,17 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 // }
 
 func (u *MissionServiceController) Create(c *gin.Context) {
-	var mission models.MissionService
+	var missionJson api_models.MissionServiceJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&missionJson); err != nil {
+
+		logger.Error().Err(err).Msg("Error Parseando MissionService")
+
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	mission := missionJson.ToModel()
 
 	mission.Id.Valid = true
 	mission.AntaresId.Valid = true
@@ -95,12 +102,14 @@ func (u *MissionServiceController) Create(c *gin.Context) {
 }
 
 func (u *MissionServiceController) Update(c *gin.Context) {
-	var mission models.MissionService
+	var missionJson api_models.MissionServiceJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&missionJson); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
+
+	mission := missionJson.ToModel()
 
 	err := u.missionService.Update(&mission)
 

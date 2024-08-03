@@ -5,6 +5,7 @@ import (
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	location_handlers "fdms/cmd/api/handlers/locations"
 	mission_handlers "fdms/cmd/api/handlers/mission"
+	antares_handlers "fdms/cmd/api/handlers/mission_antares"
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
 	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
 	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
@@ -62,6 +63,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionPersonService := repository.NewMissionPersonService(db)
 	missionInfraService := repository.NewMissionInfrastructureService(db)
 
+	missionAntaresService := repository.NewAntaresService(db)
+
 	missionController := mission_handlers.NewMissionController(missionService)
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
 	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
@@ -73,13 +76,16 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	locationController := location_handlers.NewLocationController(locationService)
 	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
 	unityController := units_handlers.NewUnityController(unityService)
+
+	missionAntaresController := antares_handlers.NewAntaresController(missionAntaresService)
 	layoutController := layout_handlers.NewLayoutController(layoutService)
 
 	AuthController := auth_handlers.NewAuthController(auth)
 
 	conf.AllowCredentials = true
 	conf.AllowOrigins = []string{"http://localhost:5173",
-		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://172.30.100.9:8082"}
+		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173",
+		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173"}
 
 	router.Use(ZerologMiddleware())
 	router.Use(cors.New(conf))
@@ -202,6 +208,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		mission.POST("/create", missionController.Create)
 		mission.PUT("/update", missionController.Update)
 		mission.DELETE("/:id", missionController.Delete)
+	}
+
+	antaresMission := v1.Group("mission/antares")
+	{
+		antaresMission.GET("/all", missionAntaresController.GetAll)
 	}
 
 	serviceMission := v1.Group("mission/service")
