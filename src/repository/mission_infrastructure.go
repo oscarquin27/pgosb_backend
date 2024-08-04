@@ -20,7 +20,53 @@ func NewMissionInfrastructureService(db *pgxpool.Pool) services.MissionInfrastru
 	}
 }
 
-func (u *MissionInfrastructureRepository) Get(id int) ([]models.MissionInfrastructure, error) {
+// GetAll implements services.MissionInfrastructureService.
+func (u *MissionInfrastructureRepository) GetAll() ([]models.MissionInfrastructure, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `
+	SELECT id, 
+	service_id, 
+	build_type, 
+	build_occupation, 
+	build_area, 
+	build_access, 
+	levels, 
+	people, 
+	goods_type, 
+	build_roof, 
+	build_floor, 
+	build_room_type, 
+	observations
+FROM missions.infrastructure;`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	infra, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionInfrastructure])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionInfrastructureNotFound
+		}
+
+		return nil, err
+	}
+
+	return infra, nil
+}
+
+// GetByServiceId implements services.MissionInfrastructureService.
+func (u *MissionInfrastructureRepository) GetByServiceId(id int) ([]models.MissionInfrastructure, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -63,6 +109,51 @@ FROM missions.infrastructure
 	}
 
 	return infra, nil
+}
+
+func (u *MissionInfrastructureRepository) Get(id int) (*models.MissionInfrastructure, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `
+	SELECT id, 
+	service_id, 
+	build_type, 
+	build_occupation, 
+	build_area, 
+	build_access, 
+	levels, 
+	people, 
+	goods_type, 
+	build_roof, 
+	build_floor, 
+	build_room_type, 
+	observations
+FROM missions.infrastructure
+ 	where id = $1;`, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	infra, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.MissionInfrastructure])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionInfrastructureNotFound
+		}
+
+		return nil, err
+	}
+
+	return &infra, nil
 }
 
 func (u *MissionInfrastructureRepository) Create(infra *models.MissionInfrastructure) error {

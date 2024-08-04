@@ -36,6 +36,25 @@ func (u *MissionVehicleController) GetVehicle(c *gin.Context) {
 		return
 	}
 
+	missionDto := api_models.ModelToMissionVehicleJson(*mission)
+
+	c.JSON(http.StatusOK, missionDto)
+}
+
+func (u *MissionVehicleController) GetAll(c *gin.Context) {
+
+	mission, err := u.missionService.GetAll()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var missionDto []api_models.MissionVehicleJson
 
 	for _, s := range mission {
@@ -46,41 +65,43 @@ func (u *MissionVehicleController) GetVehicle(c *gin.Context) {
 	c.JSON(http.StatusOK, missionDto)
 }
 
+func (u *MissionVehicleController) GetByServiceId(c *gin.Context) {
 
-// func (u *MissionVehicleController) GetAllServices(c *gin.Context) {
+	id := utils.ParseInt(c.Param("id"))
 
-// 	mission, err := u.missionService.()
+	mission, err := u.missionService.GetByServiceId(id)
 
-// 	if err != nil {
-// 		if err == models.ErrorMissionNotFound {
-// 			c.JSON(http.StatusNotFound, err.Error())
-// 			return
-// 		}
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
 
-// 		c.JSON(http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
 
-// 	var missionDto []api_models.MissionServiceJson
+	var missionDto []api_models.MissionVehicleJson
 
-// 	for _, s := range mission {
-// 		newMission := api_models.ModelToMissionServiceJson(s)
-// 		missionDto = append(missionDto, *newMission)
-// 	}
+	for _, s := range mission {
+		newMission := api_models.ModelToMissionVehicleJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
 
-// 	c.JSON(http.StatusOK, missionDto)
-
-// }
+	c.JSON(http.StatusOK, missionDto)
+}
 
 func (u *MissionVehicleController) Create(c *gin.Context) {
-	var mission models.MissionVehicle
+	var vehicle api_models.MissionVehicleJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&vehicle); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Create(&mission)
+	vehicles := vehicle.ToModel()
+
+	err := u.missionService.Create(&vehicles)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -91,14 +112,16 @@ func (u *MissionVehicleController) Create(c *gin.Context) {
 }
 
 func (u *MissionVehicleController) Update(c *gin.Context) {
-	var mission models.MissionVehicle
+	var vehicle api_models.MissionVehicleJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&vehicle); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Update(&mission)
+	vehicles := vehicle.ToModel()
+
+	err := u.missionService.Update(&vehicles)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

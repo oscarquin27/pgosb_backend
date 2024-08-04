@@ -36,6 +36,27 @@ func (u *MissionPersonController) Get(c *gin.Context) {
 		return
 	}
 
+	missionDto := api_models.ModelToMissionPersonJson(*mission)
+
+	c.JSON(http.StatusOK, missionDto)
+}
+
+func (u *MissionPersonController) GetByServiceId(c *gin.Context) {
+
+	id := utils.ParseInt(c.Param("id"))
+
+	mission, err := u.missionService.GetByServiceId(id)
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var missionDto []api_models.MissionPersonJson
 
 	for _, s := range mission {
@@ -43,7 +64,32 @@ func (u *MissionPersonController) Get(c *gin.Context) {
 		missionDto = append(missionDto, *newMission)
 	}
 
-	c.JSON(http.StatusOK, missionDto)}
+	c.JSON(http.StatusOK, missionDto)
+}
+
+func (u *MissionPersonController) GetAll(c *gin.Context) {
+
+	mission, err := u.missionService.GetAll()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.MissionPersonJson
+
+	for _, s := range mission {
+		newMission := api_models.ModelToMissionPersonJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+}
 
 // func (u *MissionServiceController) GetAllServices(c *gin.Context) {
 
@@ -71,14 +117,16 @@ func (u *MissionPersonController) Get(c *gin.Context) {
 // }
 
 func (u *MissionPersonController) Create(c *gin.Context) {
-	var mission models.MissionPerson
+	var person api_models.MissionPersonJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&person); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Create(&mission)
+	p := person.ToModel()
+
+	err := u.missionService.Create(&p)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -89,14 +137,16 @@ func (u *MissionPersonController) Create(c *gin.Context) {
 }
 
 func (u *MissionPersonController) Update(c *gin.Context) {
-	var mission models.MissionPerson
+	var person api_models.MissionPersonJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&person); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Update(&mission)
+	p := person.ToModel()
+
+	err := u.missionService.Update(&p)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

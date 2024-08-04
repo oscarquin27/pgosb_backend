@@ -37,6 +37,28 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 		return
 	}
 
+	missionDto := api_models.ModelToMissionServiceJson(*mission)
+
+	c.JSON(http.StatusOK, missionDto)
+	return
+}
+
+func (u *MissionServiceController) GetByMissionId(c *gin.Context) {
+
+	id := utils.ParseInt(c.Param("id"))
+
+	mission, err := u.missionService.GetByMissionId(id)
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var missionDto []api_models.MissionServiceJson
 
 	for _, s := range mission {
@@ -45,6 +67,32 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, missionDto)
+	return
+}
+
+func (u *MissionServiceController) GetAll(c *gin.Context) {
+
+	mission, err := u.missionService.GetAll()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.MissionServiceJson
+
+	for _, s := range mission {
+		newMission := api_models.ModelToMissionServiceJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+	return
 }
 
 // func (u *MissionServiceController) GetAllServices(c *gin.Context) {
@@ -99,6 +147,7 @@ func (u *MissionServiceController) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, id)
+	return
 }
 
 func (u *MissionServiceController) Update(c *gin.Context) {
@@ -119,6 +168,7 @@ func (u *MissionServiceController) Update(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, "Servicio actualizado satisfactoriamente")
+	return
 }
 
 func (u *MissionServiceController) Delete(c *gin.Context) {
@@ -137,5 +187,6 @@ func (u *MissionServiceController) Delete(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, "Servicio eliminado satisfactoriamente")
+	return
 
 }

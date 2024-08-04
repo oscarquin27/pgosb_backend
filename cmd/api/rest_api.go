@@ -84,7 +84,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	conf.AllowCredentials = true
 	conf.AllowOrigins = []string{"http://localhost:5173",
-		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173",
+		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12",
 		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173"}
 
 	router.Use(ZerologMiddleware())
@@ -217,7 +217,9 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	serviceMission := v1.Group("mission/service")
 	{
+		serviceMission.GET("/all", missionServiceController.GetAll)
 		serviceMission.GET("/:id", missionServiceController.Get)
+		serviceMission.GET("/group/:id", missionServiceController.GetByMissionId)
 		serviceMission.POST("/create", missionServiceController.Create)
 		serviceMission.PUT("/update", missionServiceController.Update)
 		serviceMission.DELETE("/delete", missionServiceController.Delete)
@@ -226,6 +228,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	vehicleMission := v1.Group("mission/vehicle")
 	{
 		vehicleMission.GET("/:id", missionVehicleController.GetVehicle)
+		vehicleMission.GET("/group/:id", missionVehicleController.GetByServiceId)
+		vehicleMission.GET("/all", missionVehicleController.GetAll)
 		vehicleMission.POST("/create", missionVehicleController.Create)
 		vehicleMission.PUT("/update", missionVehicleController.Update)
 		vehicleMission.DELETE("/delete", missionVehicleController.Delete)
@@ -234,6 +238,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	infraMission := v1.Group("mission/infrastructure")
 	{
 		infraMission.GET("/:id", missionInfraController.GetInfrastructure)
+		infraMission.GET("/group/:id", missionInfraController.GetByServiceId)
+		infraMission.GET("/all", missionInfraController.GetAll)
 		infraMission.POST("/create", missionInfraController.Create)
 		infraMission.PUT("/update", missionInfraController.Update)
 		infraMission.DELETE("/delete", missionInfraController.Delete)
@@ -242,6 +248,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	personMission := v1.Group("mission/person")
 	{
 		personMission.GET("/:id", missionPersonController.Get)
+		personMission.GET("/group/:id", missionPersonController.GetByServiceId)
+		personMission.GET("/all", missionPersonController.GetAll)
 		personMission.POST("/create", missionPersonController.Create)
 		personMission.PUT("/update", missionPersonController.Update)
 		personMission.DELETE("/delete", missionPersonController.Delete)

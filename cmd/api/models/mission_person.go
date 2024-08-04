@@ -6,25 +6,25 @@ import (
 )
 
 type MissionPersonJson struct {
-	Id               string    `json:"id" binding:"required"`
-	ServiceId        string    `json:"service_id"`
-	UnitId           string    `json:"unit_id"`
-	InfrastructureId string    `json:"infrastructure_id"`
-	VehicleId        string    `json:"vehicle_id"`
-	FirstName        string    `json:"first_name"`
-	LastName         string    `json:"last_name"`
-	Age              string    `json:"age"`
-	Gender           string    `json:"gender"`
-	LegalId          string    `json:"legal_id"`
-	Phone            string    `json:"phone"`
-	Employment       string    `json:"employment"`
-	State            string    `json:"state"`
-	Municipality     string    `json:"municipality"`
-	Parish           string    `json:"parish"`
-	Address          string    `json:"address"`
-	Pathology        string    `json:"pathology"`
-	Observations     string    `json:"observations"`
-	Condition        string    `json:"condition"`
+	Id               string `json:"id"`
+	ServiceId        string `json:"service_id"`
+	UnitId           string `json:"unit_id"`
+	InfrastructureId string `json:"infrastructure_id"`
+	VehicleId        string `json:"vehicle_id"`
+	FirstName        string `json:"first_name"`
+	LastName         string `json:"last_name"`
+	Age              string `json:"age"`
+	Gender           string `json:"gender"`
+	LegalId          string `json:"legal_id"`
+	Phone            string `json:"phone"`
+	Employment       string `json:"employment"`
+	State            string `json:"state"`
+	Municipality     string `json:"municipality"`
+	Parish           string `json:"parish"`
+	Address          string `json:"address"`
+	Pathology        string `json:"pathology"`
+	Observations     string `json:"observations"`
+	Condition        string `json:"condition"`
 }
 
 func ModelToMissionPersonJson(s models.MissionPerson) *MissionPersonJson {
