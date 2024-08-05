@@ -9,4 +9,5 @@ type MkModel struct {
 	conditionField string
 	conditionOperator string
 	conditionValue any
+	returning string
 }

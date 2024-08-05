@@ -39,6 +39,41 @@ func (mk *MkModel) Insert(table string) (int64, error) {
 	return executeSentence(mk.db, sentence, values)
 }
 
+func (mk *MkModel) InsertReturning(table string) error {
+	var fields []string
+	var values []interface{}
+
+	for k, v := range mk.params {
+		fields = append(fields, k)
+		values = append(values, v)
+	}
+
+	sentence := buildInsert(fields, table)
+
+	sentence += mk.returning
+
+	return executeSentenceReturning(mk.db, sentence, values, mk)
+}
+
+func (mk *MkModel) UpdateReturning(table string) error {
+	var fields []string
+	var values []interface{}
+
+	for k, v := range mk.params {
+		fields = append(fields, k)
+		values = append(values, v)
+	}
+
+	if len(mk.conditionField) > 0 {
+		values = append(values, mk.conditionValue)
+	}
+
+	sentence := buildUpdate(fields, table, *mk)
+	sentence += mk.returning
+
+	return executeSentenceReturning(mk.db, sentence, values, mk)
+}
+
 func (mk *MkModel) Update(table string) (int64, error) {
 	var fields []string
 	var values []interface{}
@@ -78,6 +113,27 @@ func executeSentence(pg *pgxpool.Pool, sql string, values []interface{}) (int64,
 
 }
 
+func executeSentenceReturning(pg *pgxpool.Pool, sql string, values []interface{}, model *MkModel) error {
+	ctx := context.Background()
+
+	conn, err := pg.Acquire(ctx)
+
+	if err != nil {
+		return err
+	}
+
+	defer conn.Conn().Close(ctx)
+
+	err = conn.QueryRow(ctx, sql, values...).Scan(&model.model)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
 // func executeSelectRows(pg *pgxpool.Pool, sql string, values []interface{}, model interface{}) (any, error) {
 // 	ctx := context.Background()
 
@@ -110,6 +166,24 @@ func (mk *MkModel) OmitMany(fields []string) *MkModel {
 	for _, v := range fields {
 		delete(mk.params, v)
 	}
+
+	return mk
+}
+
+func (mk *MkModel) Returning() *MkModel {
+	params := extractParamFields(*mk.model)
+	var sb strings.Builder
+
+	sb.WriteString(" returning (")
+	for f, v := range params {
+		if f < len(params)-1 {
+			sb.WriteString(v + ",")
+		} else {
+			sb.WriteString(v + ") ")
+		}
+	}
+
+	mk.returning = sb.String()
 
 	return mk
 }
@@ -195,6 +269,8 @@ func extractParams(value interface{}) map[string]interface{} {
 		field := modelType.Field(i)
 
 		fieldName := field.Tag.Get("json") // Use mk tag for field name
+		s := strings.Split(fieldName, ",")
+		fieldName = s[0]
 		if fieldName == "" {
 			continue //Skip if tag not set
 		}
@@ -205,4 +281,27 @@ func extractParams(value interface{}) map[string]interface{} {
 	}
 
 	return m
+}
+
+func extractParamFields(value interface{}) []string {
+	var s []string
+
+	val := reflect.ValueOf(value)
+	modelType := val.Type().Elem()
+
+	for i := 0; i < modelType.NumField(); i++ {
+		field := modelType.Field(i)
+
+		fieldName := field.Tag.Get("json") // Use mk tag for field name
+		v := strings.Split(fieldName, ",")
+		fieldName = v[0]
+		if fieldName == "" {
+			continue //Skip if tag not set
+		}
+
+		s = append(s, fieldName)
+
+	}
+
+	return s
 }

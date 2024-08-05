@@ -2,9 +2,9 @@ package repository
 
 import (
 	"context"
+	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
-	"fdms/src/utils"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -129,31 +129,19 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 }
 
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	defer conn.Release()
+	m := mikro.NewMkModel(u.db)
+	
+	err := m.Model(s).Omit("id").Returning().InsertReturning("missions.services")
 
 	if err != nil {
 		return nil, err
 	}
 
-	var id int8
-
-	err = conn.QueryRow(ctx, `insert into missions.services (mission_id, 
-	antares_id, 
-	units, 
-	bombers, 
-	summary, 
-	description)
-	values ($1, $2, $3, $4, $5, $6) returning id`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description).Scan(&id)
-
-	if err != nil {
-		return nil, err
+	if s.Id.Int32 >= 0 {
+		return s, nil
 	}
 
-	return &models.MissionService{Id: utils.ConvertToPgTypeInt4(int(id))}, nil
+	return nil, models.ErrorMissionServiceNotCreated
 }
 
 func (u *MissionServiceRepository) Update(s *models.MissionService) error {
