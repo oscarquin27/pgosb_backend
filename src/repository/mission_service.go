@@ -130,8 +130,9 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	m := mikro.NewMkModel(u.db)
-	
-	err := m.Model(s).Omit("id").Returning().InsertReturning("missions.services")
+
+	err := m.Model(s).Omit("id").
+		Returning().InsertReturning("missions.services")
 
 	if err != nil {
 		return nil, err

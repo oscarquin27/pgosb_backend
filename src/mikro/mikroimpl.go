@@ -20,7 +20,7 @@ func (mk *MkModel) Model(value interface{}) *MkModel {
 
 	return &MkModel{
 		db:     mk.db,
-		model:  &value,
+		model:  value,
 		params: params,
 	}
 }
@@ -124,7 +124,7 @@ func executeSentenceReturning(pg *pgxpool.Pool, sql string, values []interface{}
 
 	defer conn.Release()
 
-	err = conn.QueryRow(ctx, sql, values...).Scan(&model.model)
+	err = conn.QueryRow(ctx, sql, values...).Scan(model.model)
 
 	if err != nil {
 		return err
@@ -133,6 +133,27 @@ func executeSentenceReturning(pg *pgxpool.Pool, sql string, values []interface{}
 	return nil
 
 }
+
+// func executeSelectRows(pg *pgxpool.Pool, sql string, values []interface{}, model interface{}) (any, error) {
+// 	ctx := context.Background()
+
+// 	conn, err := pg.Acquire(ctx)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	defer conn.Conn().Close(ctx)
+
+// 	rows, err := conn.Query(ctx, sql, values...)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[model])
+
+// }
 
 // Omite el campo a ser actualizado
 func (mk *MkModel) Omit(field string) *MkModel {
@@ -150,7 +171,7 @@ func (mk *MkModel) OmitMany(fields []string) *MkModel {
 }
 
 func (mk *MkModel) Returning() *MkModel {
-	params := extractParamFields(*mk.model)
+	params := extractParamFields(mk.model)
 	var sb strings.Builder
 
 	sb.WriteString(" returning (")
