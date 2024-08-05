@@ -6,18 +6,18 @@ import (
 )
 
 type MissionVehicleJson struct {
-	Id		        	string    	   `json:"id" binding:"required"`
-	ServiceId      	    string    	   `json:"service_id"`
-	UnitId       		string    	   `json:"unit_id"`
-	VehicleCondition    string    	   `json:"vehicle_condition"`
-	Make                string    	   `json:"make"`
-	Model           	string    	   `json:"model"`
-	Year            	string    	   `json:"year"`
-	MotorSerial         string    	   `json:"motor_serial"`
-    Plate            	string    	   `json:"plate"`
-	Color            	string    	   `json:"color"`
-	VehicleType         string    	   `json:"vehicle_type"`
-	VehicleVerified     bool    	   `json:"vehicle_verified"`
+	Id               string `json:"id"`
+	ServiceId        string `json:"service_id"`
+	UnitId           string `json:"unit_id"`
+	VehicleCondition string `json:"vehicle_condition"`
+	Make             string `json:"make"`
+	Model            string `json:"model"`
+	Year             string `json:"year"`
+	MotorSerial      string `json:"motor_serial"`
+	Plate            string `json:"plate"`
+	Color            string `json:"color"`
+	VehicleType      string `json:"vehicle_type"`
+	VehicleVerified  bool   `json:"vehicle_verified"`
 }
 
 func ModelToMissionVehicleJson(s models.MissionVehicle) *MissionVehicleJson {
@@ -34,7 +34,7 @@ func ModelToMissionVehicleJson(s models.MissionVehicle) *MissionVehicleJson {
 	vehicle.VehicleType = utils.ConvertFromText(s.VehicleType)
 	vehicle.MotorSerial = utils.ConvertFromText(s.MotorSerial)
 	vehicle.VehicleVerified = utils.ConvertFromBool(s.VehicleVerified)
-	
+
 	return &vehicle
 }
 

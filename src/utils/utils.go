@@ -30,7 +30,7 @@ func ConvertToPgTypeInt4(i int) pgtype.Int4 {
 }
 
 func ConvertFromInt4Array(i []pgtype.Int4) []string {
-	var s []string
+	s := []string{}
 
 	for _, n := range i {
 		s = append(s, ConvertFromInt4(n))
@@ -40,7 +40,7 @@ func ConvertFromInt4Array(i []pgtype.Int4) []string {
 }
 
 func ConvertFromInt2Array(i []pgtype.Int2) []string {
-	var s []string
+	s := []string{}
 
 	for _, n := range i {
 		s = append(s, ConvertFromInt2(n))
@@ -50,7 +50,7 @@ func ConvertFromInt2Array(i []pgtype.Int2) []string {
 }
 
 func ConvertToInt4Array(i []string) []pgtype.Int4 {
-	var s []pgtype.Int4
+	s := []pgtype.Int4{}
 
 	for _, n := range i {
 		s = append(s, ConvertToPgTypeInt4(ParseInt(n)))
@@ -60,7 +60,7 @@ func ConvertToInt4Array(i []string) []pgtype.Int4 {
 }
 
 func ConvertToInt2Array(i []string) []pgtype.Int2 {
-	var s []pgtype.Int2
+	s := []pgtype.Int2{}
 
 	for _, n := range i {
 		s = append(s, ConvertToPgTypeInt2(ParseInt(n)))

@@ -35,6 +35,50 @@ func (u *MissionInfrastructureController) GetInfrastructure(c *gin.Context) {
 		return
 	}
 
+	missionDto := api_models.ModelToMissionInfrastructureJson(*mission)
+
+	c.JSON(http.StatusOK, missionDto)
+}
+
+func (u *MissionInfrastructureController) GetByServiceId(c *gin.Context) {
+	id := utils.ParseInt(c.Param("id"))
+
+	mission, err := u.missionService.GetByServiceId(id)
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.MissionInfrastructureJson
+
+	for _, s := range mission {
+		newMission := api_models.ModelToMissionInfrastructureJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+}
+
+func (u *MissionInfrastructureController) GetAll(c *gin.Context) {
+
+	mission, err := u.missionService.GetAll()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var missionDto []api_models.MissionInfrastructureJson
 
 	for _, s := range mission {
@@ -46,14 +90,16 @@ func (u *MissionInfrastructureController) GetInfrastructure(c *gin.Context) {
 }
 
 func (u *MissionInfrastructureController) Create(c *gin.Context) {
-	var mission models.MissionInfrastructure
+	var infra api_models.MissionInfrastructureJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&infra); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Create(&mission)
+	infrastructure := infra.ToModel()
+
+	err := u.missionService.Create(&infrastructure)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -64,14 +110,16 @@ func (u *MissionInfrastructureController) Create(c *gin.Context) {
 }
 
 func (u *MissionInfrastructureController) Update(c *gin.Context) {
-	var mission models.MissionInfrastructure
+	var infra api_models.MissionInfrastructureJson
 
-	if err := c.BindJSON(&mission); err != nil {
+	if err := c.BindJSON(&infra); err != nil {
 		c.JSON(http.StatusBadRequest, err.Error())
 		return
 	}
 
-	err := u.missionService.Update(&mission)
+	infrastructure := infra.ToModel()
+
+	err := u.missionService.Update(&infrastructure)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())

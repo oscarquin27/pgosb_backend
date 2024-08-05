@@ -11,17 +11,88 @@ import (
 )
 
 type MissionServiceRepository struct {
-	db   *pgxpool.Pool
+	db *pgxpool.Pool
 }
 
 func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
 	return &MissionServiceRepository{
-		db:   db,
+		db: db,
 	}
 }
 
+func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
+	ctx := context.Background()
 
-func (u *MissionServiceRepository) Get(id int) ([]models.MissionService, error) {
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
+	antares_id, 
+	units, 
+	bombers, 
+	summary, 
+	description
+	FROM missions.services where id = $1;`, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.MissionService])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionServiceNotFound
+		}
+
+		return nil, err
+	}
+
+	return &service, nil
+}
+
+func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
+	antares_id, 
+	units, 
+	bombers, 
+	summary, 
+	description
+	FROM missions.services order by id desc;`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionService])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionServiceNotFound
+		}
+
+		return nil, err
+	}
+
+	return services, nil
+}
+
+func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionService, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -57,7 +128,6 @@ func (u *MissionServiceRepository) Get(id int) ([]models.MissionService, error) 
 	return services, nil
 }
 
-
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	ctx := context.Background()
 
@@ -69,7 +139,7 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.Mis
 		return nil, err
 	}
 
-	var id int8 
+	var id int8
 
 	err = conn.QueryRow(ctx, `insert into missions.services (mission_id, 
 	antares_id, 
@@ -113,7 +183,7 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	if rows.RowsAffected() == 0 {
 		return models.ErrorMissionServiceNotUpdated
 	}
-	
+
 	return nil
 }
 
@@ -133,7 +203,6 @@ func (u *MissionServiceRepository) Delete(id int) error {
 	if err != nil {
 		return models.ErrorMissionServiceNotDeleted
 	}
-
 
 	return nil
 }

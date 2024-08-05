@@ -79,6 +79,29 @@ func executeSentence(pg *pgxpool.Pool, sql string, values []interface{}) (int64,
 
 }
 
+// func executeSelectRows(pg *pgxpool.Pool, sql string, values []interface{}, model interface{}) (any, error) {
+// 	ctx := context.Background()
+
+// 	conn, err := pg.Acquire(ctx)
+	
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	defer conn.Conn().Close(ctx)
+
+// 	rows, err := conn.Query(ctx, sql, values...)
+
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[model])
+
+	
+
+// }
+
 //Omite el campo a ser actualizado
 func (mk *MkModel) Omit(field string) (*MkModel){
 	delete(mk.params, field)
@@ -104,6 +127,27 @@ func (mk *MkModel) Where(field string, operator string, value any) (*MkModel) {
 }
 
 
+func buildSelect(fields []string, table string, mk MkModel) string {
+	var sb strings.Builder
+	
+	sb.WriteString("select ")
+
+	for f, v := range fields {
+		if f < len(fields)-1 {
+			sb.WriteString(v + ",")
+		} else {
+			sb.WriteString(v)
+		}
+	}
+
+	sb.WriteString(" from " + table)
+
+	if len(mk.conditionField) > 0 {
+		sb.WriteString(" where " + mk.conditionField + " " + mk.conditionOperator + " $1")
+	}
+	
+	return sb.String()
+}
 
 func buildInsert(fields []string, table string) string{
 	var sb strings.Builder
@@ -157,7 +201,7 @@ func extractParams(value interface{}) (map[string]interface{}) {
     for i := 0; i < modelType.NumField(); i++ {
         field := modelType.Field(i)
 
-        fieldName := field.Tag.Get("mk") // Use mk tag for field name
+        fieldName := field.Tag.Get("json") // Use mk tag for field name
         if fieldName == "" {
             continue //Skip if tag not set
         }
