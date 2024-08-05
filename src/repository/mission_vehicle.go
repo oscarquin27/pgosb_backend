@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
 
@@ -150,42 +151,15 @@ func (u *MissionVehicleRepository) Get(id int) (*models.MissionVehicle, error) {
 }
 
 func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return err
-	}
-
-	rows, err := conn.Exec(ctx, `insert into missions.vehicles (service_id, 
-	vehicle_condition, 
-	make, 
-	model, 
-	year, 
-	plate, 
-	color, 
-	vehicle_type, 
-	motor_serial, 
-	vehicle_verified)
-	VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10);
-`, vehicle.ServiceId,
-		vehicle.VehicleCondition,
-		vehicle.Make,
-		vehicle.Model,
-		vehicle.Year,
-		vehicle.Plate,
-		vehicle.Color,
-		vehicle.VehicleType,
-		vehicle.MotorSerial,
-		vehicle.VehicleVerified)
+	m := mikro.NewMkModel(u.db)
+	
+	rows, err := m.Model(vehicle).Omit("id").Insert("missions.services")
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
+	if rows > 0 {
 		return nil
 	}
 
@@ -193,50 +167,19 @@ func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error 
 }
 
 func (u *MissionVehicleRepository) Update(vehicle *models.MissionVehicle) error {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return err
-	}
-
-	rows, err := conn.Exec(ctx, `
-		UPDATE missions.vehicles
-		SET service_id = $1, 
-	    vehicle_condition = $2, 
-	    make = $3, 
-	    model = $4, 
-	    year = $5, 
-	    plate = $6, 
-	    color = $7, 
-	    vehicle_type = $8, 
-	    motor_serial = $9, 
-	    vehicle_verified = $10
-		where id = $11;
-		`,
-		vehicle.ServiceId,
-		vehicle.VehicleCondition,
-		vehicle.Make,
-		vehicle.Model,
-		vehicle.Year,
-		vehicle.Plate,
-		vehicle.Color,
-		vehicle.VehicleType,
-		vehicle.MotorSerial,
-		vehicle.VehicleVerified,
-		vehicle.Id)
+	m := mikro.NewMkModel(u.db)
+	
+	rows, err := m.Model(vehicle).Omit("id").Insert("missions.vehicles")
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
+	if rows > 0 {
 		return nil
 	}
 
-	return models.ErrorVehicleNotUpdated
+	return models.ErrorMissionVehicleNotUpdated
 }
 
 func (u *MissionVehicleRepository) Delete(id int) error {
