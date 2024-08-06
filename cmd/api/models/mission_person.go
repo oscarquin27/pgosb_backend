@@ -32,6 +32,8 @@ func ModelToMissionPersonJson(s models.MissionPerson) *MissionPersonJson {
 
 	person.Id = utils.ConvertFromInt4(s.Id)
 	person.UnitId = utils.ConvertFromInt4(s.UnitId)
+	person.ServiceId = utils.ConvertFromInt4(s.ServiceId)
+
 	person.InfrastructureId = utils.ConvertFromInt4(s.InfrastructureId)
 	person.VehicleId = utils.ConvertFromInt4(s.VehicleId)
 	person.FirstName = utils.ConvertFromText(s.FirstName)
@@ -56,6 +58,8 @@ func (s *MissionPersonJson) ToModel() models.MissionPerson {
 
 	person.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	person.UnitId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.UnitId))
+	person.ServiceId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.ServiceId))
+
 	person.InfrastructureId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.InfrastructureId))
 	person.VehicleId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.VehicleId))
 	person.FirstName = utils.ConvertToPgTypeText(s.FirstName)

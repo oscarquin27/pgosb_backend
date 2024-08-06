@@ -71,11 +71,11 @@ func (u *MissionInfrastructureRepository) GetByServiceId(id int) ([]models.Missi
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `
 	SELECT id, 
@@ -90,6 +90,7 @@ func (u *MissionInfrastructureRepository) GetByServiceId(id int) ([]models.Missi
 	build_roof, 
 	build_floor, 
 	build_room_type, 
+	build_wall,
 	observations
 FROM missions.infrastructure
  	where service_id = $1;`, id)
@@ -116,11 +117,11 @@ func (u *MissionInfrastructureRepository) Get(id int) (*models.MissionInfrastruc
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `
 	SELECT id, 
@@ -135,7 +136,8 @@ func (u *MissionInfrastructureRepository) Get(id int) (*models.MissionInfrastruc
 	build_roof, 
 	build_floor, 
 	build_room_type, 
-	observations
+	observations,
+	build_wall
 FROM missions.infrastructure
  	where id = $1;`, id)
 
@@ -175,7 +177,7 @@ func (u *MissionInfrastructureRepository) Create(infra *models.MissionInfrastruc
 func (u *MissionInfrastructureRepository) Update(infra *models.MissionInfrastructure) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(infra).Omit("id").Where("id", "=", infra.Id).Update("missions.infrastructure")
+	rows, err := m.Model(infra).Omit("id").Omit("service_id").Where("id", "=", infra.Id).Update("missions.infrastructure")
 
 	if err != nil {
 		return err
@@ -192,11 +194,12 @@ func (u *MissionInfrastructureRepository) Delete(id int) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
 
 	if err != nil {
 		return err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Exec(ctx, "delete from missions.infrastructure where id = $1", id)
 
@@ -204,7 +207,9 @@ func (u *MissionInfrastructureRepository) Delete(id int) error {
 		return err
 	}
 
-	if rows.RowsAffected() > 0 {
+	numberOfRows := rows.RowsAffected()
+
+	if numberOfRows == 1 {
 		return nil
 	}
 

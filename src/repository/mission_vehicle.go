@@ -152,8 +152,8 @@ func (u *MissionVehicleRepository) Get(id int) (*models.MissionVehicle, error) {
 
 func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error {
 	m := mikro.NewMkModel(u.db)
-	
-	rows, err := m.Model(vehicle).Omit("id").Insert("missions.services")
+
+	rows, err := m.Model(vehicle).Omit("id").Insert("missions.vehicles")
 
 	if err != nil {
 		return err
@@ -168,7 +168,7 @@ func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error 
 
 func (u *MissionVehicleRepository) Update(vehicle *models.MissionVehicle) error {
 	m := mikro.NewMkModel(u.db)
-	
+
 	rows, err := m.Model(vehicle).Omit("id").Insert("missions.vehicles")
 
 	if err != nil {

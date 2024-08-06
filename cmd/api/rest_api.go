@@ -222,7 +222,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.GET("/group/:id", missionServiceController.GetByMissionId)
 		serviceMission.POST("/create", missionServiceController.Create)
 		serviceMission.PUT("/update", missionServiceController.Update)
-		serviceMission.DELETE("/delete", missionServiceController.Delete)
+		serviceMission.DELETE("/delete/:id", missionServiceController.Delete)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")
@@ -232,7 +232,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		vehicleMission.GET("/all", missionVehicleController.GetAll)
 		vehicleMission.POST("/create", missionVehicleController.Create)
 		vehicleMission.PUT("/update", missionVehicleController.Update)
-		vehicleMission.DELETE("/delete", missionVehicleController.Delete)
+		vehicleMission.DELETE("/delete/:id", missionVehicleController.Delete)
 	}
 
 	infraMission := v1.Group("mission/infrastructure")
@@ -242,7 +242,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		infraMission.GET("/all", missionInfraController.GetAll)
 		infraMission.POST("/create", missionInfraController.Create)
 		infraMission.PUT("/update", missionInfraController.Update)
-		infraMission.DELETE("/delete", missionInfraController.Delete)
+		infraMission.DELETE("/delete/:id", missionInfraController.Delete)
 	}
 
 	personMission := v1.Group("mission/person")
@@ -252,7 +252,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		personMission.GET("/all", missionPersonController.GetAll)
 		personMission.POST("/create", missionPersonController.Create)
 		personMission.PUT("/update", missionPersonController.Update)
-		personMission.DELETE("/delete", missionPersonController.Delete)
+		personMission.DELETE("/delete/:id", missionPersonController.Delete)
 	}
 
 	router.Run(":" + config.Configuration.Http.Port)

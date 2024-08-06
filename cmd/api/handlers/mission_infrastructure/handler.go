@@ -55,7 +55,7 @@ func (u *MissionInfrastructureController) GetByServiceId(c *gin.Context) {
 		return
 	}
 
-	var missionDto []api_models.MissionInfrastructureJson
+	var missionDto []api_models.MissionInfrastructureJson = make([]api_models.MissionInfrastructureJson, 0)
 
 	for _, s := range mission {
 		newMission := api_models.ModelToMissionInfrastructureJson(s)
@@ -79,7 +79,7 @@ func (u *MissionInfrastructureController) GetAll(c *gin.Context) {
 		return
 	}
 
-	var missionDto []api_models.MissionInfrastructureJson
+	var missionDto []api_models.MissionInfrastructureJson = make([]api_models.MissionInfrastructureJson, 0)
 
 	for _, s := range mission {
 		newMission := api_models.ModelToMissionInfrastructureJson(s)

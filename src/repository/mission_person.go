@@ -75,11 +75,11 @@ func (u *MissionPersonRepository) GetByServiceId(id int) ([]models.MissionPerson
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `SELECT id, service_id, 
 	unit_id, 
@@ -203,11 +203,11 @@ func (u *MissionPersonRepository) Delete(id int) error {
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return err
 	}
+
+	defer conn.Release()
 
 	_, err = conn.Exec(ctx, "delete from missions.person where id = $1", id)
 
