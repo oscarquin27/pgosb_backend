@@ -2,6 +2,7 @@ package api
 
 import (
 	auth_handlers "fdms/cmd/api/handlers/auth"
+	center_handlers "fdms/cmd/api/handlers/centers"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	location_handlers "fdms/cmd/api/handlers/locations"
 	mission_handlers "fdms/cmd/api/handlers/mission"
@@ -62,9 +63,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionVehicleService := repository.NewMissionVehicleService(db)
 	missionPersonService := repository.NewMissionPersonService(db)
 	missionInfraService := repository.NewMissionInfrastructureService(db)
-
 	missionAntaresService := repository.NewAntaresService(db)
-
+	centerService := repository.NewCenterService(db)
 	missionController := mission_handlers.NewMissionController(missionService)
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
 	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
@@ -76,7 +76,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	locationController := location_handlers.NewLocationController(locationService)
 	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
 	unityController := units_handlers.NewUnityController(unityService)
-
+	centerController := center_handlers.NewCenterController(centerService)
 	missionAntaresController := antares_handlers.NewAntaresController(missionAntaresService)
 	layoutController := layout_handlers.NewLayoutController(layoutService)
 
@@ -253,6 +253,15 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		personMission.POST("/create", missionPersonController.Create)
 		personMission.PUT("/update", missionPersonController.Update)
 		personMission.DELETE("/delete/:id", missionPersonController.Delete)
+	}
+
+	centers := v1.Group("center")
+	{
+		centers.GET("/:id", centerController.GetCenter)
+		centers.GET("/all", centerController.GetAllCenters)
+		centers.POST("/create", centerController.Create)
+		centers.PUT("/update", centerController.Update)
+		centers.DELETE("/:id", centerController.Delete)	
 	}
 
 	router.Run(":" + config.Configuration.Http.Port)

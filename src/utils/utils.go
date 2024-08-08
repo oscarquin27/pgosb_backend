@@ -9,6 +9,11 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+func ConvertIntToString(s int) string {
+	id := strconv.Itoa(s)
+	return id
+}
+
 func ParseInt(s string) int {
 	id, err := strconv.Atoi(s)
 	if err != nil {
