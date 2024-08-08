@@ -409,7 +409,7 @@ func (u *LocationController) GetAllStations(c *gin.Context) {
 		return
 	}
 
-	fireStations := []api_models.StationJson{}
+	fireStations := make([]api_models.StationJson, 0)
 
 	for _, st := range fire_station {
 		newStation := api_models.ModelToStationJson(st)

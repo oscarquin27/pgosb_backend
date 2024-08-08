@@ -81,7 +81,7 @@ func (u *MissionPersonController) GetAll(c *gin.Context) {
 		return
 	}
 
-	var missionDto []api_models.MissionPersonJson
+	var missionDto []api_models.MissionPersonJson = make([]api_models.MissionPersonJson, 0)
 
 	for _, s := range mission {
 		newMission := api_models.ModelToMissionPersonJson(s)

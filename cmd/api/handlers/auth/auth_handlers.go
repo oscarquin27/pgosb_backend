@@ -168,7 +168,6 @@ func (controller *AuthController) Login(c *gin.Context) {
 	}
 
 	c.SetSameSite(SameSiteConfig)
-
 	SetCookies(jwt.AccessToken, jwt.RefreshToken, jwt.SessionState, jwt.ExpiresIn, c)
 
 	c.JSON(200, userData)
@@ -180,18 +179,25 @@ func (controller *AuthController) LogOut(c *gin.Context) {
 	sessionId, err := c.Cookie(utils.PGOSB_SESSION_STATE_COOKIE)
 
 	if err != nil {
-		fmt.Println(err)
+		logger.Warn().Err(err).Msg("no se obtuvo token durante el login")
 		ClearCookies(c)
 		c.Status(http.StatusOK)
 		return
 	}
 
 	err = controller.authService.LogOutUser(c.Request.Context(), sessionId)
-	fmt.Println(err)
 
+	if err != nil {
+
+		logger.Error().Err(err).Msg("no se obtuvo token durante el login")
+
+		c.Status(500)
+
+		return
+	}
+
+	c.SetSameSite(SameSiteConfig)
 	ClearCookies(c)
-
-	// c.SetSameSite(SameSiteConfig)
 	c.Status(http.StatusOK)
 
 }
