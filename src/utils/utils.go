@@ -14,6 +14,11 @@ const PGOSB_ACCESS_TOKEN_COOKIE string = "PGOSB_ACCESS_TOKEN"
 const PGOSB_REFRESH_TOKEN_COOKIE string = "PGOSB_REFRESH_TOKEN"
 const PGOSB_SESSION_STATE_COOKIE string = "PGOSB_SESSION_STATE"
 
+func ConvertIntToString(s int) string {
+	id := strconv.Itoa(s)
+	return id
+}
+
 func ParseInt(s string) int {
 	id, err := strconv.Atoi(s)
 	if err != nil {
