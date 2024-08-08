@@ -12,7 +12,11 @@ type Keycloak struct {
 	Realm         string `yaml:"realm"`
 }
 type Http struct {
-	Port string `yaml:"port"`
+	MainDomain string `yaml:"main_domain"`
+	Port       int    `yaml:"port"`
+	EnabledSsl bool   `yaml:"enable_ssl"`
+	SslCert    string `yaml:"ssl_cert"`
+	SslKey     string `yaml:"ssl_key"`
 }
 
 type LogSettings struct {

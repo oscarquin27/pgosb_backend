@@ -18,11 +18,13 @@ import (
 	"fdms/src/infrastructure/keycloak"
 	logger "fdms/src/infrastructure/log"
 	"fdms/src/repository"
+	"fmt"
 	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func ZerologMiddleware() gin.HandlerFunc {
@@ -85,15 +87,23 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	conf.AllowCredentials = true
 	conf.AllowOrigins = []string{"http://localhost:5173",
 		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12",
-		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173"}
+		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173"}
+
+	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
+		Output: logger.Log(),
+	}))
 
 	router.Use(ZerologMiddleware())
 	router.Use(cors.New(conf))
+
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/api/v1")
 
 	authGroup := v1.Group("/auth")
 	{
+		authGroup.GET("/login/test", AuthController.LoginTest)
+
 		authGroup.POST("/login", AuthController.Login)
 		authGroup.PUT("/login", AuthController.RefreshSession)
 		authGroup.POST("/logout", AuthController.LogOut)
@@ -255,5 +265,17 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		personMission.DELETE("/delete/:id", missionPersonController.Delete)
 	}
 
-	router.Run(":" + config.Configuration.Http.Port)
+	if config.Get().Http.EnabledSsl {
+		if err := router.RunTLS(fmt.Sprintf("0.0.0.0:%d",
+			config.Get().Http.Port),
+			config.Get().Http.SslCert,
+			config.Get().Http.SslKey); err != nil {
+
+			logger.Fatal().Err(err).Msg("Failed to start REST API server")
+		}
+	} else if err := router.Run(fmt.Sprintf("0.0.0.0:%d",
+		config.Get().Http.Port)); err != nil {
+		logger.Fatal().Err(err).Msg("Failed to start REST API server")
+	}
+
 }

@@ -6,8 +6,13 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 )
+
+const PGOSB_ACCESS_TOKEN_COOKIE string = "PGOSB_ACCESS_TOKEN"
+const PGOSB_REFRESH_TOKEN_COOKIE string = "PGOSB_REFRESH_TOKEN"
+const PGOSB_SESSION_STATE_COOKIE string = "PGOSB_SESSION_STATE"
 
 func ParseInt(s string) int {
 	id, err := strconv.Atoi(s)
@@ -15,6 +20,19 @@ func ParseInt(s string) int {
 		id = 0
 	}
 	return id
+}
+
+func ReadJwt(tokenString string) (*jwt.Token, error) {
+	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
+
+	if err != nil {
+		fmt.Println("Error parsing token:", err)
+		return nil, err
+
+	}
+
+	return token, nil
+
 }
 
 func ParseFloat(s string) float64 {
