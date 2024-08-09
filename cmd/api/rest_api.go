@@ -199,11 +199,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	unity := v1.Group("unit")
 	{
-		unity.GET("/:id", unityController.GetUnit)
-		unity.GET("/all", unityController.GetAllUnits)
-		unity.POST("/create", unityController.CreateUnit)
-		unity.PUT("/update", unityController.UpdateUnit)
-		unity.DELETE("/:id", unityController.DeleteUnit)
+		unity.GET("/:id", unityController.Get)
+		unity.GET("/all", unityController.GetAll)
+		unity.POST("/create", unityController.Create)
+		unity.PUT("/update", unityController.Update)
+		unity.DELETE("/:id", unityController.Delete)
 	}
 
 	layout := v1.Group("layout")

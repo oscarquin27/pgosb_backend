@@ -74,3 +74,7 @@ type User struct {
 	UserIdentification
 	UserProfile
 }
+
+func (u *User) ToFrontEndModel() {
+
+}

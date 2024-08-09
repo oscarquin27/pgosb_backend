@@ -2,121 +2,52 @@ package units_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
+	"fdms/src/infrastructure/abstract_handler"
 	"fdms/src/models"
-	"fdms/src/services"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UnitController struct {
-	unityService services.UnitService
+	abstractServiceHandler abstract_handler.AbstractHandler[models.Unit, api_models.UnitJson]
 }
 
-func NewUnityController(unityService services.UnitService) *UnitController {
+func NewUnityController(unitService abstract_handler.AbstractCRUDService[models.Unit]) *UnitController {
+
+	abstractHandler := abstract_handler.NewAbstractHandler[models.Unit, api_models.UnitJson](unitService)
+
 	return &UnitController{
-		unityService: unityService,
+		abstractServiceHandler: *abstractHandler,
 	}
 }
 
-func (u *UnitController) GetUnit(c *gin.Context) {
-
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	vehicle, err := u.unityService.Get(id)
-
-	if err != nil {
-		if err == models.ErrorUnitNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	v := api_models.ModelToUnitJson(vehicle)
-
-	c.JSON(http.StatusOK, v)
+func (u *UnitController) Get(c *gin.Context) {
+	u.abstractServiceHandler.Get(api_models.ModelToUnitJson, c)
 }
 
-func (u *UnitController) GetAllUnits(c *gin.Context) {
+func (u *UnitController) GetAll(c *gin.Context) {
 
-	vehicle, err := u.unityService.GetAll()
-
-	if err != nil {
-		if err == models.ErrorUnitNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	vehicleDto := []api_models.UnitJson{}
-
-	for _, us := range vehicle {
-		newVehicle := api_models.ModelToUnitJson(&us)
-		vehicleDto = append(vehicleDto, *newVehicle)
-	}
-
-	c.JSON(http.StatusOK, vehicleDto)
+	u.abstractServiceHandler.GetAll(api_models.ModelToUnitJson, c)
 }
 
-func (u *UnitController) CreateUnit(c *gin.Context) {
-	var unitDto api_models.UnitJson
+func (u *UnitController) Create(c *gin.Context) {
+	unit := api_models.UnitJson{}
 
-	if err := c.BindJSON(&unitDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	var model abstract_handler.AbstactModel[models.Unit, api_models.UnitJson] = &unit
 
-	unit := unitDto.ToModel()
-
-	err := u.unityService.Create(&unit)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, "Unidad creada satisfactoriamente")
+	u.abstractServiceHandler.Create(model, api_models.ModelToUnitJson, c)
 }
 
-func (u *UnitController) UpdateUnit(c *gin.Context) {
-	var unitDto api_models.UnitJson
+func (u *UnitController) Update(c *gin.Context) {
 
-	if err := c.BindJSON(&unitDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-	}
+	unit := api_models.UnitJson{}
 
-	unit := unitDto.ToModel()
+	var model abstract_handler.AbstactModel[models.Unit, api_models.UnitJson] = &unit
 
-	err := u.unityService.Update(&unit)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, "Unidad actualizada satisfactoriamente")
+	u.abstractServiceHandler.Update(model, api_models.ModelToUnitJson, c)
 }
 
-func (u *UnitController) DeleteUnit(c *gin.Context) {
+func (u *UnitController) Delete(c *gin.Context) {
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	err := u.unityService.Delete(id)
-
-	if err != nil {
-		if err == models.ErrorUnitNotUpdated {
-			c.JSON(http.StatusConflict, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, "Unidad eliminada satisfactoriamente")
+	u.abstractServiceHandler.Delete(c)
 }

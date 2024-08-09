@@ -2,12 +2,9 @@ package main
 
 import (
 	"fdms/cmd/api"
-	api_models "fdms/cmd/api/models"
 	"fdms/src/infrastructure/config"
 	"fdms/src/infrastructure/keycloak"
 	"fdms/src/infrastructure/postgres"
-	"fdms/src/models"
-	"fmt"
 	"log"
 
 	"github.com/Nerzal/gocloak/v13"
@@ -28,14 +25,29 @@ func main() {
 
 }
 
-func Test() {
+// func test() {
 
-	userJson := &api_models.UserJson{}
+// 	userJson := &api_models.UserJson{}
 
-	userJson.Code = "1200000"
-	userJson.Id = "45"
+// 	userJson.Code = "1200000"
+// 	userJson.Id = "45"
 
-	var model models.AbstactModel[models.User, api_models.UserJson] = userJson
+// 	var model Abstra[models.User, api_models.UserJson] = userJson
 
-	fmt.Println(model)
-}
+// 	message, err := json.Marshal(userJson)
+
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	message2 := model.ToModel()
+
+// 	fmt.Println(string(message))
+
+// 	json2, _ := json.Marshal(message2)
+
+// 	fmt.Println(model)
+// 	fmt.Println("***---**--**-*-****-----****------*****-----*****")
+
+// 	fmt.Println(string(json2))
+// }
