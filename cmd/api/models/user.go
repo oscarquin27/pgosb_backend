@@ -148,6 +148,70 @@ func (userDto *UserJson) ToModel() models.User {
 	return user
 }
 
+func (userDto *UserJson) FromModel(user *models.User) *UserJson {
+	f, err := user.Height.Float64Value()
+
+	if err != nil {
+		logger.Error().Err(err).Msg("Error conviertiendo")
+	}
+
+	value := f.Float64
+	strValue := strconv.FormatFloat(value, 'f', 2, 64)
+
+	peso := 0.00
+
+	if user.Weight != nil {
+		peso = *user.Weight
+	}
+
+	//var err error
+	userDto.Id = strconv.FormatInt(user.Id, 10)
+	userDto.UserIdentificationJson.Id_role = utils.ConvertFromInt4(user.Id_role)
+	userDto.UserProfileJson.User_name = utils.ConvertFromText(user.User_name)
+	userDto.UserProfileJson.First_name = utils.ConvertFromText(user.First_name)
+	userDto.UserProfileJson.Last_name = utils.ConvertFromText(user.Last_name)
+	userDto.UserProfileJson.Email = utils.ConvertFromText(user.Email)
+	userDto.UserProfileJson.Photo = utils.ConvertFromText(user.Photo)
+	userDto.UserProfileJson.Gender = utils.ConvertFromText(user.Gender)
+	userDto.UserProfileJson.Phone = utils.ConvertFromText(user.Phone)
+	userDto.UserProfileJson.Secondary_Phone = utils.ConvertFromText(user.Secondary_Phone)
+	userDto.UserProfileJson.Birth_date = utils.ConvertFromText(user.Birth_date)
+	userDto.UserProfileJson.Age = utils.ConvertFromInt2(user.Age)
+	userDto.UserProfileJson.Residence = utils.ConvertFromText(user.Residence)
+	userDto.UserProfileJson.Coordinates = utils.ConvertFromText(user.Coordinates)
+	userDto.UserProfileJson.Marital_status = utils.ConvertFromText(user.Marital_status)
+	userDto.UserProfileJson.Height = strValue
+	userDto.UserProfileJson.Weight = strconv.FormatFloat(peso, 'f', 2, 32)
+	userDto.UserProfileJson.Shirt_size = utils.ConvertFromText(user.Shirt_size)
+	userDto.UserProfileJson.Pant_size = utils.ConvertFromText(user.Pant_size)
+	userDto.UserProfileJson.Shoe_size = utils.ConvertFromNumeric(user.Shoe_size)
+	userDto.UserProfileJson.Blood_type = utils.ConvertFromText(user.Blood_type)
+	userDto.UserProfileJson.Allergies = user.Allergies
+	userDto.UserProfileJson.Code = utils.ConvertFromText(user.Code)
+	userDto.UserProfileJson.Personal_code = utils.ConvertFromText(user.Personal_code)
+	userDto.UserProfileJson.Rank = utils.ConvertFromText(user.Rank)
+	userDto.UserProfileJson.Promotion = utils.ConvertFromText(user.Promotion)
+	userDto.UserProfileJson.Condition = utils.ConvertFromText(user.Condition)
+	userDto.UserProfileJson.Division = utils.ConvertFromText(user.Division)
+	userDto.UserProfileJson.Profession = utils.ConvertFromText(user.Profession)
+	userDto.UserProfileJson.Station = utils.ConvertFromText(user.Station)
+	userDto.UserProfileJson.User_system = utils.ConvertFromBool(user.User_system)
+	userDto.UserProfileJson.Zip_code = utils.ConvertFromText(user.Zip_code)
+	userDto.UserProfileJson.Skills = user.Skills
+	userDto.UserProfileJson.State = utils.ConvertFromText(user.State)
+	userDto.UserProfileJson.Municipality = utils.ConvertFromText(user.Municipality)
+	userDto.UserProfileJson.Parish = utils.ConvertFromText(user.Parish)
+	userDto.UserProfileJson.Sector = utils.ConvertFromText(user.Sector)
+	userDto.UserProfileJson.Community = utils.ConvertFromText(user.Community)
+	userDto.UserProfileJson.Street = utils.ConvertFromText(user.Street)
+	userDto.UserProfileJson.Beach = utils.ConvertFromText(user.Beach)
+	userDto.UserProfileJson.Address = utils.ConvertFromText(user.Address)
+	userDto.UserProfileJson.Legal_id = utils.ConvertFromText(user.Legal_id)
+	userDto.UserProfileJson.Role = utils.ConvertFromText(user.Role)
+
+	return userDto
+}
+
 func ModelToUserJson(user *models.User) *UserJson {
 	f, err := user.Height.Float64Value()
 
