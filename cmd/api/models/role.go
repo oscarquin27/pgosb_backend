@@ -2,8 +2,7 @@ package api_models
 
 import (
 	"fdms/src/models"
-	"fmt"
-	"strconv"
+	"fdms/src/utils"
 	"time"
 )
 
@@ -11,32 +10,32 @@ type RoleJson struct {
 	Id           string           `json:"id"`
 	RoleName     string           `json:"role_name" `
 	AccessSchema AccessSchemaJson `json:"access_schema"`
-	StRole       int              `json:"st_role"`
+	StRole       bool             `json:"st_role"`
 	Created_at   string           `json:"created_at"`
 	Updated_at   string           `json:"updated_at"`
 }
 
 // AccessSchemaJson mirrors AccessSchema but uses string keys
 type AccessSchemaJson struct {
-	Roles               map[string]string `json:"roles,omitempty"`
-	Units               map[string]string `json:"units,omitempty"`
-	Users               map[string]string `json:"users,omitempty"`
-	Services            map[string]string `json:"services,omitempty"`
-	Stations            map[string]string `json:"stations,omitempty"`
-	Locations           map[string]string `json:"locations,omitempty"`
-	AssistentialCenters map[string]string `json:"assistential_centers,omitempty"`
+	Roles               map[string]bool `json:"roles,omitempty"`
+	Units               map[string]bool `json:"units,omitempty"`
+	Users               map[string]bool `json:"users,omitempty"`
+	Services            map[string]bool `json:"services,omitempty"`
+	Stations            map[string]bool `json:"stations,omitempty"`
+	Locations           map[string]bool `json:"locations,omitempty"`
+	AssistentialCenters map[string]bool `json:"assistential_centers,omitempty"`
 }
 
 // RoleToDto converts a Role struct to a RoleJson struct.
-func ModelToRoleJson(role *models.Role) (*RoleJson, error) {
+func ModelToRoleJson(role *models.Role) *RoleJson {
 	accessSchemaDto := AccessSchemaJson{
-		Roles:               map[string]string{},
-		Units:               map[string]string{},
-		Users:               map[string]string{},
-		Services:            map[string]string{},
-		Stations:            map[string]string{},
-		Locations:           map[string]string{},
-		AssistentialCenters: map[string]string{},
+		Roles:               map[string]bool{},
+		Units:               map[string]bool{},
+		Users:               map[string]bool{},
+		Services:            map[string]bool{},
+		Stations:            map[string]bool{},
+		Locations:           map[string]bool{},
+		AssistentialCenters: map[string]bool{},
 	}
 
 	// Populate AccessSchemaJson from AccessSchema
@@ -49,41 +48,38 @@ func ModelToRoleJson(role *models.Role) (*RoleJson, error) {
 	addPermissionsToDto(&accessSchemaDto.AssistentialCenters, role.AccessSchema.AssistentialCenters)
 
 	return &RoleJson{
-		Id:           fmt.Sprint(role.ID),
+		Id:           utils.ParseInt64Sring(role.ID),
 		RoleName:     role.RoleName,
 		AccessSchema: accessSchemaDto,
 		StRole:       role.StRole,
 		Created_at:   role.CreatedAt.Format(time.RFC3339),
 		Updated_at:   role.UpdatedAt.Format(time.RFC3339),
-	}, nil
+	}
 }
 
-func addPermissionsToDto(dtoPermissions *map[string]string, permissions models.Permissions) {
+func addPermissionsToDto(dtoPermissions *map[string]bool, permissions models.Permissions) {
 	if len(permissions) > 0 {
-		*dtoPermissions = make(map[string]string)
+		*dtoPermissions = make(map[string]bool)
 		for k, v := range permissions {
-			(*dtoPermissions)[k] = fmt.Sprint(v)
+			(*dtoPermissions)[k] = v
 		}
 	}
 }
 
 // addDtoPermissionsToRole add dto permissions to the role if the dto permissions are not empty
-func addDtoPermissionsToRole(permissions *models.Permissions, dtoPermissions map[string]string) error {
+func addDtoPermissionsToRole(permissions *models.Permissions, dtoPermissions map[string]bool) error {
 	if len(dtoPermissions) > 0 {
 		*permissions = make(models.Permissions)
 		for k, v := range dtoPermissions {
-			boolValue, err := strconv.ParseBool(v)
-			if err != nil {
-				return fmt.Errorf("error parsing access schema value: %w", err)
-			}
-			(*permissions)[k] = boolValue
+
+			(*permissions)[k] = v
 		}
 	}
 	return nil
 }
 
 // DtoToRole converts a RoleJson struct to a Role struct.
-func (dto *RoleJson) ToModel() (*models.Role, error) {
+func (dto *RoleJson) ToModel() models.Role {
 
 	accessSchema := models.AccessSchema{
 		Roles:               models.Permissions{},
@@ -103,32 +99,29 @@ func (dto *RoleJson) ToModel() (*models.Role, error) {
 	addDtoPermissionsToRole(&accessSchema.Locations, dto.AccessSchema.Locations)
 	addDtoPermissionsToRole(&accessSchema.AssistentialCenters, dto.AccessSchema.AssistentialCenters)
 
-	id, err := strconv.ParseInt(dto.Id, 10, 64)
-	if err != nil {
-		return &models.Role{}, fmt.Errorf("error converting id to integer: %w", err)
-	}
+	id := utils.ParseInt64(dto.Id)
 
 	// stRole, err := strconv.Atoi(dto.StRole)
 	// if err != nil {
 	// 	return Role{}, fmt.Errorf("error converting st_role to integer: %w", err)
 	// }
 
-	createdAt, err := time.Parse(time.RFC3339, dto.Created_at)
-	if err != nil {
-		return &models.Role{}, fmt.Errorf("error parsing created_at: %w", err)
-	}
+	createdAt, _ := time.Parse(time.RFC3339, dto.Created_at)
+	// if err != nil {
+	// 	return &models.Role{}, fmt.Errorf("error parsing created_at: %w", err)
+	// }
 
-	updatedAt, err := time.Parse(time.RFC3339, dto.Updated_at)
-	if err != nil {
-		return &models.Role{}, fmt.Errorf("error parsing updated_at: %w", err)
-	}
+	updatedAt, _ := time.Parse(time.RFC3339, dto.Updated_at)
+	// if err != nil {
+	// 	return &models.Role{}, fmt.Errorf("error parsing updated_at: %w", err)
+	// }
 
-	return &models.Role{
+	return models.Role{
 		ID:           id,
 		RoleName:     dto.RoleName,
 		StRole:       dto.StRole,
 		AccessSchema: accessSchema,
 		CreatedAt:    createdAt,
 		UpdatedAt:    updatedAt,
-	}, nil
+	}
 }

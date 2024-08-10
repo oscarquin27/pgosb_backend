@@ -7,6 +7,7 @@ import (
 	"errors"
 
 	"fdms/src/services"
+	"fdms/src/utils/results"
 	"strconv"
 	"strings"
 
@@ -130,21 +131,33 @@ func RolePermissionMiddleware(moduleName string, perm string,
 			return
 		}
 
-		user, err := userService.Get(id)
+		userResult := userService.Get(id)
 
-		if err != nil {
+		if !userResult.IsSuccessful {
+
+			if userResult.Err.Code() == results.NotFoundErr {
+				c.AbortWithStatusJSON(http.StatusNotFound, userResult.Err)
+				return
+			}
+
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
 			return
 		}
 
-		rolSchema, err := roleService.GetSchema(int64(user.Id_role.Int32))
+		resulSchema := roleService.GetSchema(int64(userResult.Value.Id_role.Int32))
 
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, err)
+		if !resulSchema.IsSuccessful {
+
+			if resulSchema.Err.Code() == results.NotFoundErr {
+				c.AbortWithStatusJSON(http.StatusNotFound, resulSchema.Err.Message())
+				return
+			}
+
+			c.AbortWithStatusJSON(http.StatusInternalServerError, resulSchema.Err)
 			return
 		}
 
-		userPermissions, err := UserPermissionFromJSONString(*rolSchema)
+		userPermissions, err := UserPermissionFromJSONString(resulSchema.Value)
 
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, err)

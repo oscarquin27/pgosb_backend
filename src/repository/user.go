@@ -5,11 +5,11 @@ import (
 	"fdms/src/infrastructure/keycloak"
 	"fdms/src/models"
 	"fdms/src/services"
+	"fdms/src/utils"
 	"fdms/src/utils/results"
 	"strconv"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -27,48 +27,52 @@ func NewUserService(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationServi
 	}
 }
 
-func (u *UserRepository) Get(id int64) (*models.User, error) {
+func (u *UserRepository) Get(id int64) *results.ResultWithValue[*models.User] {
+
+	r := results.NewResultWithValue[*models.User]("Get-User", false, nil, nil).Failure()
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
-		return nil, err
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
 
-	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role, 
-	u.user_name, 
-	u.first_name, 
-	u.last_name, 
-	u.email, 
-	u.photo, 
-	u.gender, 
-	u.phone, 
-	u.secondary_phone, 
-	u.birth_date, 
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role,
+	u.user_name,
+	u.first_name,
+	u.last_name,
+	u.email,
+	u.photo,
+	u.gender,
+	u.phone,
+	u.secondary_phone,
+	u.birth_date,
 	u.age,
 	u.zip_code,
-	u.residence, 
-	u.coordinates, 
-	u.marital_status, 
-	u.height, 
-	u.weight, 
-	u.shirt_size, 
-	u.pant_size, 
-	u.shoe_size, 
-	u.blood_type, 
-	u.allergies, 
-	u.code, 
-	u.personal_code, 
-	u.rank, 
-	u.promotion, 
-	u.condition, 
-	u.division, 
-	u.profession, 
+	u.residence,
+	u.coordinates,
+	u.marital_status,
+	u.height,
+	u.weight,
+	u.shirt_size,
+	u.pant_size,
+	u.shoe_size,
+	u.blood_type,
+	u.allergies,
+	u.code,
+	u.personal_code,
+	u.rank,
+	u.promotion,
+	u.condition,
+	u.division,
+	u.profession,
 	u.station,
-	u.user_system, 
+	u.user_system,
 	u.skills,
 	u.state,
 	u.municipality,
@@ -80,69 +84,76 @@ func (u *UserRepository) Get(id int64) (*models.User, error) {
 	u.address,
 	u.legal_id,
 	ra.role_name as role
-FROM users.user u 
+FROM users.user u
 left join users.roles ra on ra.id = u.id_role
 where u.id = $1`, id)
 
 	if err != nil {
-		return nil, err
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
 
 	user, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.User])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, models.ErrorUserNotFound
+			return r.WithError(results.
+				NewNotFoundError("no se encontro el usuario espeificado", err))
 		}
 
-		return nil, err
+		return r.WithError(
+			results.NewUnknowError("error obteniendo usuario", err))
 	}
 
-	return &user, nil
+	return r.Success().WithValue(&user)
 }
 
-func (u *UserRepository) GetAll() ([]models.User, error) {
-	ctx := context.Background()
+func (u *UserRepository) GetAll() ([]models.User, *results.GeneralError) {
+
+	var usersDefault []models.User = make([]models.User, 0)
+
+	ctx := context.Background() // Or use a specific context
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
-		return nil, err
+		return usersDefault, results.
+			NewUnknowError("no se pudo adquirir conexion", err)
 	}
 
-	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role, 
-	u.user_name, 
-	u.first_name, 
-	u.last_name, 
-	u.email, 
-	u.photo, 
-	u.gender, 
-	u.phone, 
-	u.secondary_phone, 
-	u.birth_date, 
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role,
+	u.user_name,
+	u.first_name,
+	u.last_name,
+	u.email,
+	u.photo,
+	u.gender,
+	u.phone,
+	u.secondary_phone,
+	u.birth_date,
 	u.age,
 	u.zip_code,
-	u.residence, 
-	u.coordinates, 
-	u.marital_status, 
-	u.height, 
-	u.weight, 
-	u.shirt_size, 
-	u.pant_size, 
-	u.shoe_size, 
-	u.blood_type, 
-	u.allergies, 
-	u.code, 
-	u.personal_code, 
-	u.rank, 
-	u.promotion, 
-	u.condition, 
-	u.division, 
-	u.profession, 
+	u.residence,
+	u.coordinates,
+	u.marital_status,
+	u.height,
+	u.weight,
+	u.shirt_size,
+	u.pant_size,
+	u.shoe_size,
+	u.blood_type,
+	u.allergies,
+	u.code,
+	u.personal_code,
+	u.rank,
+	u.promotion,
+	u.condition,
+	u.division,
+	u.profession,
 	u.station,
-	u.user_system, 
+	u.user_system,
 	u.skills,
 	u.state,
 	u.municipality,
@@ -158,100 +169,109 @@ FROM users.user u
 left join users.roles ra on ra.id = u.id_role`)
 
 	if err != nil {
-		return nil, err
+		return usersDefault, results.
+			NewUnknowError("no se pudo ejecutar el query", err)
 	}
 
-	user, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
+	defer rows.Close()
+
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.User])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
-			return nil, models.ErrorUserNotFound
+			return usersDefault, results.NewNotFoundError("no encontraron registros", err)
 		}
 
-		return nil, err
+		return usersDefault, results.
+			NewUnknowError("no se pudo ejecutar el query", err)
 	}
 
-	return user, nil
+	return users, nil
 }
 
-func (u *UserRepository) Create(user *models.User) *results.Result {
+func (u *UserRepository) Create(user *models.User) *results.ResultWithValue[*models.User] {
 
-	result := results.NewResult("Create User", false, nil)
+	r := results.NewResultWithValue[*models.User]("Create-User", false, nil, nil).Failure()
 
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
-		return result.FailureWithError(err)
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
+
+	defer conn.Release()
 
 	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
-		return result.FailureWithError(err)
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
 
 	defer tx.Rollback(ctx)
 
-	var userId int
+	var userId int64
+
 	var idRol int
 
 	err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
 
-	if err == pgx.ErrNoRows {
-		return result.Failure().
-			WithCustomError(
-				results.NewErrorWithCode(RolNotFound, err.Error(), err))
-	}
-
 	if err != nil {
-		return result.FailureWithError(err)
+
+		if err == pgx.ErrNoRows {
+			return r.Failure().
+				WithError(
+					results.NewErrorWithCode(RolNotFound, err.Error(), err))
+		}
+
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
 
-	err = tx.QueryRow(ctx, `insert into users.user 
-	(id_role, 
-	user_name, 
-	first_name, 
-	last_name, 
-	email, 
-	photo, 
-	gender, 
-	phone, 
-	secondary_phone, 
-	birth_date, 
-	age, 
-	residence, 
-	coordinates, 
-	marital_status, 
-	height, 
-	weight, 
-	shirt_size, 
-	pant_size, 
-	shoe_size, 
-	blood_type, 
-	allergies, 
-	code, 
-	personal_code, 
-	rank, 
-	promotion, 
-	condition, 
-	division, 
-	profession, 
-	station, 
-	user_system, 
-	zip_code, 
-	skills, 
-	state, 
-	municipality, 
-	parish, 
-	sector, 
-	community, 
-	street, 
-	beach, 
-	address, 
+	err = tx.QueryRow(ctx, `insert into users.user
+	(id_role,
+	user_name,
+	first_name,
+	last_name,
+	email,
+	photo,
+	gender,
+	phone,
+	secondary_phone,
+	birth_date,
+	age,
+	residence,
+	coordinates,
+	marital_status,
+	height,
+	weight,
+	shirt_size,
+	pant_size,
+	shoe_size,
+	blood_type,
+	allergies,
+	code,
+	personal_code,
+	rank,
+	promotion,
+	condition,
+	division,
+	profession,
+	station,
+	user_system,
+	zip_code,
+	skills,
+	state,
+	municipality,
+	parish,
+	sector,
+	community,
+	street,
+	beach,
+	address,
 	legal_id)
 VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34, $35, $36, $37, $38, $39, $40, $41) returning id;
 `,
@@ -298,58 +318,81 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $1
 		user.UserProfile.Legal_id).Scan(&userId)
 
 	if err != nil {
-		return result.FailureWithError(err)
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
 
+	user.Id = userId
+
 	if user.User_system.Bool {
-		keycloakId, err := u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(userId), "12345")
+
+		keycloakId, err := u.auth.CreateUser(ctx, user.UserProfile.User_name.String,
+			user.UserProfile.Email.String, utils.ParseInt64Sring(userId), "12345")
 
 		if err != nil {
-			return result.FailureWithError(err)
+			return r.WithError(
+				results.NewUnknowError("no se pudo adquirir conexion", err))
 		}
 
 		_, err = tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, userId)
 
 		if err != nil {
-			return result.FailureWithError(err)
+			return r.WithError(
+				results.NewUnknowError("erro actualizando", err))
 		}
+
 	}
 
 	err = tx.Commit(ctx)
 
 	if err != nil {
-		return result.FailureWithError(err)
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
 
-	return result.Success()
+	return r.Success().WithValue(user)
 }
 
-func (u *UserRepository) Update(user *models.User) error {
+func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*models.User] {
+
+	r := results.NewResultWithValue[*models.User]("Update-User", false, nil, nil).Failure()
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
-		return err
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
+
+	defer conn.Release()
 
 	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
-		return err
+		return r.WithError(
+			results.NewUnknowError("no se pudo adquirir conexion", err))
 	}
 
 	defer tx.Rollback(ctx)
 
-	var keycloakId pgtype.Text
+	var keycloakId string
 
-	previous, err := u.Get(user.Id)
+	userResult := u.Get(user.Id)
+
+	if !userResult.IsSuccessful {
+		return userResult
+	}
 
 	var idRol int
 
 	err = tx.QueryRow(ctx, `select id from users.roles where role_name = $1`, user.Role).Scan(&idRol)
+
+	if err != nil {
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
+	}
 
 	err = tx.QueryRow(ctx, `
 		UPDATE users.user
@@ -437,83 +480,99 @@ func (u *UserRepository) Update(user *models.User) error {
 		user.UserProfile.Legal_id).Scan(&keycloakId)
 
 	if err != nil {
-		return err
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
+
+	previous := userResult.Value
+
 	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
-		err = u.auth.DeleteUser(ctx, keycloakId.String)
-		if err != nil {
-			return err
-		}
-	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool && keycloakId.String == "" {
-		keycloakId.String, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
+		err = u.auth.DeleteUser(ctx, keycloakId)
 
 		if err != nil {
-			return models.ErrorUserNotUpdated
+			return r.WithError(
+				results.NewUnknowError("no se pudo ejecutar query", err))
 		}
-		r, err := tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId.String, user.UserIdentification.Id)
+
+	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool && keycloakId == "" {
+		keycloakId, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
 
 		if err != nil {
-			return err
+			return r.WithError(
+				results.NewUnknowError("no se pudo ejecutar query", err))
 		}
 
-		if r.RowsAffected() <= 0 {
-			return models.ErrorUserNotUpdated
+		row, err := tx.Exec(ctx, `update users.user set id_keycloak = $1 where id = $2;`, keycloakId, user.UserIdentification.Id)
+
+		if err != nil {
+			return r.WithError(
+				results.NewUnknowError("no se pudo ejecutar query", err))
 		}
+
+		if row.RowsAffected() != 1 {
+			return r.WithError(
+				results.NewUnknowError("no se pudo ejecutar query", err))
+		}
+
 	}
+
+	err = tx.Commit(ctx)
 
 	if err != nil {
-		return models.ErrorUserNotUpdated
+		return r.WithError(
+			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
-	return tx.Commit(ctx)
+
+	return r.Success().WithValue(user)
 
 }
+func (u *UserRepository) Delete(id int64) *results.Result {
 
-func (u *UserRepository) Delete(id int64) error {
+	r := results.NewResult("Delete-User", false, nil).Failure()
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
-		return err
+		return r.FailureWithError(err)
 	}
+
+	defer conn.Release()
 
 	tx, err := conn.BeginTx(ctx, pgx.TxOptions{})
 
 	if err != nil {
-		return err
+		return r.FailureWithError(err)
 	}
 
-	defer func() {
-		if err != nil {
-			tx.Rollback(ctx)
-		} else {
-			tx.Commit(ctx)
-		}
-	}()
+	defer tx.Rollback(ctx)
 
-	var keycloakId pgtype.Text
+	keycloakId := ""
 
-	err = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", id).Scan(&keycloakId)
+	_ = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", id).Scan(&keycloakId)
 
-	if err != nil {
-		return err
-	}
-
-	if keycloakId.String != "" {
-		err = u.auth.DeleteUser(ctx, keycloakId.String)
+	if keycloakId != "" {
+		err = u.auth.DeleteUser(ctx, keycloakId)
 
 		if err != nil {
-			return err
+			return r.FailureWithError(err)
 		}
 	}
 
-	_, err = tx.Exec(ctx, "delete from users.user where id = $1", id)
+	rows, err := tx.Exec(ctx, "delete from users.user where id = $1", id)
 
 	if err != nil {
-		return err
+		return r.FailureWithError(err)
 	}
 
-	return nil
+	if rows.RowsAffected() == 0 {
+		return r.WithError(results.NewNotFoundError("no se consiguio unidad", err))
+	}
+
+	if rows.RowsAffected() > 1 {
+		return r.WithError(results.NewUnknowError("se borraron multiples registros", err))
+	}
+
+	return r.Success()
 }

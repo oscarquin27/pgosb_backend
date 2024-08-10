@@ -120,11 +120,11 @@ func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
 	rows, err := conn.Query(ctx, `SELECT 
 	distinct make as make from vehicles.vehicle;`)
 
-	defer rows.Close()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer rows.Close()
 
 	var tp string
 	var tps []string

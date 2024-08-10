@@ -1,6 +1,7 @@
 package utils
 
 import (
+	logger "fdms/src/infrastructure/log"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -25,6 +26,49 @@ func ParseInt(s string) int {
 		id = 0
 	}
 	return id
+}
+
+func GetStringFromPointer(s *string) string {
+	if s == nil {
+		return ""
+	}
+	return *s
+}
+
+func ParseInt64(s string) int64 {
+	n, err := strconv.ParseInt(s, 10, 64)
+	if err != nil {
+		logger.Warn().Msgf("fallo la conversacion del string: %s a entero 64 ", s)
+		return 0
+	}
+	return n
+}
+
+func ParseInt64Pointer(s *string) int64 {
+	if s == nil {
+		return 0
+	}
+
+	n, err := strconv.ParseInt(*s, 10, 64)
+	if err != nil {
+		logger.Warn().Msgf("fallo la conversacion del string: %s a entero 64 ", *s)
+		return 0
+	}
+	return n
+}
+
+func ParseInt64Sring(n int64) string {
+	s := strconv.FormatInt(n, 10)
+	return s
+}
+
+func ParseInt64SringPointer(n *int64) string {
+	if n == nil {
+		return ""
+	}
+
+	s := strconv.FormatInt(*n, 10)
+	return s
 }
 
 func ReadJwt(tokenString string) (*jwt.Token, error) {

@@ -27,7 +27,7 @@ type StationJson struct {
 	Address         string    `json:"address"`
 }
 
-func ModelToStationJson(s models.Station) *StationJson {
+func ModelToStationJson(s *models.Station) *StationJson {
 	station := StationJson{
 		Id:              utils.ConvertFromInt4(s.Id),
 		Municipality_id: utils.ConvertFromInt4(s.Municipality_id),

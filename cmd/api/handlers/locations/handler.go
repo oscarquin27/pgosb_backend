@@ -1,7 +1,6 @@
 package location_handlers
 
 import (
-	api_models "fdms/cmd/api/models"
 	"fdms/src/models"
 	"fdms/src/services"
 	"net/http"
@@ -372,108 +371,4 @@ func (u *LocationController) DeleteParish(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, "Parroquia eliminada satisfactoriamente")
 
-}
-
-func (u *LocationController) GetStation(c *gin.Context) {
-
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	fire_station, err := u.locationService.GetStation(id)
-
-	if err != nil {
-		if err == models.ErrorStationFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	fire_station_json := api_models.ModelToStationJson(*fire_station)
-	c.JSON(http.StatusOK, fire_station_json)
-
-}
-
-func (u *LocationController) GetAllStations(c *gin.Context) {
-
-	fire_station, err := u.locationService.GetAllStations()
-
-	if err != nil {
-		if err == models.ErrorParishFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	fireStations := make([]api_models.StationJson, 0)
-
-	for _, st := range fire_station {
-		newStation := api_models.ModelToStationJson(st)
-		fireStations = append(fireStations, *newStation)
-	}
-
-	c.JSON(http.StatusOK, fireStations)
-
-}
-
-func (u *LocationController) CreateStation(c *gin.Context) {
-	var locationDto api_models.StationJson
-
-	if err := c.BindJSON(&locationDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	location := locationDto.ToModel()
-
-	err := u.locationService.CreateStation(&location)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusCreated, "Estación creada satisfactoriamente")
-}
-
-func (u *LocationController) UpdateStation(c *gin.Context) {
-	var locationDto api_models.StationJson
-
-	if err := c.BindJSON(&locationDto); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
-
-	location := locationDto.ToModel()
-
-	err := u.locationService.UpdateStation(&location)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, "Estación actualizada satisfactoriamente")
-}
-
-func (u *LocationController) DeleteStation(c *gin.Context) {
-
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	err := u.locationService.DeleteStation(id)
-
-	if err != nil {
-		if err == models.ErrorStationNotDeleted {
-			c.JSON(http.StatusConflict, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, "Estación eliminada satisfactoriamente")
 }

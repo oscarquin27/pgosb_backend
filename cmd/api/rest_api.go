@@ -12,6 +12,7 @@ import (
 	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
 	mission_vehicle_handlers "fdms/cmd/api/handlers/mission_vehicles"
 	roles_handlers "fdms/cmd/api/handlers/roles"
+	station_handler "fdms/cmd/api/handlers/station"
 	units_handlers "fdms/cmd/api/handlers/units"
 	user_handlers "fdms/cmd/api/handlers/user"
 	vehicle_handlers "fdms/cmd/api/handlers/vehicles"
@@ -55,18 +56,23 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	userService := repository.NewUserService(db, auth)
 	roleService := repository.NewRoleService(db)
+	unityService := repository.NewUnityService(db)
+	stationService := repository.NewStationService(db)
 
 	locationService := repository.NewLocationService(db)
 	vehicleService := repository.NewVehicleService(db)
-	unityService := repository.NewUnityService(db)
+
 	layoutService := repository.NewLayoutService(db)
+
 	missionService := repository.NewMissionService(db)
 	missionServiceService := repository.NewMissionServiceService(db)
 	missionVehicleService := repository.NewMissionVehicleService(db)
 	missionPersonService := repository.NewMissionPersonService(db)
 	missionInfraService := repository.NewMissionInfrastructureService(db)
 	missionAntaresService := repository.NewAntaresService(db)
+
 	centerService := repository.NewCenterService(db)
+
 	missionController := mission_handlers.NewMissionController(missionService)
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
 	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
@@ -75,9 +81,13 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
-	locationController := location_handlers.NewLocationController(locationService)
-	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
 	unityController := units_handlers.NewUnityController(unityService)
+	stationController := station_handler.NewStationController(stationService)
+
+	locationController := location_handlers.NewLocationController(locationService)
+
+	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
+
 	centerController := center_handlers.NewCenterController(centerService)
 	missionAntaresController := antares_handlers.NewAntaresController(missionAntaresService)
 	layoutController := layout_handlers.NewLayoutController(layoutService)
@@ -103,7 +113,6 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	authGroup := v1.Group("/auth")
 	{
 		authGroup.GET("/login/test", AuthController.LoginTest)
-
 		authGroup.POST("/login", AuthController.Login)
 		authGroup.PUT("/login", AuthController.RefreshSession)
 		authGroup.POST("/logout", AuthController.LogOut)
@@ -113,28 +122,19 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	user := v1.Group("/user")
 	{
 		user.GET("/:id", userController.GetUser)
-
 		user.GET("/all",
-			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Read, userService, roleService),
 			userController.GetAllUser)
-
 		user.POST("/create",
-			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Write, userService, roleService),
 			userController.Create)
-
 		user.PUT("/update",
-			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Update, userService, roleService),
 			userController.Update)
-
 		user.DELETE("/:id",
-			//auth_routes.PermissionAuthMiddleware(modules.Users, permission.Delete, userService, roleService),
 			userController.Delete)
 	}
 
 	role := v1.Group("/role")
 	{
 		role.GET("/:id", roleController.GetRole)
-
 		role.GET("/all", roleController.GetAllRoles)
 		role.POST("/create", roleController.Create)
 		role.PUT("/update", roleController.Update)
@@ -179,11 +179,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	station := v1.Group("/station")
 	{
-		station.GET("/:id", locationController.GetStation)
-		station.GET("all", locationController.GetAllStations)
-		station.POST("/create", locationController.CreateStation)
-		station.PUT("/update", locationController.UpdateStation)
-		station.DELETE("/:id", locationController.DeleteStation)
+		station.GET("/:id", stationController.Get)
+		station.GET("all", stationController.GetAll)
+		station.POST("/create", stationController.Create)
+		station.PUT("/update", stationController.Update)
+		station.DELETE("/:id", stationController.Delete)
 	}
 
 	vehicle := v1.Group("/vehicles")

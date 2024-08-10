@@ -35,33 +35,34 @@ func ModelToUnitJson(s *models.Unit) *UnitJson {
 	unit := UnitJson{}
 
 	// Basic String Conversions
-	unit.Id = utils.ConvertFromInt4(s.Id)
-	unit.Plate = utils.ConvertFromText(s.Plate)
-	unit.Station = utils.ConvertFromText(s.Station)
-	unit.Unit_type = utils.ConvertFromText(s.Unit_type)
-	unit.Make = utils.ConvertFromText(s.Make)
-	unit.Unit_condition = utils.ConvertFromText(s.Unit_condition)
-	unit.Vehicle_serial = utils.ConvertFromText(s.Vehicle_serial)
-	unit.Motor_serial = utils.ConvertFromText(s.Motor_serial)
-	unit.Capacity = utils.ConvertFromText(s.Capacity)
-	unit.Fuel_type = utils.ConvertFromText(s.Fuel_type)
-	unit.Water_capacity = utils.ConvertFromText(s.Water_capacity)
-	unit.Observations = utils.ConvertFromText(s.Observations)
+
+	unit.Id = utils.ParseInt64Sring(s.Id)
+	unit.Plate = utils.GetStringFromPointer(s.Plate)
+	unit.Station = utils.GetStringFromPointer(s.Station)
+	unit.Unit_type = utils.GetStringFromPointer(s.Unit_type)
+	unit.Make = utils.GetStringFromPointer(s.Make)
+	unit.Unit_condition = utils.GetStringFromPointer(s.Unit_condition)
+	unit.Vehicle_serial = utils.GetStringFromPointer(s.Vehicle_serial)
+	unit.Motor_serial = utils.GetStringFromPointer(s.Motor_serial)
+	unit.Capacity = utils.GetStringFromPointer(s.Capacity)
+	unit.Fuel_type = utils.GetStringFromPointer(s.Fuel_type)
+	unit.Water_capacity = utils.GetStringFromPointer(s.Water_capacity)
+	unit.Observations = utils.GetStringFromPointer(s.Observations)
 
 	// Direct Assignment for String Slices
 	unit.Details = s.Details
 
 	// Conversion for Additional Fields
-	unit.Hurt_capacity = utils.ConvertFromInt4(s.Hurt_capacity)
-	unit.Doors = utils.ConvertFromInt4(s.Doors)
-	unit.Performance = utils.ConvertFromText(s.Performance)
-	unit.Load_capacity = utils.ConvertFromInt4(s.Load_capacity)
-	unit.Model = utils.ConvertFromText(s.Model)
-	unit.Alias = utils.ConvertFromText(s.Alias)
-	unit.Color = utils.ConvertFromText(s.Color)
-	unit.Year = utils.ConvertFromText(s.Year)
-	unit.Purpose = utils.ConvertFromText(s.Purpose)
-	unit.Init_kilometer = utils.ConvertFromInt4(s.Init_kilometer)
+	unit.Hurt_capacity = utils.ParseInt64SringPointer(s.Hurt_capacity)
+	unit.Doors = utils.ParseInt64SringPointer(s.Doors)
+	unit.Performance = utils.GetStringFromPointer(s.Performance)
+	unit.Load_capacity = utils.ParseInt64SringPointer(s.Load_capacity)
+	unit.Model = utils.GetStringFromPointer(s.Model)
+	unit.Alias = utils.GetStringFromPointer(s.Alias)
+	unit.Color = utils.GetStringFromPointer(s.Color)
+	unit.Year = utils.GetStringFromPointer(s.Year)
+	unit.Purpose = utils.GetStringFromPointer(s.Purpose)
+	unit.Init_kilometer = utils.ParseInt64SringPointer(s.Init_kilometer)
 
 	return &unit
 }
@@ -70,31 +71,41 @@ func (s *UnitJson) ToModel() models.Unit {
 	var unit models.Unit
 
 	// Basic String Conversions
-	unit.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	unit.Plate = utils.ConvertToPgTypeText(s.Plate)
-	unit.Station = utils.ConvertToPgTypeText(s.Station)
-	unit.Unit_type = utils.ConvertToPgTypeText(s.Unit_type)
-	unit.Make = utils.ConvertToPgTypeText(s.Make)
-	unit.Unit_condition = utils.ConvertToPgTypeText(s.Unit_condition)
-	unit.Vehicle_serial = utils.ConvertToPgTypeText(s.Vehicle_serial)
-	unit.Motor_serial = utils.ConvertToPgTypeText(s.Motor_serial)
-	unit.Capacity = utils.ConvertToPgTypeText(s.Capacity)
-	unit.Fuel_type = utils.ConvertToPgTypeText(s.Fuel_type)
-	unit.Water_capacity = utils.ConvertToPgTypeText(s.Water_capacity)
-	unit.Observations = utils.ConvertToPgTypeText(s.Observations)
+	unit.Id = utils.ParseInt64(s.Id)
+	unit.Plate = &s.Plate
+	unit.Station = &s.Station
+	unit.Unit_type = &s.Unit_type
+	unit.Make = &s.Make
+	unit.Unit_condition = &s.Unit_condition
+	unit.Vehicle_serial = &s.Vehicle_serial
+	unit.Motor_serial = &s.Motor_serial
+	unit.Capacity = &s.Capacity
+	unit.Fuel_type = &s.Fuel_type
+	unit.Water_capacity = &s.Water_capacity
+	unit.Observations = &s.Observations
 	unit.Details = s.Details // Direct assignment for string slices
 
 	// Conversion for Additional Fields
-	unit.Hurt_capacity = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Hurt_capacity))
-	unit.Doors = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Doors))
-	unit.Performance = utils.ConvertToPgTypeText(s.Performance)
-	unit.Load_capacity = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Load_capacity))
-	unit.Model = utils.ConvertToPgTypeText(s.Model)
-	unit.Alias = utils.ConvertToPgTypeText(s.Alias)
-	unit.Color = utils.ConvertToPgTypeText(s.Color)
-	unit.Year = utils.ConvertToPgTypeText(s.Year)
-	unit.Purpose = utils.ConvertToPgTypeText(s.Purpose)
-	unit.Init_kilometer = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Init_kilometer))
+
+	hurt_capacity := utils.ParseInt64(s.Hurt_capacity)
+	unit.Hurt_capacity = &hurt_capacity
+
+	doors := utils.ParseInt64(s.Doors)
+	unit.Doors = &doors
+
+	unit.Performance = &s.Performance
+
+	load_capacity := utils.ParseInt64(s.Load_capacity)
+	unit.Load_capacity = &load_capacity
+
+	unit.Model = &s.Model
+	unit.Alias = &s.Alias
+	unit.Color = &s.Color
+	unit.Year = &s.Year
+	unit.Purpose = &s.Purpose
+
+	init_kilometer := utils.ParseInt64(s.Init_kilometer)
+	unit.Init_kilometer = &init_kilometer
 
 	return unit
 }

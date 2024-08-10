@@ -1,10 +1,9 @@
 package results
 
-type GeneralErrorType string
-
 const (
-	TimeOutErr GeneralErrorType = "TimeOutErr"
-	OtherErr   GeneralErrorType = "OtherErr"
+	TimeOutErr  string = "TimeOutErr"
+	NotFoundErr string = "NotFoundErr"
+	UnknowErr   string = "UnknowErr"
 )
 
 type IError interface {
@@ -21,6 +20,22 @@ type GeneralError struct {
 
 func NewError(message string, err error) *GeneralError {
 	return &GeneralError{
+		message: message,
+		err:     err,
+	}
+}
+
+func NewUnknowError(message string, err error) *GeneralError {
+	return &GeneralError{
+		code:    UnknowErr,
+		message: message,
+		err:     err,
+	}
+}
+
+func NewNotFoundError(message string, err error) *GeneralError {
+	return &GeneralError{
+		code:    NotFoundErr,
 		message: message,
 		err:     err,
 	}
@@ -62,13 +77,13 @@ func NewResult(stepIdentifier string, isSuccessful bool, err IError) *Result {
 	}
 }
 
-func (r *Result) HasError() (IError, bool) {
+// func (r *Result) HasError() (IError, bool) {
 
-	if r.Err == nil {
-		return r.Err, false
-	}
-	return r.Err, true
-}
+// 	if r.Err == nil {
+// 		return r.Err, false
+// 	}
+// 	return r.Err, true
+// }
 
 func (r *Result) Success() *Result {
 	r.IsSuccessful = true
@@ -86,19 +101,19 @@ func (r *Result) FailureWithError(err error) *Result {
 	return r
 }
 
-func (r *Result) WithCustomError(err IError) *Result {
+func (r *Result) WithError(err IError) *Result {
 	r.Err = err
 	return r
 }
 
-type ResultWithValue[V comparable] struct {
+type ResultWithValue[V any] struct {
 	StepIdentifier string
 	IsSuccessful   bool
 	Value          V
 	Err            IError
 }
 
-func NewResultWithValue[V comparable](stepIdentifier string, isSuccessful bool, value V, err IError) *ResultWithValue[V] {
+func NewResultWithValue[V any](stepIdentifier string, isSuccessful bool, value V, err IError) *ResultWithValue[V] {
 	return &ResultWithValue[V]{
 		StepIdentifier: stepIdentifier,
 		IsSuccessful:   isSuccessful,
@@ -107,19 +122,19 @@ func NewResultWithValue[V comparable](stepIdentifier string, isSuccessful bool, 
 	}
 }
 
-func (rwv *ResultWithValue[V]) HasError() (IError, bool) {
-	if rwv.Err == nil {
-		return rwv.Err, false
-	}
-	return rwv.Err, true
-}
+// func (rwv *ResultWithValue[V]) HasError() (IError, bool) {
+// 	if rwv.Err == nil {
+// 		return rwv.Err, false
+// 	}
+// 	return rwv.Err, true
+// }
 
-func (rwv *ResultWithValue[V]) HasValue() (V, bool) {
-	if rwv.Value == Zero[V]() {
-		return rwv.Value, false
-	}
-	return rwv.Value, true
-}
+// func (rwv *ResultWithValue[V]) HasValue() (V, bool) {
+// 	if rwv.Value == Zero[V]() {
+// 		return rwv.Value, false
+// 	}
+// 	return rwv.Value, true
+// }
 
 func (rwv *ResultWithValue[V]) Success() *ResultWithValue[V] {
 	rwv.IsSuccessful = true

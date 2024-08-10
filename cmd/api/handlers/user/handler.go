@@ -2,128 +2,55 @@ package user_handlers
 
 import (
 	api_models "fdms/cmd/api/models"
-	logger "fdms/src/infrastructure/log"
+	"fdms/src/infrastructure/abstract_handler"
 	"fdms/src/models"
 	"fdms/src/services"
-	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserController struct {
-	userService services.UserService
+	userService            services.UserService
+	abstractServiceHandler abstract_handler.AbstractHandler[models.User, api_models.UserJson]
 }
 
 func NewUserController(userService services.UserService) *UserController {
+	abstractHandler := abstract_handler.NewAbstractHandler[models.User, api_models.UserJson](userService)
+
 	return &UserController{
-		userService: userService,
+		userService:            userService,
+		abstractServiceHandler: *abstractHandler,
 	}
 }
 
 func (u *UserController) GetUser(c *gin.Context) {
-
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	user, err := u.userService.Get(id)
-
-	if err != nil {
-		if err == models.ErrorUserNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	userDto := api_models.ModelToUserJson(user)
-
-	c.JSON(http.StatusOK, userDto)
-
+	u.abstractServiceHandler.Get(api_models.ModelToUserJson, c)
 }
 
 func (u *UserController) GetAllUser(c *gin.Context) {
 
-	//time.Sleep(12000 * time.Millisecond)
+	u.abstractServiceHandler.GetAll(api_models.ModelToUserJson, c)
 
-	user, err := u.userService.GetAll()
-
-	if err != nil {
-		if err == models.ErrorUserNotFound {
-			c.JSON(http.StatusNotFound, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	usersDto := []api_models.UserJson{}
-
-	for _, us := range user {
-		newUser := api_models.ModelToUserJson(&us)
-		usersDto = append(usersDto, *newUser)
-	}
-	c.JSON(http.StatusOK, usersDto)
 }
 
 func (u *UserController) Create(c *gin.Context) {
-	var user api_models.UserJson
+	user := api_models.UserJson{}
 
-	if err := c.BindJSON(&user); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	var model abstract_handler.AbstactModel[models.User, api_models.UserJson] = &user
 
-	userEntity := user.ToModel()
-
-	result := u.userService.Create(&userEntity)
-
-	if !result.IsSuccessful {
-		logger.Error().Err(result.Err.AssociateException()).Msg("Error guardando al usuario")
-		c.JSON(http.StatusInternalServerError, result.Err.Message())
-		return
-	}
-
-	c.JSON(http.StatusOK, "Usuario creado satisfactoriamente")
+	u.abstractServiceHandler.Create(model, api_models.ModelToUserJson, c)
 }
 
 func (u *UserController) Update(c *gin.Context) {
-	var userJson api_models.UserJson
+	user := api_models.UserJson{}
 
-	if err := c.BindJSON(&userJson); err != nil {
-		c.JSON(http.StatusBadRequest, err.Error())
-		return
-	}
+	var model abstract_handler.AbstactModel[models.User, api_models.UserJson] = &user
 
-	user := userJson.ToModel()
-
-	err := u.userService.Update(&user)
-
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	c.JSON(http.StatusOK, "Usuario actualizado satisfactoriamente")
+	u.abstractServiceHandler.Update(model, api_models.ModelToUserJson, c)
 }
 
 func (u *UserController) Delete(c *gin.Context) {
 
-	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
-
-	err := u.userService.Delete(id)
-
-	if err != nil {
-		if err == models.ErrorUserNotDeleted {
-			c.JSON(http.StatusConflict, err.Error())
-			return
-		}
-
-		c.JSON(http.StatusInternalServerError, err.Error())
-		return
-	}
-	c.JSON(http.StatusOK, "Usuario eliminado satisfactoriamente")
+	u.abstractServiceHandler.Delete(c)
 
 }

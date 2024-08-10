@@ -1,15 +1,7 @@
 package models
 
 import (
-	"errors"
 	"time"
-)
-
-var (
-	ErrorRoleNotFound   = errors.New("rol no encontrado")
-	ErrorRoleNotCreated = errors.New("rol no creado")
-	ErrorRoleNotUpdated = errors.New("el rol no pudo ser actualizado")
-	ErrorRoleNotDeleted = errors.New("el rol no pudo ser eliminado")
 )
 
 type Permissions map[string]bool
@@ -25,10 +17,10 @@ type AccessSchema struct {
 }
 
 type Role struct {
-	ID           int64        `json:"id"`
-	RoleName     string       `json:"role_name"`
-	StRole       int          `json:"st_role"`
-	AccessSchema AccessSchema `json:"access_schema"`
-	CreatedAt    time.Time    `json:"created_at,omitempty"`
-	UpdatedAt    time.Time    `json:"updated_at,omitempty"`
+	ID           int64        `db:"id"`
+	RoleName     string       `db:"role_name"`
+	StRole       bool         `db:"st_role"`
+	AccessSchema AccessSchema `db:"access_schema"`
+	CreatedAt    time.Time    `db:"created_at,omitempty"`
+	UpdatedAt    time.Time    `db:"updated_at,omitempty"`
 }
