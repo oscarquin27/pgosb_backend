@@ -5,21 +5,15 @@ import (
 	"fdms/src/models"
 )
 
-type StationService interface {
-	abstract_handler.AbstractCRUDService[models.Station]
-}
-
 type StateService interface {
 	abstract_handler.AbstractCRUDService[models.State]
 }
 
-type LocationsService interface {
-	GetState(id int64) (*models.State, error)
-	GetAllStates() ([]models.State, error)
-	CreateState(models *models.State) error
-	UpdateState(models *models.State) error
-	DeleteState(id int64) error
+type MunicipalityService interface {
+	abstract_handler.AbstractCRUDService[models.Municipality]
+}
 
+type LocationsService interface {
 	GetCity(id int64) (*models.City, error)
 	GetAllCity() ([]models.City, error)
 	CreateCity(models *models.City) error

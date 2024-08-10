@@ -4,6 +4,7 @@ import (
 	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/utils"
+	"fmt"
 	"strconv"
 	"time"
 
@@ -145,6 +146,19 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Address = utils.ConvertToPgTypeText(userDto.Address)
 	user.UserProfile.Legal_id = utils.ConvertToPgTypeText(userDto.Legal_id)
 	user.UserProfile.Role = utils.ConvertToPgTypeText(userDto.Role)
+	return user
+}
+
+func (userDto *UserJson) ToModelSimple() models.UserSimple {
+	user := models.UserSimple{}
+
+	user.Id = userDto.Id
+	user.Name = fmt.Sprintf("%s %s", userDto.First_name, userDto.Last_name)
+	user.Legal_id = userDto.Legal_id
+	user.Code = userDto.Code
+	user.Rank = userDto.Rank
+	user.User_name = userDto.User_name
+
 	return user
 }
 

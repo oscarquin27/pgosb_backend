@@ -2,6 +2,9 @@ package models
 
 import (
 	"errors"
+	"fdms/src/utils"
+	"fmt"
+	"strconv"
 
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -57,6 +60,7 @@ type UserProfile struct {
 	Legal_id        pgtype.Text    `json:"legal_id"`
 	// Skills          []string       `json:"skills"`
 }
+
 type UserIdentification struct {
 	Id      int64       `json:"id"`
 	Id_role pgtype.Int4 `json:"id_role"`
@@ -75,6 +79,23 @@ type User struct {
 	UserProfile
 }
 
-func (u *User) ToFrontEndModel() {
+type UserSimple struct {
+	Id        string `json:"id"`
+	Name      string `json:"name"`
+	User_name string `json:"user_name"`
+	Rank      string `json:"rank"`
+	Code      string `json:"code"`
+	Legal_id  string `json:"legal_id"`
+}
 
+func (u *UserSimple) UserSimpleFromUser(user *User) *UserSimple {
+
+	u.Id = strconv.FormatInt(user.Id, 10)
+	u.User_name = utils.ConvertFromText(user.User_name)
+	u.Code = utils.ConvertFromText(user.Code)
+	u.Name = fmt.Sprintf("%s %s", utils.ConvertFromText(user.First_name), utils.ConvertFromText(user.Last_name))
+	u.Rank = utils.ConvertFromText(user.Rank)
+	u.Legal_id = utils.ConvertFromText(user.Legal_id)
+
+	return u
 }

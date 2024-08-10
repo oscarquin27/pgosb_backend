@@ -4,6 +4,7 @@ import (
 	api_models "fdms/cmd/api/models"
 	"fdms/src/infrastructure/abstract_handler"
 	"fdms/src/models"
+	"fdms/src/services"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,7 +13,7 @@ type StateController struct {
 	abstractServiceHandler abstract_handler.AbstractHandler[models.State, api_models.StateJson]
 }
 
-func NewStateController(stationService abstract_handler.AbstractCRUDService[models.State]) *StateController {
+func NewStateController(stationService services.StateService) *StateController {
 
 	abstractHandler := abstract_handler.NewAbstractHandler[models.State, api_models.StateJson](stationService)
 

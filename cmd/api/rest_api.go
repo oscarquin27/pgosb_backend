@@ -5,6 +5,7 @@ import (
 	center_handlers "fdms/cmd/api/handlers/centers"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	location_handlers "fdms/cmd/api/handlers/locations"
+	state_handler "fdms/cmd/api/handlers/locations/states"
 	mission_handlers "fdms/cmd/api/handlers/mission"
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
@@ -59,6 +60,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	unityService := repository.NewUnityService(db)
 	stationService := repository.NewStationService(db)
 
+	stateService := repository.NewStateService(db)
+
 	locationService := repository.NewLocationService(db)
 	vehicleService := repository.NewVehicleService(db)
 
@@ -83,6 +86,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	roleController := roles_handlers.NewRoleController(roleService)
 	unityController := units_handlers.NewUnityController(unityService)
 	stationController := station_handler.NewStationController(stationService)
+	stateController := state_handler.NewStateController(stateService)
 
 	locationController := location_handlers.NewLocationController(locationService)
 
@@ -118,24 +122,22 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		authGroup.POST("/logout", AuthController.LogOut)
 
 	}
-
 	user := v1.Group("/user")
 	{
 		user.GET("/:id", userController.GetUser)
-		user.GET("/all",
-			userController.GetAllUser)
-		user.POST("/create",
-			userController.Create)
-		user.PUT("/update",
-			userController.Update)
-		user.DELETE("/:id",
-			userController.Delete)
+		user.GET("/all", userController.GetAllUser)
+		user.GET("/all/simple", userController.GetAllSimple)
+
+		user.POST("/create", userController.Create)
+		user.PUT("/update", userController.Update)
+		user.DELETE("/:id", userController.Delete)
 	}
 
 	role := v1.Group("/role")
 	{
 		role.GET("/:id", roleController.GetRole)
 		role.GET("/all", roleController.GetAllRoles)
+
 		role.POST("/create", roleController.Create)
 		role.PUT("/update", roleController.Update)
 		role.DELETE("/:id", roleController.Delete)
@@ -143,11 +145,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	state := v1.Group("/location/state")
 	{
-		state.GET("/:id", locationController.GetState)
-		state.GET("/all", locationController.GetAllStates)
-		state.POST("/create", locationController.CreateState)
-		state.PUT("/update", locationController.UpdateState)
-		state.DELETE("/:id", locationController.DeleteState)
+		state.GET("/:id", stateController.Get)
+		state.GET("/all", stateController.GetAll)
+		state.POST("/create", stateController.Create)
+		state.PUT("/update", stateController.Update)
+		state.DELETE("/:id", stateController.Delete)
 	}
 
 	city := v1.Group("/location/city")
@@ -201,6 +203,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	{
 		unity.GET("/:id", unityController.Get)
 		unity.GET("/all", unityController.GetAll)
+		unity.GET("/all/simple", unityController.GetAllSimple)
+
 		unity.POST("/create", unityController.Create)
 		unity.PUT("/update", unityController.Update)
 		unity.DELETE("/:id", unityController.Delete)

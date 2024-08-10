@@ -2,7 +2,6 @@ package repository
 
 import (
 	"context"
-	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
 
@@ -18,121 +17,6 @@ func NewLocationService(db *pgxpool.Pool) services.LocationsService {
 	return &LocationRepository{
 		db: db,
 	}
-}
-
-func (u *LocationRepository) GetState(id int64) (*models.State, error) {
-
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := conn.Query(ctx, "select state_id, name, coordinates from locations.states where state_id = $1", id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	r, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.State])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorStateFound
-		}
-
-		return nil, err
-	}
-
-	return &r, nil
-}
-
-func (u *LocationRepository) GetAllStates() ([]models.State, error) {
-
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := conn.Query(ctx, "select state_id, name, coordinates from locations.states")
-
-	if err != nil {
-		return nil, err
-	}
-
-	r, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.State])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorStateFound
-		}
-
-		return nil, err
-	}
-
-	return r, nil
-}
-
-func (u *LocationRepository) CreateState(r *models.State) error {
-	m := mikro.NewMkModel(u.db)
-
-	rows, err := m.Model(r).Omit("state_id").Insert("locations.states")
-
-	if err != nil {
-		return err
-	}
-
-	if rows > 0 {
-		return nil
-	}
-
-	return models.ErrorStateNotCreated
-}
-
-func (u *LocationRepository) UpdateState(r *models.State) error {
-	m := mikro.NewMkModel(u.db)
-
-	rows, err := m.Model(r).Omit("state_id").Where("state_id", "=", r.Id).Update("locations.states")
-
-	if err != nil {
-		return err
-	}
-
-	if rows > 0 {
-		return nil
-	}
-
-	return models.ErrorStateNotUpdated
-}
-
-func (u *LocationRepository) DeleteState(id int64) error {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
-
-	if err != nil {
-		return err
-	}
-
-	rows, err := conn.Exec(ctx, "delete from locations.states where state_id = $1", id)
-
-	if err != nil {
-		return err
-	}
-
-	if rows.RowsAffected() > 0 {
-		return nil
-	}
-
-	return models.ErrorStateNotDeleted
 }
 
 func (u *LocationRepository) GetCity(id int64) (*models.City, error) {

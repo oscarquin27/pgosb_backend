@@ -122,6 +122,14 @@ func NewResultWithValue[V any](stepIdentifier string, isSuccessful bool, value V
 	}
 }
 
+func NewResultWithZeroValue[V any](stepIdentifier string, isSuccessful bool, err IError) *ResultWithValue[V] {
+	return &ResultWithValue[V]{
+		StepIdentifier: stepIdentifier,
+		IsSuccessful:   isSuccessful,
+		Err:            err,
+	}
+}
+
 // func (rwv *ResultWithValue[V]) HasError() (IError, bool) {
 // 	if rwv.Err == nil {
 // 		return rwv.Err, false
