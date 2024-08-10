@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	"fdms/src/infrastructure/abstract_handler"
 	"fdms/src/models"
+	"fdms/src/services"
 	"fdms/src/utils/results"
 
 	"github.com/jackc/pgx/v5"
@@ -152,7 +152,7 @@ type UnitRepository struct {
 	db *pgxpool.Pool
 }
 
-func NewUnityService(db *pgxpool.Pool) abstract_handler.AbstractCRUDService[models.Unit] {
+func NewUnityService(db *pgxpool.Pool) services.UnitService {
 	return &UnitRepository{
 		db: db,
 	}
@@ -372,4 +372,27 @@ func (u *UnitRepository) Delete(id int64) *results.Result {
 	}
 
 	return r.Success()
+}
+
+func (u *UnitRepository) GetAllSimple() *results.ResultWithValue[[]models.UnitSimple] {
+
+	r := results.NewResultWithValue[[]models.UnitSimple]("Get-All-Simple", false, make([]models.UnitSimple, 0), nil).
+		Failure()
+
+	allUnist, err := u.GetAll()
+
+	if err != nil {
+		return r.WithError(err)
+	}
+
+	var unitSimples []models.UnitSimple = make([]models.UnitSimple, 0)
+
+	for _, unit := range allUnist {
+
+		unitSimple := models.UnitSimple{}
+		unitSimple = *unitSimple.UnitSimpleFromUnit(&unit)
+		unitSimples = append(unitSimples, unitSimple)
+	}
+
+	return r.Success().WithValue(unitSimples)
 }

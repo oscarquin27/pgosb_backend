@@ -524,8 +524,8 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	}
 
 	return r.Success().WithValue(user)
-
 }
+
 func (u *UserRepository) Delete(id int64) *results.Result {
 
 	r := results.NewResult("Delete-User", false, nil).Failure()
@@ -574,5 +574,34 @@ func (u *UserRepository) Delete(id int64) *results.Result {
 		return r.WithError(results.NewUnknowError("se borraron multiples registros", err))
 	}
 
+	err = tx.Commit(ctx)
+
+	if err != nil {
+		return r.FailureWithError(err)
+	}
+
 	return r.Success()
+}
+
+func (u *UserRepository) GetAllSimple() *results.ResultWithValue[[]models.UserSimple] {
+
+	r := results.NewResultWithValue[[]models.UserSimple]("Get-All-Simple", false, make([]models.UserSimple, 0), nil).
+		Failure()
+
+	allUsers, err := u.GetAll()
+
+	if err != nil {
+		return r.WithError(err)
+	}
+
+	var usersSimples []models.UserSimple = make([]models.UserSimple, 0)
+
+	for _, user := range allUsers {
+
+		userSimple := models.UserSimple{}
+		userSimple = *userSimple.UserSimpleFromUser(&user)
+		usersSimples = append(usersSimples, userSimple)
+	}
+
+	return r.Success().WithValue(usersSimples)
 }

@@ -1,5 +1,10 @@
 package models
 
+import (
+	"fdms/src/utils"
+	"strconv"
+)
+
 type Unit struct {
 	Id             int64    `db:"id"`
 	Plate          *string  `db:"plate"`
@@ -24,4 +29,22 @@ type Unit struct {
 	Year           *string  `db:"year"`
 	Purpose        *string  `db:"purpose"`
 	Init_kilometer *int64   `db:"init_kilometer"`
+}
+
+type UnitSimple struct {
+	Id        string `json:"id"`
+	Plate     string `json:"plate"`
+	Station   string `json:"station"`
+	Unit_type string `json:"unit_type"`
+	Alias     string `json:"alias"`
+}
+
+func (u *UnitSimple) UnitSimpleFromUnit(unit *Unit) *UnitSimple {
+
+	u.Id = strconv.FormatInt(unit.Id, 10)
+	u.Alias = utils.GetStringFromPointer(unit.Alias)
+	u.Plate = utils.GetStringFromPointer(unit.Plate)
+	u.Station = utils.GetStringFromPointer(unit.Station)
+	u.Unit_type = utils.GetStringFromPointer(unit.Unit_type)
+	return u
 }

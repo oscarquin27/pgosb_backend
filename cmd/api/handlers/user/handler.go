@@ -3,8 +3,11 @@ package user_handlers
 import (
 	api_models "fdms/cmd/api/models"
 	"fdms/src/infrastructure/abstract_handler"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
+	"fdms/src/utils/results"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -28,9 +31,7 @@ func (u *UserController) GetUser(c *gin.Context) {
 }
 
 func (u *UserController) GetAllUser(c *gin.Context) {
-
 	u.abstractServiceHandler.GetAll(api_models.ModelToUserJson, c)
-
 }
 
 func (u *UserController) Create(c *gin.Context) {
@@ -52,5 +53,24 @@ func (u *UserController) Update(c *gin.Context) {
 func (u *UserController) Delete(c *gin.Context) {
 
 	u.abstractServiceHandler.Delete(c)
+}
 
+func (u *UserController) GetAllSimple(c *gin.Context) {
+
+	result := u.userService.GetAllSimple()
+
+	if !result.IsSuccessful {
+
+		logger.Warn().Err(result.Err.AssociateException()).
+			Msg("Problemas ejecutando GetAllSimple")
+
+		if result.Err.Code() == results.NotFoundErr {
+			c.JSON(http.StatusOK, result.Value)
+		}
+
+		c.JSON(http.StatusInternalServerError, result.Value)
+		return
+	}
+
+	c.JSON(http.StatusOK, result.Value)
 }
