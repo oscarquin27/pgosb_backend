@@ -1,65 +1,75 @@
 package repository
 
-// type MunicipalityRepository struct {
-// 	*AbstractRepository[models.Municipality]
-// }
+import (
+	"fdms/src/models"
+	"fdms/src/services"
+	"fdms/src/utils/results"
 
-// func NewMunicipalityService(db *pgxpool.Pool) services.MunicipalityService {
+	"github.com/jackc/pgx/v5/pgxpool"
+)
 
-// 	abstractImplent := NewAbstractRepository[models.Municipality](db)
+type MunicipalityRepository struct {
+	*AbstractRepository[models.Municipality]
+}
 
-// 	return &MunicipalityRepository{
-// 		&abstractImplent,
-// 	}
-// }
+func NewMunicipalityService(db *pgxpool.Pool) services.MunicipalityService {
 
-// const selectMunicipalityQuery = "SELECT id, name, coordinates , capital FROM locations.states WHERE id = $1"
+	abstractImplent := NewAbstractRepository[models.Municipality](db)
 
-// const selectAllMunicipalityQuery = "SELECT id, name, coordinates , capital FROM locations.states"
+	return &MunicipalityRepository{
+		&abstractImplent,
+	}
+}
 
-// const insertMunicipalityQuery = `INSERT INTO locations.states(
-// 	name, coordinates, capital)
-// 	VALUES (@name, @coordinates, @capital)`
+const selectMunicipalityQuery = "SELECT id, state_id ,name, coordinates , capital FROM locations.municipalities WHERE id = $1"
 
-// const updateMunicipalityQuery = `UPDATE locations.states
-// 	SET  name=@name, coordinates=@coordinates, capital=@capital
-// 	WHERE id = @id `
+const selectAllMunicipalityQuery = "SELECT id, state_id,name, coordinates , capital FROM locations.municipalities"
 
-// const deleteMunicipalityQuery = `DELETE FROM locations.states WHERE id = $1`
+const insertMunicipalityQuery = `INSERT INTO locations.municipalities(
+      state_id,	name, coordinates, capital)
+	VALUES (@state_id, @name, @coordinates, @capital)`
 
-// func (u *MunicipalityRepository) Get(id int64) *results.ResultWithValue[*models.Municipality] {
+const updateMunicipalityQuery = `UPDATE locations.municipalities
+	SET state_id=@state_id name=@name, coordinates=@coordinates, capital=@capital
+	WHERE id = @id `
 
-// 	r := u.AbstractRepository.Get(id, selectStateQuery)
+const deleteMunicipalityQuery = `DELETE FROM locations.municipalities WHERE id = $1`
 
-// 	results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, r.Value, r.Err)
-// }
-// func (u *MunicipalityRepository) GetAll() ([]models.Municipality, *results.GeneralError) {
+func (u *MunicipalityRepository) Get(id int64) *results.ResultWithValue[*models.Municipality] {
 
-// 	var municipalities []models.Municipality = make([]models.Municipality, 0)
+	r := u.AbstractRepository.Get(id, selectMunicipalityQuery)
 
-// 	values, err := u.AbstractRepository.GetAll(selectAllStateQuery)
+	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+}
 
-// 	if err != nil {
-// 		return municipalities, err
-// 	}
+func (u *MunicipalityRepository) GetAll() ([]models.Municipality, *results.GeneralError) {
 
-// 	return values, nil
-// }
+	var municipalities []models.Municipality = make([]models.Municipality, 0)
 
-// func (u *MunicipalityRepository) Create(state *models.Municipality) *results.ResultWithValue[models.Municipality] {
+	values, err := u.AbstractRepository.GetAll(selectAllMunicipalityQuery)
 
-// 	r := u.AbstractRepository.Create(*state, insertStateQuery, state.GetNameArgs(), state.SetId)
+	if err != nil {
+		return municipalities, err
+	}
 
-// 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
-// }
+	return values, nil
+}
 
-// func (u *MunicipalityRepository) Update(state models.Municipality) *results.ResultWithValue[models.Municipality] {
-// 	r := u.AbstractRepository.Update(*state, updateStateQuery, state.GetNameArgs())
+func (u *MunicipalityRepository) Create(state *models.Municipality) *results.ResultWithValue[*models.Municipality] {
 
-// 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
-// }
+	r := u.AbstractRepository.Create(*state, insertMunicipalityQuery, state.GetNameArgs(), state.SetId)
 
-// func (u *MunicipalityRepository) Delete(id int64) *results.Result {
+	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+}
 
-// 	return u.AbstractRepository.Delete(id, deleteStateQuery)
-// }
+func (u *MunicipalityRepository) Update(state *models.Municipality) *results.ResultWithValue[*models.Municipality] {
+
+	r := u.AbstractRepository.Update(*state, updateMunicipalityQuery, state.GetNameArgs())
+
+	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+}
+
+func (u *MunicipalityRepository) Delete(id int64) *results.Result {
+
+	return u.AbstractRepository.Delete(id, deleteMunicipalityQuery)
+}

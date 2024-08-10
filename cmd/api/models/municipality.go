@@ -5,17 +5,20 @@ import (
 	"fdms/src/utils"
 )
 
-type StateJson struct {
+type MunicipalityJson struct {
 	Id          string `json:"id"`
+	StateId     string `json:"state_id"`
 	Name        string `json:"name"`
 	Capital     string `json:"capital"`
 	Coordinates string `json:"coordinates"`
 }
 
-func ModelToStateJson(s *models.State) *StateJson {
-	state := StateJson{}
+func ModelToMunicipalityJson(s *models.Municipality) *MunicipalityJson {
+	state := MunicipalityJson{}
 
 	state.Id = utils.ParseInt64Sring(s.Id)
+	state.StateId = utils.ParseInt64Sring(s.StateId)
+
 	state.Name = utils.GetStringFromPointer(s.Name)
 	state.Capital = utils.GetStringFromPointer(s.Capital)
 	state.Coordinates = utils.GetStringFromPointer(s.Coordinates)
@@ -23,12 +26,12 @@ func ModelToStateJson(s *models.State) *StateJson {
 	return &state
 }
 
-func (s *StateJson) ToModel() models.State {
+func (s *MunicipalityJson) ToModel() models.Municipality {
 
-	var state models.State
+	var state models.Municipality
 
 	state.Id = utils.ParseInt64(s.Id)
-
+	state.StateId = utils.ParseInt64(s.StateId)
 	state.Name = &s.Name
 	state.Capital = &s.Capital
 	state.Coordinates = &s.Coordinates
