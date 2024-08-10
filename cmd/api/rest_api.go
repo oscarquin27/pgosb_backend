@@ -107,8 +107,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	conf.AllowCredentials = true
 	conf.AllowOrigins = []string{"http://localhost:5173",
-		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12",
-		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173", "http://192.168.1.12:5100"}
+		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12:5100",
+		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173"}
 
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output: logger.Log(),
@@ -244,6 +244,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.POST("/create", missionServiceController.Create)
 		serviceMission.PUT("/update", missionServiceController.Update)
 		serviceMission.DELETE("/delete/:id", missionServiceController.Delete)
+		serviceMission.GET("/unit/:id", missionServiceController.GetUnits)
+		serviceMission.GET("/user/:id", missionServiceController.GetUsers)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")
