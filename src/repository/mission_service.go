@@ -5,6 +5,7 @@ import (
 	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
+	"fdms/src/utils/results"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -13,6 +14,7 @@ import (
 type MissionServiceRepository struct {
 	db *pgxpool.Pool
 }
+
 
 func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
 	return &MissionServiceRepository{
@@ -127,6 +129,93 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 
 	return services, nil
 }
+
+// GetUnits implements services.MissionServiceService.
+func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]models.UnitSimple] {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	r := results.NewResultWithValue[[]models.UnitSimple]("Get-Units-Simple", false, make([]models.UnitSimple, 0), nil).
+		Failure()
+		
+	if err != nil {
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT coalesce(id::varchar, '') as id, 
+		coalesce(plate::varchar, '') as plate, 
+		coalesce(station::varchar, '') as station, 
+		coalesce(unit_type::varchar, '') as unit_type, 
+		coalesce(alias::varchar, '') as alias
+		FROM  vehicles.unit u
+		where id in (select 
+			unnest(s.units) as id
+		from missions.services s
+		where s.id = $1)`, id)
+
+	if err != nil {
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UnitSimple])
+
+	
+	if err != nil {
+		if err == pgx.ErrNoRows || len(services) == 0 {
+			return r.WithError(results.NewError(err.Error(), err))
+		}
+
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	return r.Success().WithValue(services)
+}
+
+// GetUsers implements services.MissionServiceService.
+func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.UserSimple] {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	r := results.NewResultWithValue[[]models.UserSimple]("Get-Units-Simple", false, make([]models.UserSimple, 0), nil).
+		Failure()
+		
+	if err != nil {
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT coalesce(id::varchar, '') as id, 
+		coalesce((first_name || ' ' || last_name)::varchar, '') as name, 
+		coalesce(user_name::varchar, '') as user_name, 
+		coalesce(rank::varchar, '') as rank,
+		coalesce(code::varchar, '') as code,
+		coalesce(legal_id::varchar, '') as legal_id
+		FROM users."user" u
+		where id in (select 
+			unnest(s.bombers) as id
+		from missions.services s
+		where s.id = $1)`, id)
+
+	if err != nil {
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UserSimple])
+
+	if err != nil {
+		if err == pgx.ErrNoRows || len(users) == 0 {
+			return r.WithError(results.NewError(err.Error(), err))
+		}
+
+		return r.WithError(results.NewError(err.Error(), err))
+	}
+
+	return r.Success().WithValue(users)}
 
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	m := mikro.NewMkModel(u.db)

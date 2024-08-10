@@ -6,6 +6,7 @@ import (
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils"
+	"fdms/src/utils/results"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -94,30 +95,49 @@ func (u *MissionServiceController) GetAll(c *gin.Context) {
 	return
 }
 
-// func (u *MissionServiceController) GetAllServices(c *gin.Context) {
+func (u *MissionServiceController) GetUnits(c *gin.Context) {
 
-// 	mission, err := u.missionService.GetAll()
+	id := utils.ParseInt(c.Param("id"))
 
-// 	if err != nil {
-// 		if err == models.ErrorMissionNotFound {
-// 			c.JSON(http.StatusNotFound, err.Error())
-// 			return
-// 		}
+	result := u.missionService.GetUnits(id)
 
-// 		c.JSON(http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
+	if !result.IsSuccessful {
 
-// 	var missionDto []api_models.MissionServiceJson
+		logger.Warn().Err(result.Err.AssociateException()).
+			Msg("Problemas ejecutando GetAllSimple")
 
-// 	for _, s := range mission {
-// 		newMission := api_models.ModelToMissionServiceJson(s)
-// 		missionDto = append(missionDto, *newMission)
-// 	}
+		if result.Err.Code() == results.NotFoundErr {
+			c.JSON(http.StatusOK, result.Value)
+		}
 
-// 	c.JSON(http.StatusOK, missionDto)
+		c.JSON(http.StatusInternalServerError, result.Value)
+		return
+	}
 
-// }
+	c.JSON(http.StatusOK, result.Value)
+}
+
+func (u *MissionServiceController) GetUsers(c *gin.Context) {
+
+	id := utils.ParseInt(c.Param("id"))
+
+	result := u.missionService.GetUsers(id)
+
+	if !result.IsSuccessful {
+
+		logger.Warn().Err(result.Err.AssociateException()).
+			Msg("Problemas ejecutando GetAllSimple")
+
+		if result.Err.Code() == results.NotFoundErr {
+			c.JSON(http.StatusOK, result.Value)
+		}
+
+		c.JSON(http.StatusInternalServerError, result.Value)
+		return
+	}
+
+	c.JSON(http.StatusOK, result.Value)
+}
 
 func (u *MissionServiceController) Create(c *gin.Context) {
 	var missionJson api_models.MissionServiceJson

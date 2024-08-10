@@ -237,6 +237,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.POST("/create", missionServiceController.Create)
 		serviceMission.PUT("/update", missionServiceController.Update)
 		serviceMission.DELETE("/delete/:id", missionServiceController.Delete)
+		serviceMission.GET("/unit/:id", missionServiceController.GetUnits)
+		serviceMission.GET("/user/:id", missionServiceController.GetUsers)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")
