@@ -94,6 +94,24 @@ func (s *Parish) GetNameArgs() pgx.NamedArgs {
 	}
 }
 
+type Sector struct {
+	Id       int64   `db:"id"`
+	ParishId int64   `db:"parish_id"`
+	Name     *string `db:"name"`
+}
+
+func (s *Sector) SetId(id int64) {
+	s.Id = id
+}
+
+func (s *Sector) GetNameArgs() pgx.NamedArgs {
+	return pgx.NamedArgs{
+		"id":        s.Id,
+		"parish_id": s.ParishId,
+		"name":      s.Name,
+	}
+}
+
 type City struct {
 	Id          pgtype.Int8 `json:"id" db:"city_id"`
 	State_Id    pgtype.Int8 `json:"state_id"`

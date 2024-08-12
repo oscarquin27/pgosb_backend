@@ -6,20 +6,20 @@ import (
 )
 
 type MissionInfrastructureJson struct {
-	Id		        	string   `json:"id" binding:"required"`
-	ServiceId      	    string   `json:"service_id"`
-	BuildType       	string   `json:"build_type"`
-	BuildOccupation     string   `json:"build_occupation"`
-	BuildArea           string   `json:"build_area"`
-	BuildAccess         string   `json:"build_access"`
-	Levels              string   `json:"levels"`
-	Walls				string   `json:"walls"`
-	People              string   `json:"people"`
-	GoodsType           string   `json:"goods_type"`
-	BuildRoof           string   `json:"build_roof"`
-	BuildFloor          string   `json:"build_floor"`
-	BuildRoomType       string   `json:"build_room_type"`
-	Observations        string   `json:"observations"`
+	Id              string `json:"id" binding:"required"`
+	ServiceId       string `json:"service_id"`
+	BuildType       string `json:"build_type"`
+	BuildOccupation string `json:"build_occupation"`
+	BuildArea       string `json:"build_area"`
+	BuildAccess     string `json:"build_access"`
+	Levels          string `json:"levels"`
+	Walls           string `json:"build_wall"`
+	People          string `json:"people"`
+	GoodsType       string `json:"goods_type"`
+	BuildRoof       string `json:"build_roof"`
+	BuildFloor      string `json:"build_floor"`
+	BuildRoomType   string `json:"build_room_type"`
+	Observations    string `json:"observations"`
 }
 
 func ModelToMissionInfrastructureJson(s models.MissionInfrastructure) *MissionInfrastructureJson {
