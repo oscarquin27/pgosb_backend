@@ -108,7 +108,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	conf.AllowCredentials = true
 	conf.AllowOrigins = []string{"http://localhost:5173",
 		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12:5100",
-		"http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173"}
+		"http://192.168.1.103:5173", "http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173"}
 
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output: logger.Log(),
