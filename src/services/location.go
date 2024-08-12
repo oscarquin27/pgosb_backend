@@ -17,6 +17,10 @@ type ParishService interface {
 	abstract_handler.AbstractCRUDService[models.Parish]
 }
 
+type SectorService interface {
+	abstract_handler.AbstractCRUDService[models.Sector]
+}
+
 type LocationsService interface {
 	GetCity(id int64) (*models.City, error)
 	GetAllCity() ([]models.City, error)

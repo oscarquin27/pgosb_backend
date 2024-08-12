@@ -7,6 +7,7 @@ import (
 	location_handlers "fdms/cmd/api/handlers/locations"
 	municipality_handler "fdms/cmd/api/handlers/locations/municipality"
 	parish_handler "fdms/cmd/api/handlers/locations/parish"
+	sector_handler "fdms/cmd/api/handlers/locations/sector"
 	state_handler "fdms/cmd/api/handlers/locations/states"
 	mission_handlers "fdms/cmd/api/handlers/mission"
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
@@ -66,7 +67,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	municipalityService := repository.NewMunicipalityService(db)
 	parishSevice := repository.NewParishService(db)
-
+	sectorService := repository.NewSectorService(db)
 	locationService := repository.NewLocationService(db)
 	vehicleService := repository.NewVehicleService(db)
 
@@ -94,6 +95,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	stateController := state_handler.NewStateController(stateService)
 	municpalityController := municipality_handler.NewMunicipalityController(municipalityService)
 	parishController := parish_handler.NewParishController(parishSevice)
+	sectorController := sector_handler.NewSectorController(sectorService)
 
 	locationController := location_handlers.NewLocationController(locationService)
 
@@ -175,6 +177,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		parish.POST("/create", parishController.Create)
 		parish.PUT("/update", parishController.Update)
 		parish.DELETE("/:id", parishController.Delete)
+	}
+	sector := v1.Group("/location/sector")
+	{
+		sector.GET("/:id", sectorController.Get)
+		sector.GET("/all", sectorController.GetAll)
+		sector.POST("/create", sectorController.Create)
+		sector.PUT("/update", sectorController.Update)
+		sector.DELETE("/:id", sectorController.Delete)
 	}
 
 	city := v1.Group("/location/city")
