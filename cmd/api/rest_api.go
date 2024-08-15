@@ -2,7 +2,7 @@ package api
 
 import (
 	auth_handlers "fdms/cmd/api/handlers/auth"
-	center_handlers "fdms/cmd/api/handlers/centers"
+	healthcare_center_handler "fdms/cmd/api/handlers/healthcare_center"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	municipality_handler "fdms/cmd/api/handlers/locations/municipality"
 	parish_handler "fdms/cmd/api/handlers/locations/parish"
@@ -12,6 +12,7 @@ import (
 	mission_handlers "fdms/cmd/api/handlers/mission"
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
+	mission_location_handler "fdms/cmd/api/handlers/mission_location"
 	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
 	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
 	mission_vehicle_handlers "fdms/cmd/api/handlers/mission_vehicles"
@@ -62,7 +63,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	roleService := repository.NewRoleService(db)
 	unityService := repository.NewUnityService(db)
 	stationService := repository.NewStationService(db)
-
+	healthcareCenterService := repository.NewHealthcareCenterService(db)
 	stateService := repository.NewStateService(db)
 
 	municipalityService := repository.NewMunicipalityService(db)
@@ -81,7 +82,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionInfraService := repository.NewMissionInfrastructureService(db)
 	missionAntaresService := repository.NewAntaresService(db)
 
-	centerService := repository.NewCenterService(db)
+	missionLocationService := repository.NewMissionLocationService(db)
 
 	missionController := mission_handlers.NewMissionController(missionService)
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
@@ -89,10 +90,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionPersonController := mission_person_handlers.NewMissionPersonController(missionPersonService)
 	missionInfraController := mission_infra_handlers.NewMissionController(missionInfraService)
 
+	missionLocationController := mission_location_handler.NewMissionLocationController(missionLocationService, missionLocationService)
+
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
 	unityController := units_handlers.NewUnityController(unityService)
 	stationController := station_handler.NewStationController(stationService)
+	healthCareCenterController := healthcare_center_handler.NewHealthcareCenterController(healthcareCenterService)
+
 	stateController := state_handler.NewStateController(stateService)
 	municpalityController := municipality_handler.NewMunicipalityController(municipalityService)
 	parishController := parish_handler.NewParishController(parishSevice)
@@ -101,14 +106,13 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
 
-	centerController := center_handlers.NewCenterController(centerService)
 	missionAntaresController := antares_handlers.NewAntaresController(missionAntaresService)
 	layoutController := layout_handlers.NewLayoutController(layoutService)
 
 	AuthController := auth_handlers.NewAuthController(auth)
 
 	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"http://localhost:5173",
+	conf.AllowOrigins = []string{"http://localhost:5173", "http://192.168.120.136:5100",
 		"http://192.168.120.122:5173", "http://192.168.0.164:5173", "http://192.168.120.110:5173", "http://192.168.1.12:5100",
 		"http://192.168.1.103:5173", "http://172.30.100.9:8082", "http://192.168.1.12:5173", "http://192.168.1.7:5173", "http://pruebas.gres.local.net:5173"}
 
@@ -205,6 +209,15 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		station.DELETE("/:id", stationController.Delete)
 	}
 
+	centers := v1.Group("center")
+	{
+		centers.GET("/:id", healthCareCenterController.Get)
+		centers.GET("/all", healthCareCenterController.GetAll)
+		centers.POST("/create", healthCareCenterController.Create)
+		centers.PUT("/update", healthCareCenterController.Update)
+		centers.DELETE("/:id", healthCareCenterController.Delete)
+	}
+
 	vehicle := v1.Group("/vehicles")
 	{
 		vehicle.GET("/:id", vehicleController.GetVehicle)
@@ -288,13 +301,14 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		personMission.DELETE("/delete/:id", missionPersonController.Delete)
 	}
 
-	centers := v1.Group("center")
+	locationMission := v1.Group("mission/location")
 	{
-		centers.GET("/:id", centerController.GetCenter)
-		centers.GET("/all", centerController.GetAllCenters)
-		centers.POST("/create", centerController.Create)
-		centers.PUT("/update", centerController.Update)
-		centers.DELETE("/:id", centerController.Delete)
+		locationMission.GET("/:id", missionLocationController.Get)
+		// locationMission.GET("/group/:id", missionLocationController.GetByServiceId)
+		locationMission.GET("/all", missionLocationController.GetAll)
+		locationMission.POST("/create", missionLocationController.Create)
+		locationMission.PUT("/update", missionLocationController.Update)
+		locationMission.DELETE("/delete/:id", missionLocationController.Delete)
 	}
 
 	if config.Get().Http.EnabledSsl {
