@@ -15,7 +15,6 @@ type MissionServiceRepository struct {
 	db *pgxpool.Pool
 }
 
-
 func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
 	return &MissionServiceRepository{
 		db: db,
@@ -38,7 +37,15 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	units, 
 	bombers, 
 	summary, 
-	description
+	description,
+	unharmed,
+	injured,
+	transported,
+	deceased,
+	station_id,
+	center_id
+
+	
 	FROM missions.services where id = $1;`, id)
 
 	if err != nil {
@@ -74,7 +81,15 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	units, 
 	bombers, 
 	summary, 
-	description
+	description,
+	unharmed,
+	injured ,
+	transported ,
+	deceased ,
+	station_id,
+	center_id
+
+	
 	FROM missions.services order by id desc;`)
 
 	if err != nil {
@@ -110,7 +125,15 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	units, 
 	bombers, 
 	summary, 
-	description
+	description,
+	unharmed,
+	injured ,
+	transported ,
+	deceased ,
+	station_id,
+	center_id
+	
+	
 	FROM missions.services where mission_id = $1;`, id)
 
 	if err != nil {
@@ -138,7 +161,7 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 
 	r := results.NewResultWithValue[[]models.UnitSimple]("Get-Units-Simple", false, make([]models.UnitSimple, 0), nil).
 		Failure()
-		
+
 	if err != nil {
 		return r.WithError(results.NewError(err.Error(), err))
 	}
@@ -162,7 +185,6 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 
 	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UnitSimple])
 
-	
 	if err != nil {
 		if err == pgx.ErrNoRows || len(services) == 0 {
 			return r.WithError(results.NewError(err.Error(), err))
@@ -182,7 +204,7 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 
 	r := results.NewResultWithValue[[]models.UserMission]("Get-UserMission-Simple", false, make([]models.UserMission, 0), nil).
 		Failure()
-		
+
 	if err != nil {
 		return r.WithError(results.NewError(err.Error(), err))
 	}
@@ -240,11 +262,11 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Exec(ctx, `UPDATE missions.services
 	SET mission_id = $1, 
@@ -252,8 +274,20 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	units = $3, 
 	bombers = $4, 
 	summary = $5, 
-	description = $6
-	WHERE id = $7`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description, s.Id)
+	description = $6,
+
+	unharmed = $7,
+	injured = $8,
+	transported = $9,
+	deceased = $10,
+	station_id = $11,
+	center_id = $12
+
+	
+	
+	
+	WHERE id = $13`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
+		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.Id)
 
 	if err != nil {
 		return err
