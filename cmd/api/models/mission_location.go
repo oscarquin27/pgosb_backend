@@ -8,7 +8,7 @@ import (
 type MissionLocationJson struct {
 	Id string `json:"id"`
 
-	ServiceId string `json:"service_id"`
+	MissionId string `json:"mission_id"`
 
 	Alias string `json:"alias"`
 
@@ -35,7 +35,7 @@ type MissionLocationJson struct {
 func ModelToMissionLocationJson(s *models.MissionLocation) *MissionLocationJson {
 	station := MissionLocationJson{
 		Id:             utils.ParseInt64Sring(s.Id),
-		ServiceId:      utils.ParseInt64Sring(s.ServiceId),
+		MissionId:      utils.ParseInt64Sring(s.MissionId),
 		StateId:        utils.ParseInt64SringPointer(s.StateId),
 		MunicipalityId: utils.ParseInt64SringPointer(s.MunicipalityId),
 		ParishId:       utils.ParseInt64SringPointer(s.ParishId),
@@ -65,7 +65,7 @@ func (s *MissionLocationJson) ToModel() models.MissionLocation {
 	station := models.MissionLocation{
 
 		Id:        utils.ParseInt64(s.Id),
-		ServiceId: utils.ParseInt64(s.ServiceId),
+		MissionId: utils.ParseInt64(s.MissionId),
 
 		StateId:        &state_id,
 		MunicipalityId: &municipality_id,

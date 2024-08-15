@@ -43,7 +43,8 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	transported,
 	deceased,
 	station_id,
-	center_id
+	center_id,
+	location_id
 
 	
 	FROM missions.services where id = $1;`, id)
@@ -87,7 +88,8 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	transported ,
 	deceased ,
 	station_id,
-	center_id
+	center_id,
+	location_id
 
 	
 	FROM missions.services order by id desc;`)
@@ -131,7 +133,8 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	transported ,
 	deceased ,
 	station_id,
-	center_id
+	center_id,
+	location_id
 	
 	
 	FROM missions.services where mission_id = $1;`, id)
@@ -281,13 +284,14 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	transported = $9,
 	deceased = $10,
 	station_id = $11,
-	center_id = $12
+	center_id = $12,
+	location_id = $13
 
 	
 	
 	
-	WHERE id = $13`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
-		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.Id)
+	WHERE id = $14`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
+		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.LocationId, s.Id)
 
 	if err != nil {
 		return err

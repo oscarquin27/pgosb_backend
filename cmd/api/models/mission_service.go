@@ -6,10 +6,12 @@ import (
 )
 
 type MissionServiceJson struct {
-	Id                 string   `json:"id"`
-	MissionId          string   `json:"mission_id"`
-	AntaresId          string   `json:"antares_id"`
-	StationId          string   `json:"station_id"`
+	Id         string `json:"id"`
+	MissionId  string `json:"mission_id"`
+	AntaresId  string `json:"antares_id"`
+	StationId  string `json:"station_id"`
+	LocationId string `json:"location_id"`
+
 	HealthCareCenterId string   `json:"center_id"`
 	Units              []string `json:"units"`
 	Bombers            []string `json:"bombers"`
@@ -37,6 +39,8 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.Transported = utils.ParseInt64SringPointer(s.Transported)
 	service.Deceased = utils.ParseInt64SringPointer(s.Deceased)
 	service.StationId = utils.ParseInt64SringPointer(s.StationId)
+	service.LocationId = utils.ParseInt64SringPointer(s.LocationId)
+
 	service.HealthCareCenterId = utils.ParseInt64SringPointer(s.HealthCareCenterId)
 
 	return &service
@@ -60,12 +64,15 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	stationId := utils.ParseInt64(s.StationId)
 	centerId := utils.ParseInt64(s.HealthCareCenterId)
 
+	locationId := utils.ParseInt64(s.LocationId)
+
 	service.Unharmed = &unharmed
 	service.Injured = &injured
 	service.Transported = &transported
 	service.Deceased = &deceased
 	service.StationId = &stationId
 	service.HealthCareCenterId = &centerId
+	service.LocationId = &locationId
 
 	return service
 }

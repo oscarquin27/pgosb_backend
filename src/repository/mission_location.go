@@ -23,31 +23,27 @@ func NewMissionLocationService(db *pgxpool.Pool) services.MissionLocationService
 	}
 }
 
-const selectMissionLocationQuery = "SELECT * FROM hq.stations WHERE id = $1"
+const selectMissionLocationQuery = "SELECT * FROM mission.locations WHERE id = $1"
 
-const selectMissionLocationQuerybyServiceId = "SELECT * FROM hq.stations WHERE service_id = $1"
+const selectMissionLocationQuerybyServiceId = "SELECT * FROM mission.locations WHERE mission_id = $1"
 
-const selectAllMissionLocationQuery = "SELECT * FROM hq.stations"
+const selectAllMissionLocationQuery = "SELECT * FROM mission.locations"
 
-const insertMissionLocationQuery = `INSERT INTO hq.stations (
+const insertMissionLocationQuery = `INSERT INTO mission.locations (
     
-    id,name, description, abbreviation, phones, region_id, 
-    state_id, state, municipality_id, municipality, parish_id,
-    parish, sector_id, sector, urb_id, urb, street, address
+    alias,state_id, state, municipality_id, municipality, parish_id,
+    parish, sector_id, sector, urb_id, urb,  address
 )
 VALUES (
-    @id, @name, @description, @abbreviation, @phones, @region_id,
+     @alias, 
     @state_id, @state, @municipality_id, @municipality, @parish_id, 
-    @parish, @sector_id, @sector, @urb_id, @urb, @street, @address
+    @parish, @sector_id, @sector, @urb_id, @urb,  @address
 ) RETURNING id`
 
-const updateMissionLocationQuery = `UPDATE hq.stations
+const updateMissionLocationQuery = `UPDATE mission.locations
 SET 
-    name = @name, 
-    description = @description, 
-    abbreviation = @abbreviation,
-    phones = @phones,
-    region_id = @region_id,
+    alias = @alias, 
+    
     state_id = @state_id,
     state = @state,
     municipality_id = @municipality_id,
@@ -58,11 +54,10 @@ SET
     sector = @sector,
     urb_id = @urb_id,
     urb = @urb,
-    street = @street,
     address = @address
 WHERE id = @id; `
 
-const deleteMissionLocationQuery = `DELETE FROM hq.stations WHERE id = $1`
+const deleteMissionLocationQuery = `DELETE FROM mission.locations WHERE id = $1`
 
 func (u *MissionLocationRepository) Get(id int64) *results.ResultWithValue[*models.MissionLocation] {
 	r := u.AbstractRepository.Get(id, selectMissionLocationQuery)

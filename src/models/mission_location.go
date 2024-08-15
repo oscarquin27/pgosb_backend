@@ -6,7 +6,7 @@ import (
 
 type MissionLocation struct {
 	Id        int64 `db:"id"`
-	ServiceId int64 `db:"service_id"`
+	MissionId int64 `db:"mission_id"`
 
 	Alias *string `db:"alias"`
 
@@ -37,7 +37,7 @@ func (s *MissionLocation) SetId(id int64) {
 func (s *MissionLocation) GetNameArgs() pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"id":              s.Id,
-		"service_id":      s.ServiceId,
+		"mission_id":      s.MissionId,
 		"alias":           s.Alias,
 		"state_id":        s.StateId,
 		"state":           s.State,
