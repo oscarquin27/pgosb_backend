@@ -304,7 +304,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	locationMission := v1.Group("mission/location")
 	{
 		locationMission.GET("/:id", missionLocationController.Get)
-		// locationMission.GET("/group/:id", missionLocationController.GetByServiceId)
+		locationMission.GET("/group/:id", missionLocationController.GetLocationsByServiceId)
 		locationMission.GET("/all", missionLocationController.GetAll)
 		locationMission.POST("/create", missionLocationController.Create)
 		locationMission.PUT("/update", missionLocationController.Update)

@@ -61,6 +61,7 @@ func (u *MissionLocationController) Delete(c *gin.Context) {
 }
 
 func (u *MissionLocationController) GetLocationsByServiceId(c *gin.Context) {
+
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 	var returnList []api_models.MissionLocationJson = make([]api_models.MissionLocationJson, 0)

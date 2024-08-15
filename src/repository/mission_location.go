@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"context"
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils/results"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -22,6 +24,8 @@ func NewMissionLocationService(db *pgxpool.Pool) services.MissionLocationService
 }
 
 const selectMissionLocationQuery = "SELECT * FROM hq.stations WHERE id = $1"
+
+const selectMissionLocationQuerybyServiceId = "SELECT * FROM hq.stations WHERE service_id = $1"
 
 const selectAllMissionLocationQuery = "SELECT * FROM hq.stations"
 
@@ -100,7 +104,39 @@ func (u *MissionLocationRepository) Delete(id int64) *results.Result {
 func (u *MissionLocationRepository) GetLocationsByServiceId(id int64) *results.ResultWithValue[[]models.MissionLocation] {
 
 	defaultList := make([]models.MissionLocation, 0)
+
 	rest := results.NewResultWithValue("GetLocationByServiceId", false, defaultList, nil)
 
-	return rest
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return rest.WithError(
+			results.NewError("no se pudo adquirir conexion", err))
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, selectMissionLocationQuerybyServiceId)
+
+	if err != nil {
+		return rest.WithError(
+			results.NewError("no se pudo ejecutar el query", err))
+	}
+
+	defer rows.Close()
+
+	registers, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionLocation])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return rest.WithError(results.NewNotFoundError("no encontraron registros", err))
+		}
+
+		return rest.WithError(
+			results.NewError("no se pudo ejecutar el query", err))
+	}
+
+	return rest.WithValue(registers).Success()
 }
