@@ -1,5 +1,5 @@
 http:
-  port: 5001
+  port: 5002
   main_domain: "pruebas.gres.local.net"
   enable_ssl: true
   ssl_cert: "./config/pruebas.gres.local.net.pem"
