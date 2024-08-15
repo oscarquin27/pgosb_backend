@@ -268,7 +268,7 @@ func extractParams(value interface{}) map[string]interface{} {
 	for i := 0; i < modelType.NumField(); i++ {
 		field := modelType.Field(i)
 
-		fieldName := field.Tag.Get("json") // Use mk tag for field name
+		fieldName := field.Tag.Get("db") // Use mk tag for field name
 		s := strings.Split(fieldName, ",")
 		fieldName = s[0]
 		if fieldName == "" {
@@ -292,7 +292,7 @@ func extractParamFields(value interface{}) []string {
 	for i := 0; i < modelType.NumField(); i++ {
 		field := modelType.Field(i)
 
-		fieldName := field.Tag.Get("json") // Use mk tag for field name
+		fieldName := field.Tag.Get("db") // Use mk tag for field name
 		v := strings.Split(fieldName, ",")
 		fieldName = v[0]
 		if fieldName == "" {

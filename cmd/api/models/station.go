@@ -6,73 +6,87 @@ import (
 )
 
 type StationJson struct {
-	Id              string    `json:"id" db:"id"`
-	Municipality_id string    `json:"municipality_id"`
-	Name            string    `json:"name"`
-	Coordinates     string    `json:"coordinates"`
-	Description     string    `json:"description"`
-	Code            string    `json:"code"`
-	Abbreviation    string    `json:"abbreviation"`
-	Phones          *[]string `json:"phones"`
-	Regions         *[]string `json:"regions"`
-	State_id        string    `json:"state_id"`
-	Parish_id       string    `json:"parish_id"`
-	Sector          string    `json:"sector"`
-	Community       string    `json:"community"`
-	Street          string    `json:"street"`
-	Institution     string    `json:"institution"`
-	State           string    `json:"state"`
-	Municipality    string    `json:"municipality"`
-	Parish          string    `json:"parish"`
-	Address         string    `json:"address"`
+	Id           string   `json:"id"`
+	Name         string   `json:"name"`
+	Description  string   `json:"description"`
+	Abbreviation string   `json:"abbreviation"`
+	Phones       []string `json:"phones"`
+	RegionId     string   `json:"region_id"`
+
+	StateId string `json:"state_id"`
+	State   string `json:"state"`
+
+	MunicipalityId string `json:"municipality_id"`
+	Municipality   string `json:"municipality"`
+
+	ParishId string `json:"parish_id"`
+	Parish   string `json:"parish"`
+
+	SectorId string `json:"sector_id"`
+	Sector   string `json:"sector"`
+
+	UrbId string `json:"urb_id"`
+	Urb   string `json:"urb"`
+
+	Street string `json:"street"`
+
+	Address string `json:"address"`
 }
 
 func ModelToStationJson(s *models.Station) *StationJson {
 	station := StationJson{
-		Id:              utils.ConvertFromInt4(s.Id),
-		Municipality_id: utils.ConvertFromInt4(s.Municipality_id),
-		Name:            utils.ConvertFromText(s.Name),
-		Coordinates:     utils.ConvertFromText(s.Coordinates),
-		Description:     utils.ConvertFromText(s.Description),
-		Code:            utils.ConvertFromText(s.Code),
-		Abbreviation:    utils.ConvertFromText(s.Abbreviation),
-		Phones:          s.Phones,
-		Regions:         s.Regions, // Make sure this is included if you're using it
-		State_id:        utils.ConvertFromInt4(s.State_id),
-		Parish_id:       utils.ConvertFromInt4(s.Parish_id),
-		Sector:          utils.ConvertFromText(s.Sector),
-		Community:       utils.ConvertFromText(s.Community),
-		Street:          utils.ConvertFromText(s.Street),
-		Institution:     utils.ConvertFromText(s.Institution),
-		State:           utils.ConvertFromText(s.State),
-		Municipality:    utils.ConvertFromText(s.Municipality),
-		Parish:          utils.ConvertFromText(s.Parish),
-		Address:         utils.ConvertFromText(s.Address),
+		Id:             utils.ParseInt64Sring(s.Id),
+		RegionId:       utils.ParseInt64SringPointer(s.RegionId),
+		StateId:        utils.ParseInt64SringPointer(s.StateId),
+		MunicipalityId: utils.ParseInt64SringPointer(s.MunicipalityId),
+		ParishId:       utils.ParseInt64SringPointer(s.ParishId),
+		SectorId:       utils.ParseInt64SringPointer(s.SectorId),
+		UrbId:          utils.ParseInt64SringPointer(s.UrbId),
+		Name:           utils.GetStringFromPointer(s.Name),
+		Description:    utils.GetStringFromPointer(s.Description),
+		Abbreviation:   utils.GetStringFromPointer(s.Abbreviation),
+		Phones:         s.Phones,
+		State:          utils.GetStringFromPointer(s.State),
+		Municipality:   utils.GetStringFromPointer(s.Municipality),
+		Parish:         utils.GetStringFromPointer(s.Parish),
+		Sector:         utils.GetStringFromPointer(s.Sector),
+		Urb:            utils.GetStringFromPointer(s.Urb),
+		Street:         utils.GetStringFromPointer(s.Street),
+		Address:        utils.GetStringFromPointer(s.Address),
 	}
 	return &station
 }
 
 func (s *StationJson) ToModel() models.Station {
+
+	regionId := utils.ParseInt64(s.RegionId)
+	state_id := utils.ParseInt64(s.StateId)
+	municipality_id := utils.ParseInt64(s.MunicipalityId)
+	parish_id := utils.ParseInt64(s.ParishId)
+	sector_id := utils.ParseInt64(s.SectorId)
+	urb_id := utils.ParseInt64(s.UrbId)
+
 	station := models.Station{
-		Id:              utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id)),
-		Municipality_id: utils.ConvertToPgTypeInt4(utils.ParseInt(s.Municipality_id)),
-		Name:            utils.ConvertToPgTypeText(s.Name),
-		Coordinates:     utils.ConvertToPgTypeText(s.Coordinates),
-		Description:     utils.ConvertToPgTypeText(s.Description),
-		Code:            utils.ConvertToPgTypeText(s.Code),
-		Abbreviation:    utils.ConvertToPgTypeText(s.Abbreviation),
-		Phones:          s.Phones,
-		Regions:         s.Regions, // Make sure this is included if you're using it
-		State_id:        utils.ConvertToPgTypeInt4(utils.ParseInt(s.State_id)),
-		Parish_id:       utils.ConvertToPgTypeInt4(utils.ParseInt(s.Parish_id)),
-		Sector:          utils.ConvertToPgTypeText(s.Sector),
-		Community:       utils.ConvertToPgTypeText(s.Community),
-		Street:          utils.ConvertToPgTypeText(s.Street),
-		Institution:     utils.ConvertToPgTypeText(s.Institution),
-		State:           utils.ConvertToPgTypeText(s.State),
-		Municipality:    utils.ConvertToPgTypeText(s.Municipality),
-		Parish:          utils.ConvertToPgTypeText(s.Parish),
-		Address:         utils.ConvertToPgTypeText(s.Address),
+
+		Id: utils.ParseInt64(s.Id),
+
+		RegionId:       &regionId,
+		StateId:        &state_id,
+		MunicipalityId: &municipality_id,
+		ParishId:       &parish_id,
+		SectorId:       &sector_id,
+		UrbId:          &urb_id,
+		Name:           &s.Name,
+		Description:    &s.Description,
+		Abbreviation:   &s.Abbreviation,
+		Phones:         s.Phones,
+		State:          &s.State,
+		Municipality:   &s.Municipality,
+		Parish:         &s.Parish,
+		Sector:         &s.Sector,
+		Urb:            &s.Urb,
+		Street:         &s.Street,
+		Address:        &s.Address,
 	}
 	return station
 }

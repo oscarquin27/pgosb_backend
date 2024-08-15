@@ -4,11 +4,11 @@ import (
 	auth_handlers "fdms/cmd/api/handlers/auth"
 	center_handlers "fdms/cmd/api/handlers/centers"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
-	location_handlers "fdms/cmd/api/handlers/locations"
 	municipality_handler "fdms/cmd/api/handlers/locations/municipality"
 	parish_handler "fdms/cmd/api/handlers/locations/parish"
 	sector_handler "fdms/cmd/api/handlers/locations/sector"
 	state_handler "fdms/cmd/api/handlers/locations/states"
+	urbanization_handler "fdms/cmd/api/handlers/locations/urbanization"
 	mission_handlers "fdms/cmd/api/handlers/mission"
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
@@ -68,7 +68,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	municipalityService := repository.NewMunicipalityService(db)
 	parishSevice := repository.NewParishService(db)
 	sectorService := repository.NewSectorService(db)
-	locationService := repository.NewLocationService(db)
+	urbanizationService := repository.NewUrbanizationService(db)
+
 	vehicleService := repository.NewVehicleService(db)
 
 	layoutService := repository.NewLayoutService(db)
@@ -96,8 +97,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	municpalityController := municipality_handler.NewMunicipalityController(municipalityService)
 	parishController := parish_handler.NewParishController(parishSevice)
 	sectorController := sector_handler.NewSectorController(sectorService)
-
-	locationController := location_handlers.NewLocationController(locationService)
+	urbanizationController := urbanization_handler.NewUrbanizationController(urbanizationService)
 
 	vehicleController := vehicle_handlers.NewVehicleController(vehicleService)
 
@@ -187,13 +187,13 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		sector.DELETE("/:id", sectorController.Delete)
 	}
 
-	city := v1.Group("/location/city")
+	urbanization := v1.Group("/location/urbanization")
 	{
-		city.GET("/:id", locationController.GetCity)
-		city.GET("/all", locationController.GetAllCity)
-		city.POST("/create", locationController.CreateCity)
-		city.PUT("/update", locationController.UpdateCity)
-		city.DELETE("/:id", locationController.DeleteCity)
+		urbanization.GET("/:id", urbanizationController.Get)
+		urbanization.GET("/all", urbanizationController.GetAll)
+		urbanization.POST("/create", urbanizationController.Create)
+		urbanization.PUT("/update", urbanizationController.Update)
+		urbanization.DELETE("/:id", urbanizationController.Delete)
 	}
 
 	station := v1.Group("/station")

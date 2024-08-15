@@ -169,7 +169,7 @@ func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error 
 func (u *MissionVehicleRepository) Update(vehicle *models.MissionVehicle) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(vehicle).Omit("id").Insert("missions.vehicles")
+	rows, err := m.Model(vehicle).Omit("id").Where("id", "=", vehicle.Id).Update("missions.vehicles")
 
 	if err != nil {
 		return err

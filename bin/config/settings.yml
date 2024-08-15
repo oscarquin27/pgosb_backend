@@ -5,7 +5,7 @@ http:
   ssl_cert: "./config/pruebas.gres.local.net.pem"
   ssl_key: "./config/pruebas.gres.local.net-key.pem"
 database:
-  connection_string: "dbname=postgres user=postgres password=postgres host=localhost port=5435 pool_max_conns=10"
+  connection_string: "dbname=postgres user=postgres password=postgres host=192.168.120.122 port=5435 pool_max_conns=10"
 keycloak:
   address: "http://localhost:8442"
   admin_user: "admin"

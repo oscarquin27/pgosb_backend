@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5"
 )
 
 var (
@@ -13,29 +13,57 @@ var (
 	ErrorStationNotDeleted = errors.New("la Estación no pudo ser eliminada")
 )
 
-type Phones struct {
-	AreaCode string `json:"area_code"`
-	Number   string `json:"number"`
+type Station struct {
+	Id           int64    `db:"id"`
+	Name         *string  `db:"name"`
+	Description  *string  `db:"description"`
+	Abbreviation *string  `db:"abbreviation"`
+	Phones       []string `db:"phones"`
+	RegionId     *int64   `db:"region_id"`
+
+	StateId *int64  `db:"state_id"`
+	State   *string `db:"state"`
+
+	MunicipalityId *int64  `db:"municipality_id"`
+	Municipality   *string `db:"municipality"`
+
+	ParishId *int64  `db:"parish_id"`
+	Parish   *string `db:"parish"`
+
+	SectorId *int64  `db:"sector_id"`
+	Sector   *string `db:"sector"`
+
+	UrbId *int64  `db:"urb_id"`
+	Urb   *string `db:"urb"`
+
+	Street *string `db:"street"`
+
+	Address *string `db:"address"`
 }
 
-type Station struct {
-	Id              pgtype.Int4 `json:"id" db:"id"`
-	Municipality_id pgtype.Int4 `json:"municipality_id"`
-	Name            pgtype.Text `json:"name"`
-	Coordinates     pgtype.Text `json:"coordinates"`
-	Description     pgtype.Text `json:"description"`
-	Code            pgtype.Text `json:"code"`
-	Abbreviation    pgtype.Text `json:"abbreviation"`
-	Phones          *[]string   `json:"phones"`
-	Regions         *[]string   `json:"regions"`
-	State_id        pgtype.Int4 `json:"state_id"`
-	Parish_id       pgtype.Int4 `json:"parish_id"`
-	Sector          pgtype.Text `json:"sector"`
-	Community       pgtype.Text `json:"community"`
-	Street          pgtype.Text `json:"street"`
-	Institution     pgtype.Text `json:"institution"`
-	State           pgtype.Text `json:"state"`
-	Municipality    pgtype.Text `json:"municipality"`
-	Parish          pgtype.Text `json:"parish"`
-	Address         pgtype.Text `json:"address"`
+func (s *Station) SetId(id int64) {
+	s.Id = id
+}
+
+func (s *Station) GetNameArgs() pgx.NamedArgs {
+	return pgx.NamedArgs{
+		"id":              s.Id,
+		"name":            s.Name,
+		"description":     s.Description,
+		"abbreviation":    s.Abbreviation,
+		"phones":          s.Phones,
+		"region_id":       s.RegionId,
+		"state_id":        s.StateId,
+		"state":           s.State,
+		"municipality_id": s.MunicipalityId,
+		"municipality":    s.Municipality,
+		"parish_id":       s.ParishId,
+		"parish":          s.Parish,
+		"sector_id":       s.SectorId,
+		"sector":          s.Sector,
+		"urb_id":          s.UrbId,
+		"urb":             s.Urb,
+		"street":          s.Street,
+		"address":         s.Address,
+	}
 }

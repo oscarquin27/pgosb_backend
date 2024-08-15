@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/jackc/pgx/v5"
-	"github.com/jackc/pgx/v5/pgtype"
 )
 
 var (
@@ -112,11 +111,20 @@ func (s *Sector) GetNameArgs() pgx.NamedArgs {
 	}
 }
 
-type City struct {
-	Id          pgtype.Int8 `json:"id" db:"city_id"`
-	State_Id    pgtype.Int8 `json:"state_id"`
-	Name        pgtype.Text `json:"name"`
-	Area_Code   pgtype.Text `json:"area_code"`
-	Zip_Code    pgtype.Text `json:"zip_code"`
-	Coordinates pgtype.Text `json:"Coordinates"`
+type Urbanization struct {
+	Id       int64   `db:"id"`
+	SectorId int64   `db:"sector_id"`
+	Name     *string `db:"name"`
+}
+
+func (s *Urbanization) SetId(id int64) {
+	s.Id = id
+}
+
+func (s *Urbanization) GetNameArgs() pgx.NamedArgs {
+	return pgx.NamedArgs{
+		"id":        s.Id,
+		"sector_id": s.SectorId,
+		"name":      s.Name,
+	}
 }
