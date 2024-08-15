@@ -197,12 +197,12 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 }
 
 // GetUsers implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.UserSimple] {
+func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.UserMission] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	r := results.NewResultWithValue[[]models.UserSimple]("Get-Units-Simple", false, make([]models.UserSimple, 0), nil).
+	r := results.NewResultWithValue[[]models.UserMission]("Get-UserMission-Simple", false, make([]models.UserMission, 0), nil).
 		Failure()
 
 	if err != nil {
@@ -211,23 +211,23 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT coalesce(id::varchar, '') as id, 
-		coalesce((first_name || ' ' || last_name)::varchar, '') as name, 
-		coalesce(user_name::varchar, '') as user_name, 
-		coalesce(rank::varchar, '') as rank,
-		coalesce(code::varchar, '') as code,
-		coalesce(legal_id::varchar, '') as legal_id
-		FROM users."user" u
-		where id in (select 
-			unnest(s.bombers) as id
-		from missions.services s
-		where s.id = $1)`, id)
+	rows, err := conn.Query(ctx, `select u.id::varchar as id,
+		f.id::varchar as firefighter_id,
+		coalesce((u.first_name || ' ' || u.last_name)::varchar, '') as name,
+		coalesce(u.user_name::varchar, '') as user_name,
+		coalesce(u.rank::varchar, '') as rank,
+		coalesce(u.code::varchar, '') as code,
+		coalesce(u.legal_id::varchar, '') as legal_id,
+		coalesce(f.rol::varchar, '') as rol
+		from users."user" u 
+		join missions.firefighters f on f.user_id = u.id 
+		where f.service_id = $1)`, id)
 
 	if err != nil {
 		return r.WithError(results.NewError(err.Error(), err))
 	}
 
-	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UserSimple])
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UserMission])
 
 	if err != nil {
 		if err == pgx.ErrNoRows || len(users) == 0 {
