@@ -58,6 +58,7 @@ type UserProfile struct {
 	Beach           pgtype.Text    `json:"beach"`
 	Address         pgtype.Text    `json:"address"`
 	Legal_id        pgtype.Text    `json:"legal_id"`
+	StatusUser      *string        `json:"status_user" db:"status_user"`
 	// Skills          []string       `json:"skills"`
 }
 
@@ -80,30 +81,30 @@ type User struct {
 }
 
 type UserSimple struct {
-	Id        string `json:"id"`
-	Name      string `json:"name"`
-	User_name string `json:"user_name"`
-	Rank      string `json:"rank"`
-	Code      string `json:"code"`
-	Legal_id  string `json:"legal_id"`
+	Id           string `json:"id"`
+	Name         string `json:"name"`
+	User_name    string `json:"user_name"`
+	Rank         string `json:"rank"`
+	PersonalCode string `json:"personal_code"`
+	Legal_id     string `json:"legal_id"`
 }
 
 type UserMission struct {
-	Id        string `json:"id"`
+	Id            string `json:"id"`
 	FireFighterId string `json:"firefighter_id"`
-	Name      string `json:"name"`
-	User_name string `json:"user_name"`
-	Rank      string `json:"rank"`
-	Code      string `json:"code"`
-	Legal_id  string `json:"legal_id"`
-	Role      string `json:"role"`	
+	Name          string `json:"name"`
+	User_name     string `json:"user_name"`
+	Rank          string `json:"rank"`
+	Code          string `json:"code"`
+	Legal_id      string `json:"legal_id"`
+	Role          string `json:"role"`
 }
 
 func (u *UserSimple) UserSimpleFromUser(user *User) *UserSimple {
 
 	u.Id = strconv.FormatInt(user.Id, 10)
 	u.User_name = utils.ConvertFromText(user.User_name)
-	u.Code = utils.ConvertFromText(user.Code)
+	u.PersonalCode = utils.ConvertFromText(user.Personal_code)
 	u.Name = fmt.Sprintf("%s %s", utils.ConvertFromText(user.First_name), utils.ConvertFromText(user.Last_name))
 	u.Rank = utils.ConvertFromText(user.Rank)
 	u.Legal_id = utils.ConvertFromText(user.Legal_id)

@@ -155,7 +155,7 @@ func (userDto *UserJson) ToModelSimple() models.UserSimple {
 	user.Id = userDto.Id
 	user.Name = fmt.Sprintf("%s %s", userDto.First_name, userDto.Last_name)
 	user.Legal_id = userDto.Legal_id
-	user.Code = userDto.Code
+	user.PersonalCode = userDto.Code
 	user.Rank = userDto.Rank
 	user.User_name = userDto.User_name
 

@@ -13,6 +13,6 @@ type MissionServiceService interface {
 	Create(user *models.MissionService) (*models.MissionService, error)
 	Update(user *models.MissionService) error
 	Delete(id int) error
-	GetUnits(id int) (*results.ResultWithValue[[]models.UnitSimple])
-	GetUsers(id int) (*results.ResultWithValue[[]models.UserMission])
+	GetUnits(id int) *results.ResultWithValue[[]models.UnitSimple]
+	GetUsers(id int) *results.ResultWithValue[[]models.UserSimple]
 }

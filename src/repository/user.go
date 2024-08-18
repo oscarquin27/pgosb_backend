@@ -42,14 +42,7 @@ func (u *UserRepository) Get(id int64) *results.ResultWithValue[*models.User] {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role,
-	u.user_name,
-	u.first_name,
-	u.last_name,
-	u.email,
-	u.photo,
-	u.gender,
-	u.phone,
+	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role,u.user_name,u.first_name,u.last_name,u.email,u.photo,u.gender,u.phone,
 	u.secondary_phone,
 	u.birth_date,
 	u.age,
@@ -83,6 +76,7 @@ func (u *UserRepository) Get(id int64) *results.ResultWithValue[*models.User] {
 	u.beach,
 	u.address,
 	u.legal_id,
+	u.status_user,
 	ra.role_name as role
 FROM users.user u
 left join users.roles ra on ra.id = u.id_role
@@ -164,6 +158,8 @@ func (u *UserRepository) GetAll() ([]models.User, *results.GeneralError) {
 	u.beach,
 	u.address,
 	u.legal_id,
+	u.status_user,
+	
 	ra.role_name as role
 FROM users.user u
 left join users.roles ra on ra.id = u.id_role`)
@@ -598,8 +594,20 @@ func (u *UserRepository) GetAllSimple() *results.ResultWithValue[[]models.UserSi
 
 	for _, user := range allUsers {
 
+		if user.StatusUser == nil {
+			continue
+		}
+
+		status := *user.StatusUser
+
+		if status != "ACTIVO" {
+			continue
+		}
+
 		userSimple := models.UserSimple{}
+
 		userSimple = *userSimple.UserSimpleFromUser(&user)
+
 		usersSimples = append(usersSimples, userSimple)
 	}
 

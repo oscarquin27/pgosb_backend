@@ -23,24 +23,24 @@ func NewMissionLocationService(db *pgxpool.Pool) services.MissionLocationService
 	}
 }
 
-const selectMissionLocationQuery = "SELECT * FROM mission.locations WHERE id = $1"
+const selectMissionLocationQuery = "SELECT * FROM missions.locations WHERE id = $1"
 
-const selectMissionLocationQuerybyServiceId = "SELECT * FROM mission.locations WHERE mission_id = $1"
+const selectMissionLocationQuerybyServiceId = "SELECT * FROM missions.locations WHERE mission_id = $1"
 
-const selectAllMissionLocationQuery = "SELECT * FROM mission.locations"
+const selectAllMissionLocationQuery = "SELECT * FROM missions.locations"
 
-const insertMissionLocationQuery = `INSERT INTO mission.locations (
+const insertMissionLocationQuery = `INSERT INTO missions.locations (
     
     alias,state_id, state, municipality_id, municipality, parish_id,
-    parish, sector_id, sector, urb_id, urb,  address
+    parish, sector_id, sector, urb_id, urb,  address , mission_id
 )
 VALUES (
      @alias, 
     @state_id, @state, @municipality_id, @municipality, @parish_id, 
-    @parish, @sector_id, @sector, @urb_id, @urb,  @address
+    @parish, @sector_id, @sector, @urb_id, @urb,  @address, @mission_id
 ) RETURNING id`
 
-const updateMissionLocationQuery = `UPDATE mission.locations
+const updateMissionLocationQuery = `UPDATE missions.locations
 SET 
     alias = @alias, 
     
@@ -54,10 +54,11 @@ SET
     sector = @sector,
     urb_id = @urb_id,
     urb = @urb,
-    address = @address
+    address = @address,
+	mission_id = @mission_id
 WHERE id = @id; `
 
-const deleteMissionLocationQuery = `DELETE FROM mission.locations WHERE id = $1`
+const deleteMissionLocationQuery = `DELETE FROM missions.locations WHERE id = $1`
 
 func (u *MissionLocationRepository) Get(id int64) *results.ResultWithValue[*models.MissionLocation] {
 	r := u.AbstractRepository.Get(id, selectMissionLocationQuery)
@@ -113,7 +114,7 @@ func (u *MissionLocationRepository) GetLocationsByServiceId(id int64) *results.R
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, selectMissionLocationQuerybyServiceId)
+	rows, err := conn.Query(ctx, selectMissionLocationQuerybyServiceId, id)
 
 	if err != nil {
 		return rest.WithError(
