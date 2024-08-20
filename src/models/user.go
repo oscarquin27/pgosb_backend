@@ -81,12 +81,12 @@ type User struct {
 }
 
 type UserSimple struct {
-	Id           string `json:"id"`
-	Name         string `json:"name"`
-	User_name    string `json:"user_name"`
-	Rank         string `json:"rank"`
-	PersonalCode string `json:"personal_code"`
-	Legal_id     string `json:"legal_id"`
+	Id           string  `json:"id"`
+	Name         string  `json:"name"`
+	User_name    *string `json:"user_name"`
+	Rank         string  `json:"rank"`
+	PersonalCode string  `json:"personal_code"`
+	Legal_id     string  `json:"legal_id"`
 }
 
 type UserMission struct {
@@ -102,8 +102,11 @@ type UserMission struct {
 
 func (u *UserSimple) UserSimpleFromUser(user *User) *UserSimple {
 
+	username := utils.ConvertFromText(user.User_name)
 	u.Id = strconv.FormatInt(user.Id, 10)
-	u.User_name = utils.ConvertFromText(user.User_name)
+
+	u.User_name = &username
+
 	u.PersonalCode = utils.ConvertFromText(user.Personal_code)
 	u.Name = fmt.Sprintf("%s %s", utils.ConvertFromText(user.First_name), utils.ConvertFromText(user.Last_name))
 	u.Rank = utils.ConvertFromText(user.Rank)

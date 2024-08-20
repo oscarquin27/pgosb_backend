@@ -1,0 +1,39 @@
+# Imagen base de Golang
+FROM golang:1.22.3-alpine AS builder
+
+# Deshabilitar CGO para una compilación estática
+ENV CGO_ENABLED=0
+
+# Establecer el sistema operativo y la arquitectura de destino
+ENV GOOS=linux
+ENV GOARCH=amd64
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de código fuente y archivos de módulos
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY ./src ./src 
+COPY ./cmd ./cmd 
+
+# Compilar el ejecutable
+RUN go build -o /app/pgosb_api_app ./cmd/api/
+
+# Imagen base para la aplicación final
+FROM alpine:latest
+
+# Establecer el directorio de trabajo
+WORKDIR /app
+
+# Copiar el ejecutable desde la imagen de compilación
+COPY --from=builder /app/pgosb_api_app /app/pgosb_api_app
+
+# Otorgar permisos de ejecución al ejecutable (importante)
+RUN chmod +x /app/pgosb_api_app
+
+# Exponer el puerto necesario para el servicio (reemplaza 8080 con el puerto correcto)
+
+# Iniciar la aplicación
+ENTRYPOINT ["/app/pgosb_api_app"]

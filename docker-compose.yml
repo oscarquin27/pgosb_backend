@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+ 
+  pgosb_api_app:
+    image: orlandoiii/pgosb_api_app:0.8.2
+    ports:
+      - "8082:8082"
+      
+    volumes:
+      - /app/gres/pgosb_back_end/config/:/app/cmd/config
+      - /etc/letsencrypt/archive/hackorlandodev.com/:/etc/letsencrypt/archive/hackorlandodev.com/
+      - /etc/letsencrypt/live/hackorlandodev.com/:/etc/letsencrypt/live/hackorlandodev.com/
+    container_name: pgosb_api_app
+    environment:
+          - TZ=America/Caracas
+    #restart: always
+

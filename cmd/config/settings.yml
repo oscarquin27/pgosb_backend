@@ -1,12 +1,12 @@
 http:
-  port: 5002
+  port: 8082
   main_domain: "pruebas.gres.local.net"
   enable_ssl: true
   ssl_cert: "./config/pruebas.gres.local.net.pem"
   ssl_key: "./config/pruebas.gres.local.net-key.pem"
 
 database:
-  connection_string: "dbname=postgres user=postgres password=postgres host=localhost port=5435 pool_max_conns=10"
+  connection_string: "dbname=postgres user=postgres password=postgres host=192.168.120.122 port=5435 pool_max_conns=10"
 keycloak:
   address: "http://localhost:8442"
   admin_user: "admin"
@@ -19,7 +19,7 @@ log_settings:
   console: true
   beutify_console: false
   file: true
-  route: "logs/application.log"
+  route: "./logs/application.log"
   min_level: "trace"
   rotation_max_size_mb: 100
   max_age_day: 7

@@ -157,7 +157,7 @@ func (userDto *UserJson) ToModelSimple() models.UserSimple {
 	user.Legal_id = userDto.Legal_id
 	user.PersonalCode = userDto.Code
 	user.Rank = userDto.Rank
-	user.User_name = userDto.User_name
+	user.User_name = &userDto.User_name
 
 	return user
 }

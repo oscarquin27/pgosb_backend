@@ -18,7 +18,7 @@ log_settings:
   console: true 
   beutify_console: false 
   file: true 
-  route: "logs/application.log" 
+  route: "./logs/application.log" 
   min_level: "trace" 
   rotation_max_size_mb: 100 
   max_age_day: 7

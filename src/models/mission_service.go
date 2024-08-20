@@ -14,7 +14,7 @@ var (
 )
 
 type MissionService struct {
-	Id          pgtype.Int4   `json:"id" binding:"required" db:"id"`
+	Id          pgtype.Int4   `json:"id" db:"id"`
 	MissionId   pgtype.Int2   `json:"mission_id" db:"mission_id"`
 	AntaresId   pgtype.Int2   `json:"antares_id,omitempty" db:"antares_id"`
 	Units       []pgtype.Int2 `json:"units,omitempty" db:"units"`

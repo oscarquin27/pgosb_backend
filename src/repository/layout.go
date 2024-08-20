@@ -25,11 +25,11 @@ func (u *LayoutRepository) Get(entity string) ([]models.Layout, error) {
 
 	conn, err := u.connPool.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, "select id, column_name, display_name, group_name, visibility, entity_name, type from layouts.layout where entity_name = $1", entity)
 
