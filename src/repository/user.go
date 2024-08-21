@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	"fdms/src/infrastructure/keycloak"
 	"fdms/src/models"
 	"fdms/src/services"
@@ -373,7 +374,7 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 
 	defer tx.Rollback(ctx)
 
-	var keycloakId string
+	var keycloakId sql.NullString
 
 	userResult := u.Get(user.Id)
 
@@ -390,7 +391,7 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 			results.NewUnknowError("no se pudo ejecutar query", err))
 	}
 
-	err = tx.QueryRow(ctx, `
+	row := tx.QueryRow(ctx, `
 		UPDATE users.user
 		SET id_role = $1,
 			first_name = $2,
@@ -473,7 +474,9 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 		user.UserProfile.Street,
 		user.UserProfile.Beach,
 		user.UserProfile.Address,
-		user.UserProfile.Legal_id).Scan(&keycloakId)
+		user.UserProfile.Legal_id)
+
+	err = row.Scan(&keycloakId)
 
 	if err != nil {
 		return r.WithError(
@@ -483,15 +486,16 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	previous := userResult.Value
 
 	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
-		err = u.auth.DeleteUser(ctx, keycloakId)
+		err = u.auth.DeleteUser(ctx, keycloakId.String)
 
 		if err != nil {
 			return r.WithError(
 				results.NewUnknowError("no se pudo ejecutar query", err))
 		}
 
-	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool && keycloakId == "" {
-		keycloakId, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String, user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
+	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool {
+		keycloakId.String, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String,
+			user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
 
 		if err != nil {
 			return r.WithError(
