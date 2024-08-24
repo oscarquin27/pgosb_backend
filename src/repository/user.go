@@ -486,6 +486,8 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	previous := userResult.Value
 
 	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
+
+		err = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", user.UserIdentification.Id).Scan(&keycloakId)
 		err = u.auth.DeleteUser(ctx, keycloakId.String)
 
 		if err != nil {
@@ -496,7 +498,9 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool {
 		keycloakId.String, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String,
 			user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
-
+		
+	    keycloakId.Valid = true
+		
 		if err != nil {
 			return r.WithError(
 				results.NewUnknowError("no se pudo ejecutar query", err))
