@@ -26,11 +26,11 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
 	antares_id, 
@@ -44,7 +44,10 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	deceased,
 	station_id,
 	center_id,
-	location_id
+	location_id,
+	service_date,
+	manual_service_date,
+	is_important
 
 	
 	FROM missions.services where id = $1;`, id)
@@ -71,11 +74,11 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
 	antares_id, 
@@ -89,7 +92,11 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	deceased ,
 	station_id,
 	center_id,
-	location_id
+	location_id,
+    service_date,
+	manual_service_date,
+	is_important
+	
 
 	
 	FROM missions.services order by id desc;`)
@@ -116,11 +123,11 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
 	antares_id, 
@@ -134,7 +141,10 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	deceased ,
 	station_id,
 	center_id,
-	location_id
+	location_id,
+	service_date,
+	manual_service_date,
+	is_important
 	
 	
 	FROM missions.services where mission_id = $1 `, id)
@@ -238,7 +248,7 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	m := mikro.NewMkModel(u.db)
 
-	err := m.Model(s).Omit("id").
+	err := m.Model(s).Omit("id").Omit("service_date").
 		Returning().InsertReturning("missions.services")
 
 	if err != nil {
@@ -277,13 +287,15 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	deceased = $10,
 	station_id = $11,
 	center_id = $12,
-	location_id = $13
-
+	location_id = $13,
+	manual_service_date = $14,
+	is_important = $15
 	
 	
 	
-	WHERE id = $14`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
-		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.LocationId, s.Id)
+	WHERE id = $16`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
+		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.LocationId,
+		s.ManualServiceDate, s.IsImportant, s.Id)
 
 	if err != nil {
 		return err

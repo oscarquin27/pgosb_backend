@@ -1,6 +1,7 @@
 package models
 
 import (
+	"database/sql"
 	"errors"
 
 	"github.com/jackc/pgx/v5/pgtype"
@@ -27,6 +28,10 @@ type MissionService struct {
 	Deceased    *int64        `json:"deceased" db:"deceased"`
 	StationId   *int64        `json:"station_id" db:"station_id"`
 	LocationId  *int64        `json:"location_id" db:"location_id"`
+
+	ServiceDate       sql.NullTime `json:"service_date" db:"service_date"`
+	ManualServiceDate sql.NullTime `json:"manual_service_date" db:"manual_service_date"`
+	IsImportant       bool         `json:"is_important" db:"is_important"`
 
 	HealthCareCenterId *int64 `json:"center_id" db:"center_id"`
 }

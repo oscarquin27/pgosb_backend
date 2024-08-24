@@ -1,8 +1,10 @@
 package api_models
 
 import (
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/utils"
+	"time"
 )
 
 type MissionServiceJson struct {
@@ -21,6 +23,10 @@ type MissionServiceJson struct {
 	Injured            string   `json:"injured"`
 	Transported        string   `json:"transported"`
 	Deceased           string   `json:"deceased"`
+
+	ServiceDate       string `json:"service_date"`
+	ManualServiceDate string `json:"manual_service_date"`
+	IsImportant       bool   `json:"is_important"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -42,6 +48,15 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.LocationId = utils.ParseInt64SringPointer(s.LocationId)
 
 	service.HealthCareCenterId = utils.ParseInt64SringPointer(s.HealthCareCenterId)
+
+	if s.ManualServiceDate.Valid {
+		service.ManualServiceDate = s.ManualServiceDate.Time.Format("02-01-2006 15:04:05")
+	}
+
+	if s.ServiceDate.Valid {
+		service.ServiceDate = s.ServiceDate.Time.Format("02-01-2006 15:04:05")
+	}
+	service.IsImportant = s.IsImportant
 
 	return &service
 }
@@ -73,6 +88,25 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.StationId = &stationId
 	service.HealthCareCenterId = &centerId
 	service.LocationId = &locationId
+
+	manualServiceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualServiceDate)
+
+	if err == nil {
+		service.ManualServiceDate.Time = manualServiceDate
+		service.ManualServiceDate.Valid = true
+	} else {
+		logger.Warn().Err(err).Msg("Problema parseando manual service date")
+	}
+
+	// serviceDate, err := time.Parse("02-01-2006 15:04:05", s.ServiceDate)
+
+	// if err == nil {
+	// 	service.ServiceDate = serviceDate
+	// } else {
+	// 	logger.Warn().Err(err).Msg("Problema parseando service date")
+	// }
+
+	service.IsImportant = s.IsImportant
 
 	return service
 }

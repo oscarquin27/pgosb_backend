@@ -14,7 +14,8 @@ var (
 )
 
 type Mission struct {
-	Id        pgtype.Int4 `json:"id" binding:"required"`
-	CreatedAt pgtype.Date `json:"created_at,omitempty"`
-	Code      pgtype.Text `json:"code"`
+	Id        pgtype.Int4 `db:"id"`
+	CreatedAt pgtype.Date `db:"created_at,omitempty"`
+	Code      pgtype.Text `db:"code"`
+	Alias     *string     `db:"alias"`
 }

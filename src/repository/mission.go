@@ -30,13 +30,13 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT id, created_at, code from missions.mission order by created_at desc`)
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT id, created_at, code, alias from missions.mission order by created_at desc`)
 
 	if err != nil {
 		return nil, err
@@ -67,7 +67,7 @@ func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, created_at, code from missions.mission where id = $1;`, id)
+	rows, err := conn.Query(ctx, `SELECT id, created_at, code, alias from missions.mission where id = $1;`, id)
 
 	if err != nil {
 		logger.Error().Err(err).Msg("Error ejecutando0 querys")
@@ -112,9 +112,9 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 
 	// 2. Insert with the Retrieved ID
 	_, err = conn.Exec(ctx, `
-        INSERT INTO missions.mission (id, code, created_at)
-        VALUES ($1, $2, $3)`,
-		id, code, date,
+        INSERT INTO missions.mission (id, code, created_at, alias )
+        VALUES ($1, $2, $3, $4)`,
+		id, code, date, s.Alias,
 	)
 	if err != nil {
 		logger.Error().Err(err).Msg("Error executing insert query")
@@ -141,8 +141,9 @@ func (u *MissionRepository) Update(s *models.Mission) error {
 	}
 
 	_, err = conn.Exec(ctx, `UPDATE missions.mission
-	SET code = $1
-	WHERE id = $2`, s.Code, s.Id)
+	SET code = $1,
+	    alias = $2
+	WHERE id = $3`, s.Code, s.Alias, s.Id)
 
 	if err != nil {
 		return err
