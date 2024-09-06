@@ -3,6 +3,7 @@ package api_models
 import (
 	"fdms/src/models"
 	"fdms/src/utils"
+	"time"
 )
 
 type MissionSummaryJson struct {
@@ -12,6 +13,11 @@ type MissionSummaryJson struct {
 	NumServices     string `json:"num_services"`
 	NumFireFighters string `json:"num_firefighters"`
 	NumVehicles     string `json:"num_vehicles"`
+	Unharmed        string `json:"unharmed"`
+	Injured         string `json:"injured"`
+	Transported     string `json:"transported"`
+	Deceased        string `json:"deceased"`
+	Code            string `json:"code"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
@@ -39,23 +45,86 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.NumFireFighters = utils.ParseInt64Sring(s.NumFireFighters.Int64)
 	}
 
+	if s.Unharmed.Valid {
+		service.Unharmed = utils.ParseInt64Sring(s.Unharmed.Int64)
+	}
+
+	if s.Injured.Valid {
+		service.Injured = utils.ParseInt64Sring(s.Injured.Int64)
+	}
+
+	if s.Transported.Valid {
+		service.Transported = utils.ParseInt64Sring(s.Transported.Int64)
+	}
+
+	if s.Deceased.Valid {
+		service.Deceased = utils.ParseInt64Sring(s.Deceased.Int64)
+	}
+
+	if s.Code.Valid {
+		service.Code = s.Code.String
+	}
+
 	return &service
 }
 
 func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 	service := models.MissionSummary{}
 
-	// createdAt, err := time.Parse("02-01-2006 15:04:05", s.CreatedAt)
+	service.Id = utils.ParseInt64(s.Id)
 
-	// if err == nil {
-	// 	service.CreatedAt.Time = createdAt
-	// 	service.CreatedAt.Valid = true
-	// } else {
-	// 	logger.Warn().Err(err).Msg("Problema parseando created at date")
-	// }
+	if s.Alias != "" {
+		service.Alias.String = s.Alias
+		service.Alias.Valid = true
+	}
+
+	if s.CreatedAt != "" {
+		service.CreatedAt.Time, _ = time.Parse("02-01-2006 15:04:05", s.CreatedAt)
+		service.CreatedAt.Valid = true
+	}
 
 	service.Alias.String = s.Alias
 	service.Alias.Valid = true
+
+	if s.NumServices != "" {
+		service.NumServices.Int64 = utils.ParseInt64(s.NumServices)
+		service.NumServices.Valid = true
+	}
+
+	if s.NumVehicles != "" {
+		service.NumVehicles.Int64 = utils.ParseInt64(s.NumVehicles)
+		service.NumVehicles.Valid = true
+	}
+
+	if s.NumFireFighters != "" {
+		service.NumFireFighters.Int64 = utils.ParseInt64(s.NumFireFighters)
+		service.NumFireFighters.Valid = true
+	}
+
+	if s.Unharmed != "" {
+		service.Unharmed.Int64 = utils.ParseInt64(s.Unharmed)
+		service.Unharmed.Valid = true
+	}
+
+	if s.Injured != "" {
+		service.Injured.Int64 = utils.ParseInt64(s.Injured)
+		service.Injured.Valid = true
+	}
+
+	if s.Transported != "" {
+		service.Transported.Int64 = utils.ParseInt64(s.Transported)
+		service.Transported.Valid = true
+	}
+
+	if s.Deceased != "" {
+		service.Deceased.Int64 = utils.ParseInt64(s.Deceased)
+		service.Deceased.Valid = true
+	}
+
+	if s.Code != "" {
+		service.Code.String = s.Code
+		service.Code.Valid = true
+	}
 
 	return service
 }

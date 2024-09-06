@@ -160,7 +160,14 @@ func (u *MissionServiceController) GetUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, result.Value)
+	var missionDto []api_models.MissionUserServiceJson = make([]api_models.MissionUserServiceJson, 0)
+
+	for _, s := range result.Value {
+		newMission := api_models.ModelToMissionUserServiceJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
 }
 
 func (u *MissionServiceController) Create(c *gin.Context) {

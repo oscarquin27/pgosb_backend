@@ -89,17 +89,6 @@ type UserSimple struct {
 	Legal_id     string  `json:"legal_id"`
 }
 
-type UserMission struct {
-	Id            string `json:"id"`
-	FireFighterId string `json:"firefighter_id"`
-	Name          string `json:"name"`
-	User_name     string `json:"user_name"`
-	Rank          string `json:"rank"`
-	Code          string `json:"code"`
-	Legal_id      string `json:"legal_id"`
-	Role          string `json:"role"`
-}
-
 func (u *UserSimple) UserSimpleFromUser(user *User) *UserSimple {
 
 	username := utils.ConvertFromText(user.User_name)

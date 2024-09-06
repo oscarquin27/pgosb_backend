@@ -132,9 +132,7 @@ func (u *MissionServiceRepository) GetAllMissionServiceSummary() ([]models.Missi
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, alias, created_at, 
-	service_id, antares_id, description, service_date, manual_service_date, num_firefighters, num_vehicles, station_name
-       FROM missions.vw_service_summary`)
+	rows, err := conn.Query(ctx, `SELECT * FROM missions.vw_service_summary`)
 
 	if err != nil {
 		return defaultValue, err
@@ -245,12 +243,12 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 }
 
 // GetUsers implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.UserSimple] {
+func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.MissionUserService] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
 
-	r := results.NewResultWithValue[[]models.UserSimple]("Get-UserMission-Simple", false, make([]models.UserSimple, 0), nil).
+	r := results.NewResultWithValue[[]models.MissionUserService]("Get-UserMission-Simple", false, make([]models.MissionUserService, 0), nil).
 		Failure()
 
 	if err != nil {
@@ -259,7 +257,7 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 
 	defer conn.Release()
 
-	query := "SELECT id,first_name as name,rank,personal_code,legal_id,user_name FROM users.user WHERE id  IN (SELECT UNNEST(bombers) FROM missions.services WHERE id = $1)"
+	query := "SELECT * FROM missions.vw_services_firefighter WHERE service_id = $1"
 
 	rows, err := conn.Query(ctx, query, id)
 
@@ -267,7 +265,7 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 		return r.WithError(results.NewError(err.Error(), err))
 	}
 
-	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.UserSimple])
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionUserService])
 
 	if err != nil {
 		if err == pgx.ErrNoRows || len(users) == 0 {

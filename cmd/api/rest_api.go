@@ -138,6 +138,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		authGroup.POST("/change-password", AuthController.ChangePassword)
 
 	}
+
 	user := v1.Group("/user")
 	{
 		user.GET("/:id", userController.GetUser)
@@ -290,6 +291,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	{
 		firefightersMission.GET("/:id", missionFireFighterController.Get)
 		firefightersMission.POST("/create", missionFireFighterController.Create)
+		firefightersMission.PUT("/update", missionFireFighterController.Update)
+		firefightersMission.DELETE("/delete/:id", missionFireFighterController.Delete)
 
 	}
 
