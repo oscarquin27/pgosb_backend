@@ -59,7 +59,7 @@ func (u *AbstractRepository[T]) Get(id int64, selectQuery string) *results.Resul
 	return r.Success().WithValue(register)
 }
 
-func (u *AbstractRepository[T]) GetAll(query string) ([]T, *results.GeneralError) {
+func (u *AbstractRepository[T]) GetAll(query string, params ...string) ([]T, *results.GeneralError) {
 	var registersDefault []T = make([]T, 0)
 
 	ctx := context.Background()
@@ -73,7 +73,13 @@ func (u *AbstractRepository[T]) GetAll(query string) ([]T, *results.GeneralError
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, query)
+	var rows pgx.Rows
+
+	if len(params) > 0 {
+		rows, err = conn.Query(ctx, query, params)
+	} else {
+		rows, err = conn.Query(ctx, query)
+	}
 
 	if err != nil {
 		return registersDefault, results.

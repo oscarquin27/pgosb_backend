@@ -195,7 +195,7 @@ func (u *UnitRepository) Get(id int64) *results.ResultWithValue[*models.Unit] {
 	return r.Success().WithValue(&unity)
 }
 
-func (u *UnitRepository) GetAll() ([]models.Unit, *results.GeneralError) {
+func (u *UnitRepository) GetAll(parmas ...string) ([]models.Unit, *results.GeneralError) {
 	var units []models.Unit = make([]models.Unit, 0)
 
 	ctx := context.Background()

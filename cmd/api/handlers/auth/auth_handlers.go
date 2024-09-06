@@ -240,6 +240,43 @@ func (controller *AuthController) RefreshSession(c *gin.Context) {
 	c.JSON(200, userData)
 }
 
+func (controller *AuthController) ChangePassword(c *gin.Context) {
+
+	var changePasswordData ChangePasswordData
+
+	err := c.ShouldBindBodyWithJSON(&changePasswordData)
+
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	accessToken, err := c.Cookie(utils.PGOSB_ACCESS_TOKEN_COOKIE)
+
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	userInfo, err := controller.authService.GoCloak.GetUserInfo(c.Request.Context(), accessToken, config.Get().Keycloak.Realm)
+
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	err = controller.authService.ChangePassword(c.Request.Context(), accessToken, *userInfo.Sub,
+		changePasswordData.Password)
+
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+
+	c.Status(200)
+
+}
+
 func (controller *AuthController) LoginTest(c *gin.Context) {
 
 	// one, _ := c.Cookie(PGOSB_ACCESS_TOKEN_COOKIE)

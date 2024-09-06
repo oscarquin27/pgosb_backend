@@ -13,12 +13,12 @@ import (
 var keycloakConfig *config.Keycloak
 
 type KeycloakAuthenticationService struct {
-	client *gocloak.GoCloak
+	GoCloak *gocloak.GoCloak
 }
 
 func NewService(c *gocloak.GoCloak) *KeycloakAuthenticationService {
 
-	return &KeycloakAuthenticationService{client: c}
+	return &KeycloakAuthenticationService{c}
 }
 
 // ... (Custom error types remain the same) ...
@@ -26,7 +26,7 @@ func NewService(c *gocloak.GoCloak) *KeycloakAuthenticationService {
 // 1. Create User
 func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username, email, userID, password string) (string, error) {
 
-	token, err := s.client.LoginAdmin(ctx,
+	token, err := s.GoCloak.LoginAdmin(ctx,
 		keycloakConfig.AdminUser,
 		keycloakConfig.AdminPassword,
 		"master",
@@ -43,7 +43,7 @@ func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username
 		Attributes:  &map[string][]string{"pgosb_id": {userID}},
 	}
 
-	userId, err := s.client.CreateUser(ctx, token.AccessToken, keycloakConfig.Realm, user)
+	userId, err := s.GoCloak.CreateUser(ctx, token.AccessToken, keycloakConfig.Realm, user)
 
 	if err != nil {
 		return "", fmt.Errorf("error creating user: %w", err)
@@ -55,7 +55,7 @@ func (s *KeycloakAuthenticationService) CreateUser(ctx context.Context, username
 // 2. Inspect Token
 func (s *KeycloakAuthenticationService) InspectToken(ctx context.Context, accessToken string) error {
 
-	result, err := s.client.RetrospectToken(ctx, accessToken,
+	result, err := s.GoCloak.RetrospectToken(ctx, accessToken,
 		keycloakConfig.ClientId,
 		keycloakConfig.ClientSecret,
 		keycloakConfig.Realm) // Using master realm for introspection
@@ -83,7 +83,7 @@ func (s *KeycloakAuthenticationService) InspectToken(ctx context.Context, access
 
 // 3. Login User
 func (s *KeycloakAuthenticationService) LoginUser(ctx context.Context, username, password string) (*gocloak.JWT, error) {
-	token, err := s.client.Login(
+	token, err := s.GoCloak.Login(
 		ctx,
 		keycloakConfig.ClientId,
 		keycloakConfig.ClientSecret,
@@ -101,7 +101,7 @@ func (s *KeycloakAuthenticationService) LoginUser(ctx context.Context, username,
 // 3. Logout User
 func (s *KeycloakAuthenticationService) LogOutUser(ctx context.Context, sessionId string) error {
 
-	token, err := s.client.LoginAdmin(ctx,
+	token, err := s.GoCloak.LoginAdmin(ctx,
 		keycloakConfig.AdminUser,
 		keycloakConfig.AdminPassword,
 		"master",
@@ -110,7 +110,7 @@ func (s *KeycloakAuthenticationService) LogOutUser(ctx context.Context, sessionI
 		return fmt.Errorf("error getting token: %w", err)
 	}
 
-	err = s.client.LogoutUserSession(
+	err = s.GoCloak.LogoutUserSession(
 		ctx,
 		token.AccessToken,
 		keycloakConfig.Realm,
@@ -125,7 +125,7 @@ func (s *KeycloakAuthenticationService) LogOutUser(ctx context.Context, sessionI
 
 // 4. Refresh Token
 func (s *KeycloakAuthenticationService) RefreshToken(ctx context.Context, refreshToken string) (*gocloak.JWT, error) {
-	token, err := s.client.RefreshToken(
+	token, err := s.GoCloak.RefreshToken(
 		ctx,
 		refreshToken,
 		keycloakConfig.ClientId,
@@ -141,12 +141,12 @@ func (s *KeycloakAuthenticationService) RefreshToken(ctx context.Context, refres
 
 func (s *KeycloakAuthenticationService) GetCerts(ctx context.Context) (*gocloak.CertResponse, error) {
 
-	return s.client.GetCerts(ctx, keycloakConfig.Realm)
+	return s.GoCloak.GetCerts(ctx, keycloakConfig.Realm)
 }
 
 func (s *KeycloakAuthenticationService) DeleteUser(ctx context.Context, userId string) error {
 
-	token, err := s.client.LoginAdmin(ctx,
+	token, err := s.GoCloak.LoginAdmin(ctx,
 		keycloakConfig.AdminUser,
 		keycloakConfig.AdminPassword,
 		"master",
@@ -156,7 +156,29 @@ func (s *KeycloakAuthenticationService) DeleteUser(ctx context.Context, userId s
 		return fmt.Errorf("error getting token: %w", err)
 	}
 
-	err = s.client.DeleteUser(ctx, token.AccessToken, "pgosb", userId)
+	err = s.GoCloak.DeleteUser(ctx, token.AccessToken, "pgosb", userId)
+
+	return err
+}
+
+func (s *KeycloakAuthenticationService) ChangePassword(ctx context.Context, accessToken, userID, password string) error {
+
+	token, err := s.GoCloak.LoginAdmin(ctx,
+		keycloakConfig.AdminUser,
+		keycloakConfig.AdminPassword,
+		"master",
+	)
+
+	if err != nil {
+		return fmt.Errorf("error getting token: %w", err)
+	}
+
+	err = s.GoCloak.SetPassword(ctx,
+		token.AccessToken,
+		userID,
+		keycloakConfig.Realm,
+		password,
+		false)
 
 	return err
 }

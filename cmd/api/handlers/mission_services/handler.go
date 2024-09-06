@@ -95,6 +95,30 @@ func (u *MissionServiceController) GetAll(c *gin.Context) {
 	return
 }
 
+func (u *MissionServiceController) GetAllSummary(c *gin.Context) {
+
+	mission, err := u.missionService.GetAllMissionServiceSummary()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.MissionServiceSummaryJson = make([]api_models.MissionServiceSummaryJson, 0)
+
+	for _, s := range mission {
+		newMission := api_models.ModelToMissionServiceSummaryJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+}
+
 func (u *MissionServiceController) GetUnits(c *gin.Context) {
 
 	id := utils.ParseInt(c.Param("id"))

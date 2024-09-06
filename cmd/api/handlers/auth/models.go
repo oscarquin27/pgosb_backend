@@ -40,6 +40,10 @@ type LoginData struct {
 	Password string `json:"password"`
 }
 
+type ChangePasswordData struct {
+	Password string `json:"password"`
+}
+
 type LoginResponse struct {
 	AccessToken  string `json:"access_token"`
 	RefreshToken string `json:"refresh_token"`

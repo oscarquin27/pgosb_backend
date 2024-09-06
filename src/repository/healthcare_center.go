@@ -66,11 +66,11 @@ func (u *HealthcareCenterRepository) Get(id int64) *results.ResultWithValue[*mod
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *HealthcareCenterRepository) GetAll() ([]models.HealthcareCenter, *results.GeneralError) {
+func (u *HealthcareCenterRepository) GetAll(params ...string) ([]models.HealthcareCenter, *results.GeneralError) {
 
 	var states []models.HealthcareCenter = make([]models.HealthcareCenter, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllHealthcareCenterQuery)
+	values, err := u.AbstractRepository.GetAll(selectAllHealthcareCenterQuery, params...)
 
 	if err != nil {
 		return states, err

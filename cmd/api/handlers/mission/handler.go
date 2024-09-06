@@ -42,7 +42,7 @@ func (u *MissionController) GetMission(c *gin.Context) {
 
 func (u *MissionController) GetAllMissions(c *gin.Context) {
 
-	mission, err := u.missionService.GetAll()
+	mission, err := u.missionService.GetAllMissionSummary()
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -54,10 +54,10 @@ func (u *MissionController) GetAllMissions(c *gin.Context) {
 		return
 	}
 
-	var missionDto []api_models.MissionJson = make([]api_models.MissionJson, 0)
+	var missionDto []api_models.MissionSummaryJson = make([]api_models.MissionSummaryJson, 0)
 
 	for _, s := range mission {
-		newMission := api_models.ModelToMissionJson(s)
+		newMission := api_models.ModelToMissionSummaryJson(s)
 		missionDto = append(missionDto, *newMission)
 	}
 

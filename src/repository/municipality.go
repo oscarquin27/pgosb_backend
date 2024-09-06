@@ -42,11 +42,11 @@ func (u *MunicipalityRepository) Get(id int64) *results.ResultWithValue[*models.
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MunicipalityRepository) GetAll() ([]models.Municipality, *results.GeneralError) {
+func (u *MunicipalityRepository) GetAll(params ...string) ([]models.Municipality, *results.GeneralError) {
 
 	var municipalities []models.Municipality = make([]models.Municipality, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMunicipalityQuery)
+	values, err := u.AbstractRepository.GetAll(selectAllMunicipalityQuery, params...)
 
 	if err != nil {
 		return municipalities, err

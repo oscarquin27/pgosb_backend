@@ -11,7 +11,7 @@ import (
 
 type AbstractCRUDService[T any] interface {
 	Get(id int64) *results.ResultWithValue[*T]
-	GetAll() ([]T, *results.GeneralError)
+	GetAll(params ...string) ([]T, *results.GeneralError)
 	Create(value *T) *results.ResultWithValue[*T]
 	Update(value *T) *results.ResultWithValue[*T]
 	Delete(id int64) *results.Result

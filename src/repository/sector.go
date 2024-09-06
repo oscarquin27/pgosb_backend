@@ -41,11 +41,11 @@ func (u *SectorRepository) Get(id int64) *results.ResultWithValue[*models.Sector
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *SectorRepository) GetAll() ([]models.Sector, *results.GeneralError) {
+func (u *SectorRepository) GetAll(params ...string) ([]models.Sector, *results.GeneralError) {
 
 	var municipalities []models.Sector = make([]models.Sector, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllSectorQuery)
+	values, err := u.AbstractRepository.GetAll(selectAllSectorQuery, params...)
 
 	if err != nil {
 		return municipalities, err

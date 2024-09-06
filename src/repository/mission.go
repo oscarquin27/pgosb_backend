@@ -55,6 +55,40 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 	return services, nil
 }
 
+func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, error) {
+
+	defaultValue := make([]models.MissionSummary, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT id, alias, created_at, num_services, num_firefighters, 
+	num_vehicles FROM missions.vw_mission_summary`)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionSummary])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return defaultValue, models.ErrorMissionNotFound
+		}
+
+		return defaultValue, err
+	}
+
+	return services, nil
+}
+
 func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 	ctx := context.Background()
 

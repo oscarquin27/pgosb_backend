@@ -66,11 +66,11 @@ func (u *StationRepository) Get(id int64) *results.ResultWithValue[*models.Stati
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *StationRepository) GetAll() ([]models.Station, *results.GeneralError) {
+func (u *StationRepository) GetAll(params ...string) ([]models.Station, *results.GeneralError) {
 
 	var states []models.Station = make([]models.Station, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllStationQuery)
+	values, err := u.AbstractRepository.GetAll(selectAllStationQuery, params...)
 
 	if err != nil {
 		return states, err

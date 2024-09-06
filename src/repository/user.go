@@ -103,7 +103,7 @@ where u.id = $1`, id)
 	return r.Success().WithValue(&user)
 }
 
-func (u *UserRepository) GetAll() ([]models.User, *results.GeneralError) {
+func (u *UserRepository) GetAll(params ...string) ([]models.User, *results.GeneralError) {
 
 	var usersDefault []models.User = make([]models.User, 0)
 
@@ -498,9 +498,9 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	} else if !previous.UserProfile.User_system.Bool && user.UserProfile.User_system.Bool {
 		keycloakId.String, err = u.auth.CreateUser(ctx, user.UserProfile.User_name.String,
 			user.UserProfile.Email.String, strconv.Itoa(int(user.UserIdentification.Id)), "12345")
-		
-	    keycloakId.Valid = true
-		
+
+		keycloakId.Valid = true
+
 		if err != nil {
 			return r.WithError(
 				results.NewUnknowError("no se pudo ejecutar query", err))

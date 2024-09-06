@@ -41,11 +41,11 @@ func (u *UrbanizationRepository) Get(id int64) *results.ResultWithValue[*models.
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *UrbanizationRepository) GetAll() ([]models.Urbanization, *results.GeneralError) {
+func (u *UrbanizationRepository) GetAll(params ...string) ([]models.Urbanization, *results.GeneralError) {
 
 	var municipalities []models.Urbanization = make([]models.Urbanization, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllUrbanizationQuery)
+	values, err := u.AbstractRepository.GetAll(selectAllUrbanizationQuery, params...)
 
 	if err != nil {
 		return municipalities, err

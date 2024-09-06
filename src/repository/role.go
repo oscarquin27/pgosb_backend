@@ -59,7 +59,7 @@ func (u *RoleRepositoy) Get(id int64) *results.ResultWithValue[*models.Role] {
 	return r.Success().WithValue(&role)
 }
 
-func (u *RoleRepositoy) GetAll() ([]models.Role, *results.GeneralError) {
+func (u *RoleRepositoy) GetAll(params ...string) ([]models.Role, *results.GeneralError) {
 	var roles []models.Role = make([]models.Role, 0)
 
 	ctx := context.Background() // Or use a specific context
