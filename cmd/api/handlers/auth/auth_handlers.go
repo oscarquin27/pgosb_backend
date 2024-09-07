@@ -147,7 +147,7 @@ func (controller *AuthController) Login(c *gin.Context) {
 			Message: err.Error(),
 		}
 		ClearCookies(c)
-		c.JSON(http.StatusBadRequest, errMessage)
+		c.JSON(http.StatusUnauthorized, errMessage)
 		return
 	}
 

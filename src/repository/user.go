@@ -45,7 +45,7 @@ func (u *UserRepository) Get(id int64) *results.ResultWithValue[*models.User] {
 
 	rows, err := conn.Query(ctx, `SELECT u.id, u.id_role,u.user_name,u.first_name,u.last_name,u.email,u.photo,u.gender,u.phone,
 	u.secondary_phone,
-	u.birth_date,
+	to_char(u.birth_date::date, 'dd-mm-yyyy')::text as birth_date,
 	u.age,
 	u.zip_code,
 	u.residence,
@@ -127,7 +127,7 @@ func (u *UserRepository) GetAll(params ...string) ([]models.User, *results.Gener
 	u.gender,
 	u.phone,
 	u.secondary_phone,
-	u.birth_date,
+	to_char(u.birth_date::date, 'dd-mm-yyyy') as birth_date,
 	u.age,
 	u.zip_code,
 	u.residence,

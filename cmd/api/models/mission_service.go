@@ -23,6 +23,7 @@ type MissionServiceJson struct {
 	Injured            string   `json:"injured"`
 	Transported        string   `json:"transported"`
 	Deceased           string   `json:"deceased"`
+	OperativeAreas     []string `json:"operative_areas"`
 
 	ServiceDate       string `json:"service_date"`
 	ManualServiceDate string `json:"manual_service_date"`
@@ -46,7 +47,7 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.Deceased = utils.ParseInt64SringPointer(s.Deceased)
 	service.StationId = utils.ParseInt64SringPointer(s.StationId)
 	service.LocationId = utils.ParseInt64SringPointer(s.LocationId)
-
+	service.OperativeAreas = utils.ConvertFromTextArray(s.OperativeAreas)
 	service.HealthCareCenterId = utils.ParseInt64SringPointer(s.HealthCareCenterId)
 
 	if s.ManualServiceDate.Valid {
@@ -71,6 +72,7 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.Bombers = utils.ConvertToInt2Array(s.Bombers)
 	service.Summary = utils.ConvertToPgTypeText(s.Summary)
 	service.Description = utils.ConvertToPgTypeText(s.Description)
+	service.OperativeAreas = utils.ConvertToTextArray(s.OperativeAreas)
 
 	unharmed := utils.ParseInt64(s.Unharmed)
 	injured := utils.ParseInt64(s.Injured)
@@ -88,7 +90,6 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.StationId = &stationId
 	service.HealthCareCenterId = &centerId
 	service.LocationId = &locationId
-
 	manualServiceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualServiceDate)
 
 	if err == nil {

@@ -32,6 +32,14 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 
 	service.Id = utils.ParseInt64Sring(s.Id)
 
+	service.Unharmed = utils.ParseInt64Sring(s.Unharmed.Int64)
+
+	service.Injured = utils.ParseInt64Sring(s.Injured.Int64)
+
+	service.Deceased = utils.ParseInt64Sring(s.Deceased.Int64)
+
+	service.Transported = utils.ParseInt64Sring(s.Transported.Int64)
+
 	if s.AntaresId.Valid {
 		service.AntaresId = utils.ParseInt64Sring(s.AntaresId.Int64)
 	}

@@ -35,7 +35,8 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
 	antares_id, 
 	units, 
-	bombers, 
+	bombers,
+	operative_areas,
 	summary, 
 	description,
 	unharmed,
@@ -84,7 +85,8 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	antares_id, 
 	units, 
 	bombers, 
-	summary, 
+	operative_areas,
+	summary,
 	description,
 	unharmed,
 	injured ,
@@ -165,7 +167,8 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
 	antares_id, 
 	units, 
-	bombers, 
+	bombers,
+	operative_areas, 
 	summary, 
 	description,
 	unharmed,
@@ -296,49 +299,19 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.Mis
 }
 
 func (u *MissionServiceRepository) Update(s *models.MissionService) error {
-	ctx := context.Background()
+	m := mikro.NewMkModel(u.db)
 
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Exec(ctx, `UPDATE missions.services
-	SET mission_id = $1, 
-	antares_id = $2, 
-	units = $3, 
-	bombers = $4, 
-	summary = $5, 
-	description = $6,
-
-	unharmed = $7,
-	injured = $8,
-	transported = $9,
-	deceased = $10,
-	station_id = $11,
-	center_id = $12,
-	location_id = $13,
-	manual_service_date = $14,
-	is_important = $15
-	
-	
-	
-	WHERE id = $16`, s.MissionId, s.AntaresId, s.Units, s.Bombers, s.Summary, s.Description,
-		s.Unharmed, s.Injured, s.Transported, s.Deceased, s.StationId, s.HealthCareCenterId, s.LocationId,
-		s.ManualServiceDate, s.IsImportant, s.Id)
+	rows, err := m.Model(s).Omit("id").Omit("service_date").Where("id", "=", s.Id).Update("missions.services")
 
 	if err != nil {
 		return err
 	}
 
-	if rows.RowsAffected() == 0 {
-		return models.ErrorMissionServiceNotUpdated
+	if rows == 1 {
+		return nil
 	}
 
-	return nil
+	return models.ErrorMissionServiceNotUpdated
 }
 
 func (u *MissionServiceRepository) Delete(id int) error {

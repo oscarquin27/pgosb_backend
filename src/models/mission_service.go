@@ -20,6 +20,7 @@ type MissionService struct {
 	AntaresId   pgtype.Int2   `json:"antares_id,omitempty" db:"antares_id"`
 	Units       []pgtype.Int2 `json:"units,omitempty" db:"units"`
 	Bombers     []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
+	OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
 	Summary     pgtype.Text   `json:"summary,omitempty" db:"summary"`
 	Description pgtype.Text   `json:"description,omitempty" db:"description"`
 	Unharmed    *int64        `json:"unharmed" db:"unharmed"`

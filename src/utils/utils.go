@@ -116,6 +116,27 @@ func ConvertFromInt2Array(i []pgtype.Int2) []string {
 	return s
 }
 
+func ConvertFromTextArray(i []pgtype.Text) []string {
+	s := []string{}
+
+	for _, n := range i {
+		s = append(s, n.String)
+	}
+
+	return s
+}
+
+func ConvertToTextArray(i []string) []pgtype.Text {
+	s := []pgtype.Text{}
+
+	for _, n := range i {
+		
+		s = append(s, pgtype.Text{String: n, Valid: true})
+	}
+
+	return s
+}
+
 func ConvertToInt4Array(i []string) []pgtype.Int4 {
 	s := []pgtype.Int4{}
 
