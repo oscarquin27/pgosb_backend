@@ -26,3 +26,9 @@ type Vehicle struct {
 	Vehicle_size_class  pgtype.Text `json:"vehicle_size_class"`
 	Base_model          pgtype.Text `json:"base_model"`
 }
+
+type VehicleSimple struct {
+	Id                  pgtype.Int8 `json:"id"`
+	Make                pgtype.Text `json:"make"`
+	Model               pgtype.Text `json:"model"`
+}
