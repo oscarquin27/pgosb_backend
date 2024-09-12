@@ -153,6 +153,57 @@ func (u *MissionServiceRepository) GetAllMissionServiceSummary() ([]models.Missi
 	return services, nil
 }
 
+func (u *MissionServiceRepository) GetRelevantServices() ([]models.RelevantServices, error) {
+
+	defaultValue := make([]models.RelevantServices, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, `SELECT id, 
+	region_area, 
+	mission_code, 
+	antares_id, 
+	antares_type, 
+	antares_description, 
+	service_id, 
+	operative_area_name, 
+	service_description, 
+	service_date::varchar, 
+	units, 
+	firefighters, 
+	people, 
+	infrastructures, 
+	vehicles, 
+	service_locations, 
+	service_stations, 
+	centers 
+	FROM missions.vw_relevant_services`)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RelevantServices])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return defaultValue, models.ErrorMissionNotFound
+		}
+
+		return defaultValue, err
+	}
+
+	return services, nil
+}
+
 func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionService, error) {
 	ctx := context.Background()
 
@@ -181,8 +232,6 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	service_date,
 	manual_service_date,
 	is_important
-	
-	
 	FROM missions.services where mission_id = $1 `, id)
 
 	if err != nil {

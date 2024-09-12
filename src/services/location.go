@@ -24,3 +24,7 @@ type SectorService interface {
 type UrbanizationService interface {
 	abstract_handler.AbstractCRUDService[models.Urbanization]
 }
+
+type OperativeRegionService interface {
+	abstract_handler.AbstractCRUDService[models.OperativeRegions]
+}
