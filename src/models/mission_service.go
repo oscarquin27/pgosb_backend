@@ -36,3 +36,93 @@ type MissionService struct {
 
 	HealthCareCenterId *int64 `json:"center_id" db:"center_id"`
 }
+
+
+type RelevantServices struct {
+	Id int64 `db:"id"`
+	RegionAreaDescription *string `db:"region_area"`
+	MissionCode *string `db:"mission_code"`
+	AntaresId *int `db:"antares_id"`
+	AntaresType *string `db:"antares_type"`
+	AntaresDescription *string `db:"antares_description"`
+	ServiceId *int `db:"service_id"`
+	OprativeAreaName []*string `db:"operative_area_name"`
+	ServiceDescription *string `db:"service_description"`
+	ServiceDate *string `db:"service_date"`
+	Units []*string `db:"units"`
+	Firefighters []RelevantFirefighters `db:"firefighters"`
+	People []RelevantPeople `db:"people"`
+	Infrastructures []RelevantInfrastructure `db:"infrastructures"`
+	Vehicles []RelevantVehicle `db:"vehicles"`
+	ServiceLocations []RelevantServiceLocation `db:"service_locations"`
+	ServiceStations []RelevantServiceStation `db:"service_stations"`
+	Centers []RelevantCenter `db:"centers"`
+}
+
+
+
+type RelevantFirefighters struct {
+  Rank       *string `json:"rank"`
+  Name       *string `json:"name"`
+  Document   *string `json:"document"`
+  Role       *string `json:"role"`
+  Team       *string `json:"team"`
+}
+
+type RelevantPeople struct {
+  Condition  *string `json:"condition"`
+  Name       *string `json:"name"`
+  Gender     *string `json:"gender"`
+  Age        *string `json:"age"`
+  Document   *string `json:"document"`
+  Phone      *string `json:"phone"`
+  PersonCondition *string `json:"person_condition"`
+  Unit       *string `json:"unit"` // May need adjustment based on vehicle data structure
+  Address    *string `json:"address"`
+}
+
+type RelevantInfrastructure struct {
+  Type        *string `json:"type"`
+  Floor       *string `json:"floor"`
+  Occupation *string `json:"occupation"`
+  Levels      *string    `json:"levels"` // Assuming levels is an integer
+}
+
+type RelevantVehicle struct {
+  Plate       *string `json:"plate"`
+  Make       *string `json:"make"`
+  Model      *string `json:"model"`
+  Year        *string    `json:"year"`  // Assuming year is an integer
+  Color      *string `json:"color"`
+  Type        *string `json:"type"`
+  Serial      *string `json:"serial"`
+}
+
+type RelevantServiceLocation struct {
+  State      *string `json:"state"`
+  Municipality *string `json:"municipality"`
+  Parish     *string `json:"parish"`
+  Sector     *string `json:"sector"`
+  Urb        *string `json:"urb"`
+  Address    *string `json:"address"`
+}
+
+type RelevantServiceStation struct {
+  Name        *string `json:"name"`
+  Abbreviation *string `json:"abbreviation"`
+  State       *string `json:"state"`
+  Municipality *string `json:"municipality"`
+  Parish     *string `json:"parish"`
+  Sector     *string `json:"sector"`
+  Urb        *string `json:"urb"`
+}
+
+type RelevantCenter struct {
+  Name        *string `json:"name"`
+  Abbreviation *string `json:"abbreviation"`
+  State       *string `json:"state"`
+  Municipality *string `json:"municipality"`
+  Parish     *string `json:"parish"`
+  Sector     *string `json:"sector"`
+  Urb        *string `json:"urb"`
+}

@@ -17,6 +17,7 @@ import (
 	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
 	mission_service_handlers "fdms/cmd/api/handlers/mission_services"
 	mission_vehicle_handlers "fdms/cmd/api/handlers/mission_vehicles"
+	operative_regions_handlers "fdms/cmd/api/handlers/operative_regions"
 	roles_handlers "fdms/cmd/api/handlers/roles"
 	station_handler "fdms/cmd/api/handlers/station"
 	units_handlers "fdms/cmd/api/handlers/units"
@@ -66,6 +67,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	stationService := repository.NewStationService(db)
 	healthcareCenterService := repository.NewHealthcareCenterService(db)
 	stateService := repository.NewStateService(db)
+	operativeRegionService := repository.NewOPerativeRegionsService(db)
 
 	municipalityService := repository.NewMunicipalityService(db)
 	parishSevice := repository.NewParishService(db)
@@ -101,7 +103,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	unityController := units_handlers.NewUnityController(unityService)
 	stationController := station_handler.NewStationController(stationService)
 	healthCareCenterController := healthcare_center_handler.NewHealthcareCenterController(healthcareCenterService)
-
+	operativeRegionController := operative_regions_handlers.NewOperativeRegionController(operativeRegionService)
 	stateController := state_handler.NewStateController(stateService)
 	municpalityController := municipality_handler.NewMunicipalityController(municipalityService)
 	parishController := parish_handler.NewParishController(parishSevice)
@@ -276,7 +278,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.GET("/unit/:id", missionServiceController.GetUnits)
 		serviceMission.GET("/user/:id", missionServiceController.GetUsers)
 		serviceMission.GET("/summary", missionServiceController.GetAllSummary)
-
+	    serviceMission.GET("/relevant", missionServiceController.GetRelevantServices)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")
@@ -326,6 +328,12 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		locationMission.POST("/create", missionLocationController.Create)
 		locationMission.PUT("/update", missionLocationController.Update)
 		locationMission.DELETE("/delete/:id", missionLocationController.Delete)
+	}
+
+	operativeRegion := v1.Group("operative/region")
+	{
+		operativeRegion.GET("/:id", operativeRegionController.Get)
+		operativeRegion.GET("/all", operativeRegionController.GetAll)
 	}
 
 	if config.Get().Http.EnabledSsl {

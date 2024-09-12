@@ -63,7 +63,7 @@ func (u *VehicleRepository) Get(id int64) (*models.Vehicle, error) {
 	return &vehicle, nil
 }
 
-func (u *VehicleRepository) GetVehicleModels(make string) ([]models.Vehicle, error) {
+func (u *VehicleRepository) GetVehicleModels(make string) ([]models.VehicleSimple, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -77,23 +77,15 @@ func (u *VehicleRepository) GetVehicleModels(make string) ([]models.Vehicle, err
 	rows, err := conn.Query(ctx, `SELECT 
 	id, 
 	make, 
-	model, 
-	year, 
-	drive, 
-	cylinders, 
-	engine_displacement, 
-	fuel_type, 
-	transmission, 
-	vehicle_size_class, 
-	base_model
-	FROM vehicles.vehicle
+	model
+	FROM vehicles.vw_vehicles
  	where lower(make) = lower($1)`, make)
 
 	if err != nil {
 		return nil, err
 	}
 
-	vehicle, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Vehicle])
+	vehicle, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.VehicleSimple])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {
@@ -118,7 +110,7 @@ func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
 	}
 
 	rows, err := conn.Query(ctx, `SELECT 
-	distinct make as make from vehicles.vehicle;`)
+	distinct make as make from vehicles.vw_vehicles;`)
 
 	if err != nil {
 		return nil, err
@@ -142,7 +134,7 @@ func (u *VehicleRepository) GetVehicleTypes() ([]string, error) {
 	return tps, nil
 }
 
-func (u *VehicleRepository) GetAll() ([]models.Vehicle, error) {
+func (u *VehicleRepository) GetAll() ([]models.VehicleSimple, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -156,22 +148,14 @@ func (u *VehicleRepository) GetAll() ([]models.Vehicle, error) {
 	rows, err := conn.Query(ctx, `SELECT 
 	id, 
 	make, 
-	model, 
-	year, 
-	drive, 
-	cylinders, 
-	engine_displacement, 
-	fuel_type, 
-	transmission, 
-	vehicle_size_class, 
-	base_model
-	FROM vehicles.vehicle`)
+	model
+	FROM vehicles.vw_vehicles`)
 
 	if err != nil {
 		return nil, err
 	}
 
-	vehicle, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.Vehicle])
+	vehicle, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.VehicleSimple])
 
 	if err != nil {
 		if err == pgx.ErrNoRows {

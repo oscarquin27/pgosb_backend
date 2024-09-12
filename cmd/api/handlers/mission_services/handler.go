@@ -241,3 +241,29 @@ func (u *MissionServiceController) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, "Servicio eliminado satisfactoriamente")
 
 }
+
+
+func (u *MissionServiceController) GetRelevantServices(c *gin.Context){
+
+	mission, err := u.missionService.GetRelevantServices()
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.RelevantServicesJson = make([]api_models.RelevantServicesJson, 0)
+
+	for _, s := range mission {
+		newMission := api_models.ModelToRelevantServicesJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+	return	
+}
