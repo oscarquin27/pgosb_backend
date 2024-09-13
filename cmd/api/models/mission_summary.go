@@ -1,6 +1,7 @@
 package api_models
 
 import (
+	"database/sql"
 	"fdms/src/models"
 	"fdms/src/utils"
 	"time"
@@ -18,6 +19,7 @@ type MissionSummaryJson struct {
 	Transported     string `json:"transported"`
 	Deceased        string `json:"deceased"`
 	Code            string `json:"code"`
+	OperativeAreas  []string `json:"operative_areas"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
@@ -64,6 +66,15 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	if s.Code.Valid {
 		service.Code = s.Code.String
 	}
+
+	op := make([]string, 0)
+	
+	for _, i := range s.OperativeAreas {
+		i.Valid = true
+		op = append(op, i.String)
+	}
+
+	service.OperativeAreas = op
 
 	return &service
 }
@@ -125,6 +136,18 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 		service.Code.String = s.Code
 		service.Code.Valid = true
 	}
+
+	op := make([]sql.NullString, 0)
+	
+	for _, i := range s.OperativeAreas {
+		val := sql.NullString{
+			String: i,
+			Valid: true,
+		}
+		op = append(op, val)
+	}
+
+	service.OperativeAreas = op
 
 	return service
 }

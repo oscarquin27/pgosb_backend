@@ -24,6 +24,7 @@ type MissionServiceSummaryJson struct {
 	Deceased          string `json:"deceased"`
 	ServiceDate       string `json:"service_date"`
 	ManualServiceDate string `json:"manual_service_date"`
+	
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {

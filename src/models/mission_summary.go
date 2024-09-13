@@ -14,4 +14,5 @@ type MissionSummary struct {
 	Injured         sql.NullInt64  `db:"injured"`
 	Transported     sql.NullInt64  `db:"transported"`
 	Deceased        sql.NullInt64  `db:"deceased"`
+	OperativeAreas  []sql.NullString `db:"operative_areas"`
 }
