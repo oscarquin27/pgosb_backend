@@ -8,7 +8,7 @@ import (
 type MissionServiceService interface {
 	GetAll() ([]models.MissionService, error)
 	GetAllMissionServiceSummary() ([]models.MissionServiceSummary, error)
-	GetRelevantServices(from string, to string) ([]models.RelevantServices, error)
+	GetRelevantServices(id string) ([]models.RelevantServices, error)
 	GetByMissionId(id int) ([]models.MissionService, error)
 	Get(id int) (*models.MissionService, error)
 	//GetAll() ([]models.MissionService, error)

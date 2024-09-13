@@ -245,10 +245,9 @@ func (u *MissionServiceController) Delete(c *gin.Context) {
 
 func (u *MissionServiceController) GetRelevantServices(c *gin.Context){
 
-	from := string(c.Param("from"))
-	to := string(c.Param("to"))
+	id := string(c.Param("id"))
 
-	mission, err := u.missionService.GetRelevantServices(from, to)
+	mission, err := u.missionService.GetRelevantServices(id)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {

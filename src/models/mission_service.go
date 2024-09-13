@@ -78,6 +78,8 @@ type RelevantPeople struct {
 	PersonCondition *string `json:"person_condition"`
 	Unit            *string `json:"unit"` // May need adjustment based on vehicle data structure
 	Address         *string `json:"address"`
+  Building        *string `json:"building"`
+  Vehicle         *string `json:"vehicle"`
 }
 
 type RelevantInfrastructure struct {
