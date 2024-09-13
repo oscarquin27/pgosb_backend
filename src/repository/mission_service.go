@@ -153,7 +153,7 @@ func (u *MissionServiceRepository) GetAllMissionServiceSummary() ([]models.Missi
 	return services, nil
 }
 
-func (u *MissionServiceRepository) GetRelevantServices() ([]models.RelevantServices, error) {
+func (u *MissionServiceRepository) GetRelevantServices(from string, to string) ([]models.RelevantServices, error) {
 
 	defaultValue := make([]models.RelevantServices, 0)
 
@@ -185,7 +185,8 @@ func (u *MissionServiceRepository) GetRelevantServices() ([]models.RelevantServi
 	service_locations, 
 	service_stations, 
 	centers 
-	FROM missions.vw_relevant_services`)
+	FROM missions.vw_relevant_services
+	where service_date between $1::timestamp without time zone and $2::timestamp without time zone`, from, to)
 
 	if err != nil {
 		return defaultValue, err
