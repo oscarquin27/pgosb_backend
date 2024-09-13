@@ -11,6 +11,7 @@ type MissionServiceSummary struct {
 	ManualServiceDate sql.NullTime   `db:"manual_service_date"`
 	NumFirefighters   sql.NullInt64  `db:"num_firefighters"`
 	NumVehicles       sql.NullInt64  `db:"num_vehicles"`
+	NumUnits          sql.NullInt64  `db:"num_units"`
 	StationName       sql.NullString `db:"station_name"`
 	Unharmed          sql.NullInt64  `db:"unharmed"`
 	Injured           sql.NullInt64  `db:"injured"`

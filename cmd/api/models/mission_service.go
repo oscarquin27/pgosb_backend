@@ -28,6 +28,9 @@ type MissionServiceJson struct {
 	ServiceDate       string `json:"service_date"`
 	ManualServiceDate string `json:"manual_service_date"`
 	IsImportant       bool   `json:"is_important"`
+
+	SendingUserId   string `json:"sending_user_id"`
+	ReceivingUserId string `json:"receiving_user_id"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -58,6 +61,9 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 		service.ServiceDate = s.ServiceDate.Time.Format("02-01-2006 15:04:05")
 	}
 	service.IsImportant = s.IsImportant
+
+	service.SendingUserId = utils.ParseInt64SringPointer(s.SendingUserId)
+	service.ReceivingUserId = utils.ParseInt64SringPointer(s.ReceivingUserId)
 
 	return &service
 }
@@ -106,6 +112,12 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	// } else {
 	// 	logger.Warn().Err(err).Msg("Problema parseando service date")
 	// }
+
+	sendingUserId := utils.ParseInt64(s.SendingUserId)
+	receivingUserId := utils.ParseInt64(s.ReceivingUserId)
+
+	service.SendingUserId = &sendingUserId
+	service.ReceivingUserId = &receivingUserId
 
 	service.IsImportant = s.IsImportant
 

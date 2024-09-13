@@ -48,7 +48,9 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	location_id,
 	service_date,
 	manual_service_date,
-	is_important
+	is_important,
+	sending_user_id,
+	receiving_user_id
 
 	
 	FROM missions.services where id = $1;`, id)
