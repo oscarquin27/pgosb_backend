@@ -118,7 +118,12 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	AuthController := auth_handlers.NewAuthController(auth)
 
 	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"https://gres.local.net:8083", "https://172.30.100.9:8083", "http://localhost:5173", "http://192.168.120.136:5173", "http://192.168.0.52:5173", "http://192.168.0.221:5173"}
+	conf.AllowOrigins = []string{"https://gres.local.net:8083",
+		"https://172.30.100.9:8083",
+		"http://localhost:5173",
+		"http://192.168.120.136:5173",
+		"http://192.168.0.52:5173",
+		"http://192.168.0.221:5173"}
 
 	//conf.AllowOrigins = []string{"https://hackorlandodev.com:8083"}
 
@@ -278,7 +283,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.GET("/unit/:id", missionServiceController.GetUnits)
 		serviceMission.GET("/user/:id", missionServiceController.GetUsers)
 		serviceMission.GET("/summary", missionServiceController.GetAllSummary)
-	    serviceMission.GET("/relevant", missionServiceController.GetRelevantServices)
+		serviceMission.GET("/relevant", missionServiceController.GetRelevantServices)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")

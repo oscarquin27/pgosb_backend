@@ -10,19 +10,20 @@ import (
 type MissionServiceSummaryJson struct {
 	Id                string `json:"id"`
 	MissionId         string `json:"mission_id"`
+	Alias             string `json:"alias"`
 	CreatedAt         string `json:"created_at"`
 	AntaresId         string `json:"antares_id"`
 	Description       string `json:"description"`
-	ServiceDate       string `json:"service_date"`
-	ManualServiceDate string `json:"manual_service_date"`
 	NumFireFighters   string `json:"num_firefighters"`
-	NumVehicles       string `json:"num_vehicles"`
+	NumUnits          string `json:"num_units"`
 	StationName       string `json:"station_name"`
+	NumVehicles       string `json:"num_vehicles"`
 	Unharmed          string `json:"unharmed"`
 	Injured           string `json:"injured"`
 	Transported       string `json:"transported"`
 	Deceased          string `json:"deceased"`
-	Alias             string `json:"alias"`
+	ServiceDate       string `json:"service_date"`
+	ManualServiceDate string `json:"manual_service_date"`
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
@@ -39,6 +40,8 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 	service.Deceased = utils.ParseInt64Sring(s.Deceased.Int64)
 
 	service.Transported = utils.ParseInt64Sring(s.Transported.Int64)
+
+	service.NumUnits = utils.ParseInt64Sring(s.NumUnits.Int64)
 
 	if s.AntaresId.Valid {
 		service.AntaresId = utils.ParseInt64Sring(s.AntaresId.Int64)
@@ -106,6 +109,9 @@ func (s *MissionServiceSummaryJson) ToModel() models.MissionServiceSummary {
 	} else {
 		logger.Warn().Err(err).Msg("Problema parseando manual service date")
 	}
+
+	service.NumUnits.Int64 = utils.ParseInt64(s.NumUnits)
+	service.NumUnits.Valid = true
 
 	service.NumFirefighters.Int64 = utils.ParseInt64(s.NumFireFighters)
 	service.NumFirefighters.Valid = true
