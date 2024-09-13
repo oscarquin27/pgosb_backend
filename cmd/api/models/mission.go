@@ -4,6 +4,7 @@ import (
 	"fdms/src/models"
 	"fdms/src/utils"
 	"fdms/src/utils/date_utils"
+	"strings"
 )
 
 type MissionJson struct {
@@ -20,7 +21,10 @@ func ModelToMissionJson(s models.Mission) *MissionJson {
 
 	createdDate := s.CreatedAt.Time.Format(date_utils.CompleteFormatDate)
 	mission.CreatedAt = createdDate
-	mission.Code = utils.ConvertFromText(s.Code)
+
+	codeString := utils.ConvertFromText(s.Code)
+
+	mission.Code = strings.TrimSpace(strings.Split(codeString, "-")[0])
 
 	mission.Alias = utils.GetStringFromPointer(s.Alias)
 
@@ -32,6 +36,7 @@ func (s *MissionJson) ToModel() models.Mission {
 
 	mission.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	mission.CreatedAt = utils.ConvertToPgTypeDate(s.CreatedAt)
+
 	mission.Code = utils.ConvertToPgTypeText(s.Code)
 	mission.Alias = &s.Alias
 	return mission
