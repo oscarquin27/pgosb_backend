@@ -6,6 +6,7 @@ type MissionServiceSummary struct {
 	Id                int64          `db:"id"`
 	MissionId         int64          `db:"mission_id"`
 	AntaresId         sql.NullInt64  `db:"antares_id"`
+	RegionName        sql.NullString `db:"region_name"`
 	Description       sql.NullString `db:"description"`
 	ServiceDate       sql.NullTime   `db:"service_date"`
 	ManualServiceDate sql.NullTime   `db:"manual_service_date"`

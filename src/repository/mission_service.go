@@ -6,6 +6,7 @@ import (
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils/results"
+	"fmt"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -99,10 +100,9 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	location_id,
     service_date,
 	manual_service_date,
-	is_important
-	
-
-	
+	is_important,
+	sending_user_id,
+	receiving_user_id
 	FROM missions.services order by id desc;`)
 
 	if err != nil {
@@ -155,7 +155,7 @@ func (u *MissionServiceRepository) GetAllMissionServiceSummary() ([]models.Missi
 	return services, nil
 }
 
-func (u *MissionServiceRepository) GetRelevantServices(from string, to string) ([]models.RelevantServices, error) {
+func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.RelevantServices, error) {
 
 	defaultValue := make([]models.RelevantServices, 0)
 
@@ -169,7 +169,7 @@ func (u *MissionServiceRepository) GetRelevantServices(from string, to string) (
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, 
+	rows, err := conn.Query(ctx, fmt.Sprintf(`SELECT id, 
 	region_area, 
 	mission_code, 
 	antares_id, 
@@ -188,7 +188,7 @@ func (u *MissionServiceRepository) GetRelevantServices(from string, to string) (
 	service_stations, 
 	centers 
 	FROM missions.vw_relevant_services
-	where service_date between $1::timestamp without time zone and $2::timestamp without time zone`, from, to)
+	where service_id::text in (%s)`, id))
 
 	if err != nil {
 		return defaultValue, err
@@ -234,7 +234,9 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	location_id,
 	service_date,
 	manual_service_date,
-	is_important
+	is_important,
+	sending_user_id,
+	receiving_user_id
 	FROM missions.services where mission_id = $1 `, id)
 
 	if err != nil {
