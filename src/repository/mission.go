@@ -69,7 +69,7 @@ func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, err
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT * FROM missions.vw_mission_summary`)
+	rows, err := conn.Query(ctx, `SELECT * FROM missions.vw_mission_summary ORDER BY id DESC`)
 
 	if err != nil {
 		return defaultValue, err

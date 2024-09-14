@@ -6,7 +6,7 @@ import (
 )
 
 type MissionInfrastructureJson struct {
-	Id              string `json:"id" binding:"required"`
+	Id              string `json:"id"`
 	ServiceId       string `json:"service_id"`
 	BuildType       string `json:"build_type"`
 	BuildOccupation string `json:"build_occupation"`
