@@ -123,7 +123,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		"http://localhost:5173",
 		"http://192.168.120.136:5173",
 		"http://192.168.0.52:5173",
-		"http://192.168.0.221:5173"}
+		"http://192.168.0.221:5173",
+		"https://hackorlandodev.com:8083"}
 
 	//conf.AllowOrigins = []string{"https://hackorlandodev.com:8083"}
 

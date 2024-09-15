@@ -186,11 +186,12 @@ func (u *MissionVehicleRepository) Delete(id int) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
-	defer conn.Release()
 
 	if err != nil {
 		return err
 	}
+
+	defer conn.Release()
 
 	rows, err := conn.Exec(ctx, "delete from missions.vehicles where id = $1", id)
 
