@@ -8,23 +8,24 @@ import (
 )
 
 type MissionServiceSummaryJson struct {
-	Id                string `json:"id"`
-	MissionId         string `json:"mission_id"`
-	Alias             string `json:"alias"`
-	CreatedAt         string `json:"created_at"`
-	AntaresId         string `json:"antares_id"`
-	Description       string `json:"description"`
-	NumFireFighters   string `json:"num_firefighters"`
-	NumUnits          string `json:"num_units"`
-	StationName       string `json:"station_name"`
-	NumVehicles       string `json:"num_vehicles"`
-	Unharmed          string `json:"unharmed"`
-	Injured           string `json:"injured"`
-	Transported       string `json:"transported"`
-	Deceased          string `json:"deceased"`
-	ServiceDate       string `json:"service_date"`
-	ManualServiceDate string `json:"manual_service_date"`
-	
+	Id                string   `json:"id"`
+	MissionId         string   `json:"mission_id"`
+	Alias             string   `json:"alias"`
+	CreatedAt         string   `json:"created_at"`
+	AntaresId         string   `json:"antares_id"`
+	Description       string   `json:"description"`
+	IsImportant       bool     `json:"is_important"`
+	NumFireFighters   string   `json:"num_firefighters"`
+	NumUnits          string   `json:"num_units"`
+	StationName       string   `json:"station_name"`
+	NumVehicles       string   `json:"num_vehicles"`
+	OperativesAreas   []string `json:"operative_areas"`
+	Unharmed          string   `json:"unharmed"`
+	Injured           string   `json:"injured"`
+	Transported       string   `json:"transported"`
+	Deceased          string   `json:"deceased"`
+	ServiceDate       string   `json:"service_date"`
+	ManualServiceDate string   `json:"manual_service_date"`
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
@@ -75,6 +76,10 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 	if s.Alias.Valid {
 		service.Alias = s.Alias.String
 	}
+
+	service.IsImportant = s.IsImportant
+
+	service.OperativesAreas = s.OperativesAreas
 
 	return &service
 }
@@ -131,6 +136,10 @@ func (s *MissionServiceSummaryJson) ToModel() models.MissionServiceSummary {
 
 	service.Deceased.Int64 = utils.ParseInt64(s.Deceased)
 	service.Deceased.Valid = true
+
+	service.IsImportant = s.IsImportant
+
+	service.OperativesAreas = s.OperativesAreas
 
 	return service
 

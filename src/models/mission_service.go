@@ -23,12 +23,14 @@ type MissionService struct {
 	OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
 	Summary        pgtype.Text   `json:"summary,omitempty" db:"summary"`
 	Description    pgtype.Text   `json:"description,omitempty" db:"description"`
-	Unharmed       *int64        `json:"unharmed" db:"unharmed"`
-	Injured        *int64        `json:"injured" db:"injured"`
-	Transported    *int64        `json:"transported" db:"transported"`
-	Deceased       *int64        `json:"deceased" db:"deceased"`
-	StationId      *int64        `json:"station_id" db:"station_id"`
-	LocationId     *int64        `json:"location_id" db:"location_id"`
+
+	Unharmed    *int64 `json:"unharmed" db:"unharmed"`
+	Injured     *int64 `json:"injured" db:"injured"`
+	Transported *int64 `json:"transported" db:"transported"`
+	Deceased    *int64 `json:"deceased" db:"deceased"`
+
+	StationId  *int64 `json:"station_id" db:"station_id"`
+	LocationId *int64 `json:"location_id" db:"location_id"`
 
 	ServiceDate       sql.NullTime `json:"service_date" db:"service_date"`
 	ManualServiceDate sql.NullTime `json:"manual_service_date" db:"manual_service_date"`
@@ -58,6 +60,10 @@ type RelevantServices struct {
 	ServiceLocations      []RelevantServiceLocation `db:"service_locations"`
 	ServiceStations       []RelevantServiceStation  `db:"service_stations"`
 	Centers               []RelevantCenter          `db:"centers"`
+	Unharmed              *int64                    `db:"unharmed"`
+	Injured               *int64                    `db:"injured"`
+	Transported           *int64                    `db:"transported"`
+	Deceased              *int64                    `db:"deceased"`
 }
 
 type RelevantFirefighters struct {
@@ -78,8 +84,8 @@ type RelevantPeople struct {
 	PersonCondition *string `json:"person_condition"`
 	Unit            *string `json:"unit"` // May need adjustment based on vehicle data structure
 	Address         *string `json:"address"`
-  Building        *string `json:"building"`
-  Vehicle         *string `json:"vehicle"`
+	Building        *string `json:"building"`
+	Vehicle         *string `json:"vehicle"`
 }
 
 type RelevantInfrastructure struct {

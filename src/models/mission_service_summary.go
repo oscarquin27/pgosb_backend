@@ -18,6 +18,8 @@ type MissionServiceSummary struct {
 	Injured           sql.NullInt64  `db:"injured"`
 	Transported       sql.NullInt64  `db:"transported"`
 	Deceased          sql.NullInt64  `db:"deceased"`
+	IsImportant       bool           `db:"is_important"`
+	OperativesAreas   []string       `db:"operative_areas"`
 	//Code              sql.NullString `db:"code"`
 
 	Alias sql.NullString `db:"alias"`

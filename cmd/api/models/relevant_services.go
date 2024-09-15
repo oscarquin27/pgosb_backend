@@ -6,27 +6,29 @@ import (
 )
 
 type RelevantServicesJson struct {
-	Id                    string                        `json:"id"`
-	RegionAreaDescription string                        `json:"region_area"`
-	MissionCode           string                        `json:"mission_code"`
-	AntaresId             string                        `json:"antares_id"`
-	AntaresType           string                        `json:"antares_type"`
-	AntaresDescription    string                        `json:"antares_description"`
-	ServiceId             string                        `json:"service_id"`
-	OprativeAreaName      []string                        `json:"operative_area_name"`
-	ServiceDescription    string                        `json:"service_description"`
-	ServiceDate           string                        `json:"service_date"`
-	Units                 []string                      `json:"units"`
-	Firefighters          []models.RelevantFirefighters        `json:"firefighters"`
-	People                []models.RelevantPeople              `json:"people"`
-	Infrastructures       []models.RelevantInfrastructure       `json:"infrastructures"`
-	Vehicles              []models.RelevantVehicle             `json:"vehicles"`
-	ServiceLocations      []models.RelevantServiceLocation     `json:"service_locations"`
-	ServiceStations       []models.RelevantServiceStation      `json:"service_stations"`
-	Centers               []models.RelevantCenter              `json:"centers"`
+	Id                    string                           `json:"id"`
+	RegionAreaDescription string                           `json:"region_area"`
+	MissionCode           string                           `json:"mission_code"`
+	AntaresId             string                           `json:"antares_id"`
+	AntaresType           string                           `json:"antares_type"`
+	AntaresDescription    string                           `json:"antares_description"`
+	ServiceId             string                           `json:"service_id"`
+	OprativeAreaName      []string                         `json:"operative_area_name"`
+	ServiceDescription    string                           `json:"service_description"`
+	ServiceDate           string                           `json:"service_date"`
+	Unharmed              string                           `json:"unharmed"`
+	Injured               string                           `json:"injured"`
+	Transported           string                           `json:"transported"`
+	Deceased              string                           `json:"deceased"`
+	Units                 []string                         `json:"units"`
+	Firefighters          []models.RelevantFirefighters    `json:"firefighters"`
+	People                []models.RelevantPeople          `json:"people"`
+	Infrastructures       []models.RelevantInfrastructure  `json:"infrastructures"`
+	Vehicles              []models.RelevantVehicle         `json:"vehicles"`
+	ServiceLocations      []models.RelevantServiceLocation `json:"service_locations"`
+	ServiceStations       []models.RelevantServiceStation  `json:"service_stations"`
+	Centers               []models.RelevantCenter          `json:"centers"`
 }
-
-
 
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
 	relevantService := &RelevantServicesJson{}
@@ -53,6 +55,10 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
+	relevantService.Unharmed = utils.ParseInt64SringPointer(r.Unharmed)
+	relevantService.Injured = utils.ParseInt64SringPointer(r.Injured)
+	relevantService.Transported = utils.ParseInt64SringPointer(r.Transported)
+	relevantService.Deceased = utils.ParseInt64SringPointer(r.Deceased)
 
 	return relevantService
 }
@@ -62,7 +68,6 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 
 	antaresId := utils.ParseInt(r.AntaresId)
 	serviceId := utils.ParseInt(r.ServiceId)
-
 
 	relevantService.Id = utils.ParseInt64(r.Id) // Assuming utils.ConvertToPgTypeInt4 converts string to int32
 	relevantService.RegionAreaDescription = &r.RegionAreaDescription
@@ -84,6 +89,16 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
+
+	unharmed := utils.ParseInt64(r.Unharmed)
+	injured := utils.ParseInt64(r.Injured)
+	transported := utils.ParseInt64(r.Transported)
+	deceased := utils.ParseInt64(r.Deceased)
+
+	relevantService.Unharmed = &unharmed
+	relevantService.Injured = &injured
+	relevantService.Transported = &transported
+	relevantService.Deceased = &deceased
 
 	return relevantService
 }

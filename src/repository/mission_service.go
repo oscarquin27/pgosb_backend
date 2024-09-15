@@ -186,7 +186,11 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	vehicles, 
 	service_locations, 
 	service_stations, 
-	centers 
+	centers,
+	unharmed,
+	injured,
+	transported,
+	deceased
 	FROM missions.vw_relevant_services
 	where service_id::text in (%s)`, id))
 
