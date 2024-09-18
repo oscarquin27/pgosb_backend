@@ -15,6 +15,7 @@ func main() {
 	pool, err := postgres.CreatePool()
 
 	keycloakGoClient := gocloak.NewClient(config.Get().Keycloak.Address)
+
 	keycloakService := keycloak.NewService(keycloakGoClient)
 
 	if err != nil {

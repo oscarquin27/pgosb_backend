@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/big"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -36,6 +37,9 @@ func GetStringFromPointer(s *string) string {
 }
 
 func ParseInt64(s string) int64 {
+
+	s = strings.ReplaceAll(s, ".", "")
+
 	n, err := strconv.ParseInt(s, 10, 64)
 	if err != nil {
 		logger.Warn().Msgf("fallo la conversacion del string: %s a entero 64 ", s)
@@ -49,9 +53,11 @@ func ParseInt64Pointer(s *string) int64 {
 		return 0
 	}
 
-	n, err := strconv.ParseInt(*s, 10, 64)
+	sNew := strings.ReplaceAll(*s, ".", "")
+
+	n, err := strconv.ParseInt(sNew, 10, 64)
 	if err != nil {
-		logger.Warn().Msgf("fallo la conversacion del string: %s a entero 64 ", *s)
+		logger.Warn().Msgf("fallo la conversacion del string: %s a entero 64 ", sNew)
 		return 0
 	}
 	return n
@@ -130,7 +136,7 @@ func ConvertToTextArray(i []string) []pgtype.Text {
 	s := []pgtype.Text{}
 
 	for _, n := range i {
-		
+
 		s = append(s, pgtype.Text{String: n, Valid: true})
 	}
 

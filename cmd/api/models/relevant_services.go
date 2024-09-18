@@ -28,6 +28,7 @@ type RelevantServicesJson struct {
 	ServiceLocations      []models.RelevantServiceLocation `json:"service_locations"`
 	ServiceStations       []models.RelevantServiceStation  `json:"service_stations"`
 	Centers               []models.RelevantCenter          `json:"centers"`
+	IsImportant           bool                             `json:"is_important"`
 }
 
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
@@ -41,13 +42,8 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.AntaresDescription = *r.AntaresDescription
 	relevantService.ServiceId = utils.ConvertIntToString(*r.ServiceId)
 
-	units := make([]string, len(r.Units))
-	operativeAreaName := make([]string, len(r.OprativeAreaName))
-
-	relevantService.OprativeAreaName = operativeAreaName
 	relevantService.ServiceDescription = *r.ServiceDescription
 	relevantService.ServiceDate = *r.ServiceDate
-	relevantService.Units = units
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People
 	relevantService.Infrastructures = r.Infrastructures
@@ -59,6 +55,20 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.Injured = utils.ParseInt64SringPointer(r.Injured)
 	relevantService.Transported = utils.ParseInt64SringPointer(r.Transported)
 	relevantService.Deceased = utils.ParseInt64SringPointer(r.Deceased)
+
+	relevantService.IsImportant = r.IsImportant
+
+	if len(r.OprativeAreaName) == 0 {
+		relevantService.OprativeAreaName = make([]string, 0)
+	} else {
+		relevantService.OprativeAreaName = r.OprativeAreaName
+	}
+
+	if len(r.Units) == 0 {
+		relevantService.Units = make([]string, 0)
+	} else {
+		relevantService.Units = r.Units
+	}
 
 	return relevantService
 }
@@ -74,14 +84,15 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.MissionCode = &r.MissionCode
 	relevantService.AntaresId = &antaresId
 
-	operativeAreaName := make([]*string, len(r.OprativeAreaName))
-	units := make([]*string, len(r.Units))
+	//operativeAreaName := make([]*string, len(r.OprativeAreaName))
+	//units := make([]*string, len(r.Units))
 
-	relevantService.OprativeAreaName = operativeAreaName
+	relevantService.OprativeAreaName = r.OprativeAreaName
+
 	relevantService.ServiceId = &serviceId
 	relevantService.ServiceDescription = &r.ServiceDescription
 	relevantService.ServiceDate = &r.ServiceDate
-	relevantService.Units = units
+	relevantService.Units = r.Units
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People
 	relevantService.Infrastructures = r.Infrastructures
@@ -99,6 +110,6 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.Injured = &injured
 	relevantService.Transported = &transported
 	relevantService.Deceased = &deceased
-
+	relevantService.IsImportant = r.IsImportant
 	return relevantService
 }

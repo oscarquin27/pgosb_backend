@@ -183,6 +183,11 @@ func (s *KeycloakAuthenticationService) ChangePassword(ctx context.Context, acce
 	return err
 }
 
+func (s *KeycloakAuthenticationService) Ping(ctx context.Context) error {
+	_, err := s.GoCloak.GetCerts(ctx, keycloakConfig.Realm)
+	return err
+}
+
 func init() {
 	fmt.Println("Inicio Package Authentication")
 	keycloakConfig = &config.Get().Keycloak

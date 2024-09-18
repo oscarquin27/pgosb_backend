@@ -49,10 +49,10 @@ type RelevantServices struct {
 	AntaresType           *string                   `db:"antares_type"`
 	AntaresDescription    *string                   `db:"antares_description"`
 	ServiceId             *int                      `db:"service_id"`
-	OprativeAreaName      []*string                 `db:"operative_area_name"`
+	OprativeAreaName      []string                  `db:"operative_area_name"`
 	ServiceDescription    *string                   `db:"service_description"`
 	ServiceDate           *string                   `db:"service_date"`
-	Units                 []*string                 `db:"units"`
+	Units                 []string                  `db:"units"`
 	Firefighters          []RelevantFirefighters    `db:"firefighters"`
 	People                []RelevantPeople          `db:"people"`
 	Infrastructures       []RelevantInfrastructure  `db:"infrastructures"`
@@ -64,6 +64,7 @@ type RelevantServices struct {
 	Injured               *int64                    `db:"injured"`
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
+	IsImportant           bool                      `db:"is_important"`
 }
 
 type RelevantFirefighters struct {

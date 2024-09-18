@@ -2,6 +2,7 @@ package api
 
 import (
 	auth_handlers "fdms/cmd/api/handlers/auth"
+	health_check "fdms/cmd/api/handlers/health_cheack"
 	healthcare_center_handler "fdms/cmd/api/handlers/healthcare_center"
 	layout_handlers "fdms/cmd/api/handlers/layouts"
 	municipality_handler "fdms/cmd/api/handlers/locations/municipality"
@@ -115,18 +116,13 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionAntaresController := antares_handlers.NewAntaresController(missionAntaresService)
 	layoutController := layout_handlers.NewLayoutController(layoutService)
 
+	healthCheckController := health_check.NewHealthCheckService(db, auth)
+
 	AuthController := auth_handlers.NewAuthController(auth)
 
 	conf.AllowCredentials = true
-	conf.AllowOrigins = []string{"https://gres.local.net:8083",
-		"https://172.30.100.9:8083",
-		"http://localhost:5173",
-		"http://192.168.120.136:5173",
-		"http://192.168.0.52:5173",
-		"http://192.168.0.221:5173",
-		"https://hackorlandodev.com:8083"}
 
-	//conf.AllowOrigins = []string{"https://hackorlandodev.com:8083"}
+	conf.AllowOrigins = []string{"https://gres.local.net:8083"}
 
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output: logger.Log(),
@@ -136,6 +132,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	router.Use(cors.New(conf))
 
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	router.GET("/health", healthCheckController.HealthCheckHandler)
 
 	v1 := router.Group("/api/v1")
 

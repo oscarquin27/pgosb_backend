@@ -8,17 +8,17 @@ import (
 )
 
 type MissionSummaryJson struct {
-	Id              string `json:"id"`
-	Alias           string `json:"alias"`
-	CreatedAt       string `json:"created_at"`
-	NumServices     string `json:"num_services"`
-	NumFireFighters string `json:"num_firefighters"`
-	NumVehicles     string `json:"num_vehicles"`
-	Unharmed        string `json:"unharmed"`
-	Injured         string `json:"injured"`
-	Transported     string `json:"transported"`
-	Deceased        string `json:"deceased"`
-	Code            string `json:"code"`
+	Id              string   `json:"id"`
+	Alias           string   `json:"alias"`
+	CreatedAt       string   `json:"created_at"`
+	NumServices     string   `json:"num_services"`
+	NumFireFighters string   `json:"num_firefighters"`
+	NumVehicles     string   `json:"num_vehicles"`
+	Unharmed        string   `json:"unharmed"`
+	Injured         string   `json:"injured"`
+	Transported     string   `json:"transported"`
+	Deceased        string   `json:"deceased"`
+	Code            string   `json:"code"`
 	OperativeAreas  []string `json:"operative_areas"`
 }
 
@@ -68,7 +68,7 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	}
 
 	op := make([]string, 0)
-	
+
 	for _, i := range s.OperativeAreas {
 		i.Valid = true
 		op = append(op, i.String)
@@ -138,11 +138,11 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 	}
 
 	op := make([]sql.NullString, 0)
-	
+
 	for _, i := range s.OperativeAreas {
 		val := sql.NullString{
 			String: i,
-			Valid: true,
+			Valid:  true,
 		}
 		op = append(op, val)
 	}
