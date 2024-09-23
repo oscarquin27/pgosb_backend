@@ -15,10 +15,11 @@ type MissionFirefighterJson struct {
 
 func ModelToMissionFirefighterJson(s *models.MissionFirefighter) *MissionFirefighterJson {
 	service := MissionFirefighterJson{}
-	service.Id = utils.ParseInt64Sring(s.Id)
-	service.MissionId = utils.ParseInt64Sring(s.MissionId)
-	service.ServiceId = utils.ParseInt64Sring(s.ServiceId)
-	service.UserId = utils.ParseInt64Sring(s.UserId)
+	service.Id = utils.ParseInt64String(s.Id)
+	service.MissionId = utils.ParseInt64String(s.MissionId)
+	service.ServiceId = utils.ParseInt64String(s.ServiceId)
+
+	service.UserId = utils.ParseInt64String(s.UserId)
 	service.ServiceRol = utils.GetStringFromPointer(s.ServiceRol)
 
 	return &service

@@ -34,14 +34,16 @@ type MissionLocationJson struct {
 
 func ModelToMissionLocationJson(s *models.MissionLocation) *MissionLocationJson {
 	station := MissionLocationJson{
-		Id:             utils.ParseInt64Sring(s.Id),
-		MissionId:      utils.ParseInt64Sring(s.MissionId),
-		StateId:        utils.ParseInt64SringPointer(s.StateId),
-		MunicipalityId: utils.ParseInt64SringPointer(s.MunicipalityId),
-		ParishId:       utils.ParseInt64SringPointer(s.ParishId),
-		SectorId:       utils.ParseInt64SringPointer(s.SectorId),
-		UrbId:          utils.ParseInt64SringPointer(s.UrbId),
-		Alias:          utils.GetStringFromPointer(s.Alias),
+		Id:        utils.ParseInt64String(s.Id),
+		MissionId: utils.ParseInt64String(s.MissionId),
+		StateId:   utils.ParseInt64StringPointer(s.StateId),
+
+		MunicipalityId: utils.ParseInt64StringPointer(s.MunicipalityId),
+		ParishId:       utils.ParseInt64StringPointer(s.ParishId),
+		SectorId:       utils.ParseInt64StringPointer(s.SectorId),
+		UrbId:          utils.ParseInt64StringPointer(s.UrbId),
+
+		Alias: utils.GetStringFromPointer(s.Alias),
 
 		State:        utils.GetStringFromPointer(s.State),
 		Municipality: utils.GetStringFromPointer(s.Municipality),

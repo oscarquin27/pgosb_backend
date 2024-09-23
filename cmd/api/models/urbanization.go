@@ -14,8 +14,8 @@ type UrbanizationJson struct {
 func ModelToUrbanizationJson(s *models.Urbanization) *UrbanizationJson {
 	state := UrbanizationJson{}
 
-	state.Id = utils.ParseInt64Sring(s.Id)
-	state.SectorId = utils.ParseInt64Sring(s.SectorId)
+	state.Id = utils.ParseInt64String(s.Id)
+	state.SectorId = utils.ParseInt64String(s.SectorId)
 	state.Name = utils.GetStringFromPointer(s.Name)
 
 	return &state

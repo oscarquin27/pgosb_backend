@@ -25,9 +25,10 @@ type MissionSummaryJson struct {
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	service := MissionSummaryJson{}
 
-	service.Id = utils.ParseInt64Sring(s.Id)
+	service.Id = utils.ParseInt64String(s.Id)
 
 	if s.Alias.Valid {
+
 		service.Alias = s.Alias.String
 	}
 
@@ -36,31 +37,31 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	}
 
 	if s.NumServices.Valid {
-		service.NumServices = utils.ParseInt64Sring(s.NumServices.Int64)
+		service.NumServices = utils.ParseInt64String(s.NumServices.Int64)
 	}
 
 	if s.NumVehicles.Valid {
-		service.NumVehicles = utils.ParseInt64Sring(s.NumVehicles.Int64)
+		service.NumVehicles = utils.ParseInt64String(s.NumVehicles.Int64)
 	}
 
 	if s.NumFireFighters.Valid {
-		service.NumFireFighters = utils.ParseInt64Sring(s.NumFireFighters.Int64)
+		service.NumFireFighters = utils.ParseInt64String(s.NumFireFighters.Int64)
 	}
 
 	if s.Unharmed.Valid {
-		service.Unharmed = utils.ParseInt64Sring(s.Unharmed.Int64)
+		service.Unharmed = utils.ParseInt64String(s.Unharmed.Int64)
 	}
 
 	if s.Injured.Valid {
-		service.Injured = utils.ParseInt64Sring(s.Injured.Int64)
+		service.Injured = utils.ParseInt64String(s.Injured.Int64)
 	}
 
 	if s.Transported.Valid {
-		service.Transported = utils.ParseInt64Sring(s.Transported.Int64)
+		service.Transported = utils.ParseInt64String(s.Transported.Int64)
 	}
 
 	if s.Deceased.Valid {
-		service.Deceased = utils.ParseInt64Sring(s.Deceased.Int64)
+		service.Deceased = utils.ParseInt64String(s.Deceased.Int64)
 	}
 
 	if s.Code.Valid {

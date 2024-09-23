@@ -36,9 +36,10 @@ func ModelToUnitJson(s *models.Unit) *UnitJson {
 
 	// Basic String Conversions
 
-	unit.Id = utils.ParseInt64Sring(s.Id)
+	unit.Id = utils.ParseInt64String(s.Id)
 	unit.Plate = utils.GetStringFromPointer(s.Plate)
 	unit.Station = utils.GetStringFromPointer(s.Station)
+
 	unit.Unit_type = utils.GetStringFromPointer(s.Unit_type)
 	unit.Make = utils.GetStringFromPointer(s.Make)
 	unit.Unit_condition = utils.GetStringFromPointer(s.Unit_condition)
@@ -53,18 +54,20 @@ func ModelToUnitJson(s *models.Unit) *UnitJson {
 	unit.Details = s.Details
 
 	// Conversion for Additional Fields
-	unit.Hurt_capacity = utils.ParseInt64SringPointer(s.Hurt_capacity)
-	unit.Doors = utils.ParseInt64SringPointer(s.Doors)
+	unit.Hurt_capacity = utils.ParseInt64StringPointer(s.Hurt_capacity)
+	unit.Doors = utils.ParseInt64StringPointer(s.Doors)
 	unit.Performance = utils.GetStringFromPointer(s.Performance)
-	unit.Load_capacity = utils.ParseInt64SringPointer(s.Load_capacity)
+	unit.Load_capacity = utils.ParseInt64StringPointer(s.Load_capacity)
+
 	unit.Model = utils.GetStringFromPointer(s.Model)
 	unit.Alias = utils.GetStringFromPointer(s.Alias)
 	unit.Color = utils.GetStringFromPointer(s.Color)
 	unit.Year = utils.GetStringFromPointer(s.Year)
 	unit.Purpose = utils.GetStringFromPointer(s.Purpose)
-	unit.Init_kilometer = utils.ParseInt64SringPointer(s.Init_kilometer)
+	unit.Init_kilometer = utils.ParseInt64StringPointer(s.Init_kilometer)
 
 	return &unit
+
 }
 
 func (s *UnitJson) ToModel() models.Unit {

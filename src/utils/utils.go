@@ -63,12 +63,12 @@ func ParseInt64Pointer(s *string) int64 {
 	return n
 }
 
-func ParseInt64Sring(n int64) string {
+func ParseInt64String(n int64) string {
 	s := strconv.FormatInt(n, 10)
 	return s
 }
 
-func ParseInt64SringPointer(n *int64) string {
+func ParseInt64StringPointer(n *int64) string {
 	if n == nil {
 		return ""
 	}

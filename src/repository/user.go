@@ -324,7 +324,7 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $1
 	if user.User_system.Bool {
 
 		keycloakId, err := u.auth.CreateUser(ctx, user.UserProfile.User_name.String,
-			user.UserProfile.Email.String, utils.ParseInt64Sring(userId), "12345")
+			user.UserProfile.Email.String, utils.ParseInt64String(userId), "12345")
 
 		if err != nil {
 			return r.WithError(

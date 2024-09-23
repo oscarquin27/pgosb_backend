@@ -10,18 +10,18 @@ type OperativeRegionsJson struct {
 	Description  string `json:"description"`
 	Abbreviation string `json:"abbreviation"`
 	Phone        string `json:"phone"`
-	Coverage	 string `json:"coverage"`
+	Coverage     string `json:"coverage"`
 }
 
 func ModelToOperativeRegionsJson(s *models.OperativeRegions) *OperativeRegionsJson {
 	or := OperativeRegionsJson{}
 
-	or.Id = utils.ParseInt64Sring(s.Id)
+	or.Id = utils.ParseInt64String(s.Id)
 	or.Description = utils.GetStringFromPointer(s.Description)
 	or.Abbreviation = utils.GetStringFromPointer(s.Abbreviation)
+
 	or.Phone = utils.GetStringFromPointer(s.Phone)
 	or.Coverage = utils.GetStringFromPointer(s.Coverage)
-
 
 	return &or
 }

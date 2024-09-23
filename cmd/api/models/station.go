@@ -35,24 +35,26 @@ type StationJson struct {
 
 func ModelToStationJson(s *models.Station) *StationJson {
 	station := StationJson{
-		Id:             utils.ParseInt64Sring(s.Id),
-		RegionId:       utils.ParseInt64SringPointer(s.RegionId),
-		StateId:        utils.ParseInt64SringPointer(s.StateId),
-		MunicipalityId: utils.ParseInt64SringPointer(s.MunicipalityId),
-		ParishId:       utils.ParseInt64SringPointer(s.ParishId),
-		SectorId:       utils.ParseInt64SringPointer(s.SectorId),
-		UrbId:          utils.ParseInt64SringPointer(s.UrbId),
-		Name:           utils.GetStringFromPointer(s.Name),
-		Description:    utils.GetStringFromPointer(s.Description),
-		Abbreviation:   utils.GetStringFromPointer(s.Abbreviation),
-		Phones:         s.Phones,
-		State:          utils.GetStringFromPointer(s.State),
-		Municipality:   utils.GetStringFromPointer(s.Municipality),
-		Parish:         utils.GetStringFromPointer(s.Parish),
-		Sector:         utils.GetStringFromPointer(s.Sector),
-		Urb:            utils.GetStringFromPointer(s.Urb),
-		Street:         utils.GetStringFromPointer(s.Street),
-		Address:        utils.GetStringFromPointer(s.Address),
+		Id:       utils.ParseInt64String(s.Id),
+		RegionId: utils.ParseInt64StringPointer(s.RegionId),
+		StateId:  utils.ParseInt64StringPointer(s.StateId),
+
+		MunicipalityId: utils.ParseInt64StringPointer(s.MunicipalityId),
+		ParishId:       utils.ParseInt64StringPointer(s.ParishId),
+		SectorId:       utils.ParseInt64StringPointer(s.SectorId),
+		UrbId:          utils.ParseInt64StringPointer(s.UrbId),
+
+		Name:         utils.GetStringFromPointer(s.Name),
+		Description:  utils.GetStringFromPointer(s.Description),
+		Abbreviation: utils.GetStringFromPointer(s.Abbreviation),
+		Phones:       s.Phones,
+		State:        utils.GetStringFromPointer(s.State),
+		Municipality: utils.GetStringFromPointer(s.Municipality),
+		Parish:       utils.GetStringFromPointer(s.Parish),
+		Sector:       utils.GetStringFromPointer(s.Sector),
+		Urb:          utils.GetStringFromPointer(s.Urb),
+		Street:       utils.GetStringFromPointer(s.Street),
+		Address:      utils.GetStringFromPointer(s.Address),
 	}
 	return &station
 }

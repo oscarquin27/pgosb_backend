@@ -12,6 +12,7 @@ import (
 	urbanization_handler "fdms/cmd/api/handlers/locations/urbanization"
 	mission_handlers "fdms/cmd/api/handlers/mission"
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
+	mission_authority_handler "fdms/cmd/api/handlers/mission_authority"
 	mission_firefighter_handler "fdms/cmd/api/handlers/mission_firefghter"
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
 	mission_location_handler "fdms/cmd/api/handlers/mission_location"
@@ -21,6 +22,9 @@ import (
 	operative_regions_handlers "fdms/cmd/api/handlers/operative_regions"
 	roles_handlers "fdms/cmd/api/handlers/roles"
 	station_handler "fdms/cmd/api/handlers/station"
+
+	authority_handler "fdms/cmd/api/handlers/authority"
+
 	units_handlers "fdms/cmd/api/handlers/units"
 	user_handlers "fdms/cmd/api/handlers/user"
 	vehicle_handlers "fdms/cmd/api/handlers/vehicles"
@@ -70,6 +74,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	stateService := repository.NewStateService(db)
 	operativeRegionService := repository.NewOPerativeRegionsService(db)
 
+	authorityService := repository.NewAuthorityService(db)
+
 	municipalityService := repository.NewMunicipalityService(db)
 	parishSevice := repository.NewParishService(db)
 	sectorService := repository.NewSectorService(db)
@@ -90,7 +96,23 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	missionLocationService := repository.NewMissionLocationService(db)
 
+	missionAuthorityService := repository.NewMissionAuthorityService(db)
+	missionAuthorityVehicleService := repository.NewMissionAuthorityVehicleService(db)
+
+	missionAuthorityPersonService := repository.NewMissionAuthorityPersonService(db)
+
+	missionAuthorityServiceService := repository.NewMissionAuthorityServiceService(db)
+
+	authorityController := authority_handler.NewAuthorityController(authorityService)
+
 	missionController := mission_handlers.NewMissionController(missionService)
+
+	missionAuthorityVehicleController := mission_authority_handler.NewMissionAuthorityVehicleController(missionAuthorityVehicleService, missionAuthorityVehicleService)
+	missionAuthorityPersonController := mission_authority_handler.NewMissionAuthorityPersonController(missionAuthorityPersonService, missionAuthorityPersonService)
+	missionAuthorityServiceController := mission_authority_handler.NewMissionAuthorityServiceController(missionAuthorityServiceService, missionAuthorityServiceService)
+
+	missionAuthorityController := mission_authority_handler.NewMissionAuthorityController(missionAuthorityService, missionAuthorityService)
+
 	missionServiceController := mission_service_handlers.NewServiceServiceController(missionServiceService)
 	missionVehicleController := mission_vehicle_handlers.NewMissionVehicleController(missionVehicleService)
 	missionPersonController := mission_person_handlers.NewMissionPersonController(missionPersonService)
@@ -122,7 +144,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	conf.AllowCredentials = true
 
-	conf.AllowOrigins = []string{"https://gres.local.net:8083"}
+	conf.AllowOrigins = []string{"https://gres.local.net:8083", "http://localhost:5173", "http://192.168.120.136:5173"}
 
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output: logger.Log(),
@@ -145,6 +167,15 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		authGroup.POST("/logout", AuthController.LogOut)
 		authGroup.POST("/change-password", AuthController.ChangePassword)
 
+	}
+
+	authority := v1.Group("/authority")
+	{
+		authority.GET("/:id", authorityController.Get)
+		authority.GET("/all", authorityController.GetAll)
+		authority.POST("/create", authorityController.Create)
+		authority.PUT("/update", authorityController.Update)
+		authority.DELETE("/:id", authorityController.Delete)
 	}
 
 	user := v1.Group("/user")
@@ -324,7 +355,49 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		personMission.DELETE("/delete/:id", missionPersonController.Delete)
 	}
 
+	missionAuthority := v1.Group("mission/authority")
+	{
+		missionAuthority.GET("/:id", missionAuthorityController.Get)
+		missionAuthority.GET("/group/:id", missionAuthorityController.GetByMissionId)
+		missionAuthority.GET("/all", missionAuthorityController.GetAll)
+		missionAuthority.POST("/create", missionAuthorityController.Create)
+		missionAuthority.PUT("/update", missionAuthorityController.Update)
+		missionAuthority.DELETE("/delete/:id", missionAuthorityController.Delete)
+		missionAuthority.GET("/summary/:id", missionAuthorityController.GetSummaryByMissionId)
+	}
+
+	missionAuthorityVehicle := v1.Group("mission/authority/vehicle")
+	{
+		missionAuthorityVehicle.GET("/:id", missionAuthorityVehicleController.Get)
+		missionAuthorityVehicle.GET("/group/:id", missionAuthorityVehicleController.GetByAuthorityId)
+		missionAuthorityVehicle.GET("/all", missionAuthorityVehicleController.GetAll)
+		missionAuthorityVehicle.POST("/create", missionAuthorityVehicleController.Create)
+		missionAuthorityVehicle.PUT("/update", missionAuthorityVehicleController.Update)
+		missionAuthorityVehicle.DELETE("/delete/:id", missionAuthorityVehicleController.Delete)
+	}
+
+	missionAuthorityPerson := v1.Group("mission/authority/person")
+	{
+		missionAuthorityPerson.GET("/:id", missionAuthorityPersonController.Get)
+		missionAuthorityPerson.GET("/group/:id", missionAuthorityPersonController.GetByAuthorityId)
+		missionAuthorityPerson.GET("/all", missionAuthorityPersonController.GetAll)
+		missionAuthorityPerson.POST("/create", missionAuthorityPersonController.Create)
+		missionAuthorityPerson.PUT("/update", missionAuthorityPersonController.Update)
+		missionAuthorityPerson.DELETE("/delete/:id", missionAuthorityPersonController.Delete)
+	}
+
+	missionAuthorityServiceRelated := v1.Group("mission/authority/service")
+	{
+		missionAuthorityServiceRelated.GET("/:id", missionAuthorityServiceController.Get)
+		missionAuthorityServiceRelated.GET("/group/:id", missionAuthorityServiceController.GetByServiceId)
+		missionAuthorityServiceRelated.GET("/all", missionAuthorityServiceController.GetAll)
+		missionAuthorityServiceRelated.POST("/create", missionAuthorityServiceController.Create)
+		missionAuthorityServiceRelated.PUT("/update", missionAuthorityServiceController.Update)
+		missionAuthorityServiceRelated.DELETE("/delete/:id", missionAuthorityServiceController.Delete)
+	}
+
 	locationMission := v1.Group("mission/location")
+
 	{
 		locationMission.GET("/:id", missionLocationController.Get)
 		locationMission.GET("/group/:id", missionLocationController.GetLocationsByServiceId)

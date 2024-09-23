@@ -34,9 +34,10 @@ type RelevantServicesJson struct {
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
 	relevantService := &RelevantServicesJson{}
 
-	relevantService.Id = utils.ParseInt64Sring(r.Id) // Assuming utils.ConvertFromInt4 converts int32 to string
+	relevantService.Id = utils.ParseInt64String(r.Id) // Assuming utils.ConvertFromInt4 converts int32 to string
 	relevantService.MissionCode = *r.MissionCode
 	relevantService.RegionAreaDescription = *r.RegionAreaDescription
+
 	relevantService.AntaresId = utils.ConvertIntToString(*r.AntaresId)
 	relevantService.AntaresType = *r.AntaresType
 	relevantService.AntaresDescription = *r.AntaresDescription
@@ -51,10 +52,11 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
-	relevantService.Unharmed = utils.ParseInt64SringPointer(r.Unharmed)
-	relevantService.Injured = utils.ParseInt64SringPointer(r.Injured)
-	relevantService.Transported = utils.ParseInt64SringPointer(r.Transported)
-	relevantService.Deceased = utils.ParseInt64SringPointer(r.Deceased)
+	relevantService.Unharmed = utils.ParseInt64StringPointer(r.Unharmed)
+	relevantService.Injured = utils.ParseInt64StringPointer(r.Injured)
+	relevantService.Transported = utils.ParseInt64StringPointer(r.Transported)
+
+	relevantService.Deceased = utils.ParseInt64StringPointer(r.Deceased)
 
 	relevantService.IsImportant = r.IsImportant
 

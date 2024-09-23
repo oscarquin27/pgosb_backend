@@ -23,42 +23,28 @@ func NewMissionAuthorityService(db *pgxpool.Pool) services.MissionAuthorityServi
 	}
 }
 
-const selectMissionAuthorityQuery = "SELECT * FROM missions.locations WHERE id = $1"
+const selectMissionAuthorityQuery = "SELECT * FROM missions.authorities WHERE id = $1"
 
-const selectMissionAuthorityQuerybyServiceId = "SELECT * FROM missions.locations WHERE mission_id = $1"
+const selectMissionAuthorityQuerybyMissionId = "SELECT * FROM missions.authorities WHERE mission_id = $1"
 
-const selectAllMissionAuthorityQuery = "SELECT * FROM missions.locations"
+const selectMissionAuthorityQuerybyMissionSummary = "SELECT * FROM missions.vw_mission_authority_summary WHERE mission_id = $1"
 
-const insertMissionAuthorityQuery = `INSERT INTO missions.locations (
-    
-    alias,state_id, state, municipality_id, municipality, parish_id,
-    parish, sector_id, sector, urb_id, urb,  address , mission_id
-)
+const selectAllMissionAuthorityQuery = "SELECT * FROM missions.authorities"
+
+const insertMissionAuthorityQuery = `INSERT INTO missions.authorities (
+    alias, mission_id )
 VALUES (
      @alias, 
-    @state_id, @state, @municipality_id, @municipality, @parish_id, 
-    @parish, @sector_id, @sector, @urb_id, @urb,  @address, @mission_id
+    @mission_id
 ) RETURNING id`
 
-const updateMissionAuthorityQuery = `UPDATE missions.locations
+const updateMissionAuthorityQuery = `UPDATE missions.authorities
 SET 
     alias = @alias, 
-    
-    state_id = @state_id,
-    state = @state,
-    municipality_id = @municipality_id,
-    municipality = @municipality,
-    parish_id = @parish_id,
-    parish = @parish,
-    sector_id = @sector_id,
-    sector = @sector,
-    urb_id = @urb_id,
-    urb = @urb,
-    address = @address,
-	mission_id = @mission_id
+    mission_id = @mission_id
 WHERE id = @id; `
 
-const deleteMissionAuthorityQuery = `DELETE FROM missions.locations WHERE id = $1`
+const deleteMissionAuthorityQuery = `DELETE FROM missions.authorities WHERE id = $1`
 
 func (u *MissionAuthorityRepository) Get(id int64) *results.ResultWithValue[*models.MissionAuthority] {
 	r := u.AbstractRepository.Get(id, selectMissionAuthorityQuery)
@@ -83,6 +69,8 @@ func (u *MissionAuthorityRepository) Create(state *models.MissionAuthority) *res
 
 	r := u.AbstractRepository.Create(*state, insertMissionAuthorityQuery, state.GetNameArgs(), state.SetId)
 
+	r.Value = *state
+
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
@@ -97,11 +85,11 @@ func (u *MissionAuthorityRepository) Delete(id int64) *results.Result {
 	return u.AbstractRepository.Delete(id, deleteMissionAuthorityQuery)
 }
 
-func (u *MissionAuthorityRepository) GetByServiceId(id int64) *results.ResultWithValue[[]models.MissionAuthority] {
+func (u *MissionAuthorityRepository) GetByMissionId(id int64) *results.ResultWithValue[[]models.MissionAuthority] {
 
 	defaultList := make([]models.MissionAuthority, 0)
 
-	rest := results.NewResultWithValue("GetLocationByServiceId", false, defaultList, nil)
+	rest := results.NewResultWithValue("GetByMissionId", false, defaultList, nil)
 
 	ctx := context.Background()
 
@@ -114,7 +102,7 @@ func (u *MissionAuthorityRepository) GetByServiceId(id int64) *results.ResultWit
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, selectMissionAuthorityQuerybyServiceId, id)
+	rows, err := conn.Query(ctx, selectMissionAuthorityQuerybyMissionId, id)
 
 	if err != nil {
 		return rest.WithError(
@@ -135,4 +123,46 @@ func (u *MissionAuthorityRepository) GetByServiceId(id int64) *results.ResultWit
 	}
 
 	return rest.WithValue(registers).Success()
+}
+
+func (u *MissionAuthorityRepository) GetSummaryByMissionId(id int64) *results.ResultWithValue[[]models.MissionAuthoritySummary] {
+
+	defaultList := make([]models.MissionAuthoritySummary, 0)
+
+	rest := results.NewResultWithValue("GetSummaryByMissionId", false, defaultList, nil)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return rest.WithError(
+			results.NewError("no se pudo adquirir conexion", err))
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, selectMissionAuthorityQuerybyMissionSummary, id)
+
+	if err != nil {
+		return rest.WithError(
+			results.NewError("no se pudo ejecutar el query", err))
+	}
+
+	defer rows.Close()
+
+	registers, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionAuthoritySummary])
+
+	if err != nil {
+
+		if err == pgx.ErrNoRows {
+			return rest.WithError(results.NewNotFoundError("no encontraron registros", err))
+		}
+
+		return rest.WithError(
+			results.NewError("no se pudo ejecutar el query", err))
+	}
+
+	return rest.WithValue(registers).Success()
+
 }

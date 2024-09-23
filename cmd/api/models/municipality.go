@@ -16,8 +16,8 @@ type MunicipalityJson struct {
 func ModelToMunicipalityJson(s *models.Municipality) *MunicipalityJson {
 	state := MunicipalityJson{}
 
-	state.Id = utils.ParseInt64Sring(s.Id)
-	state.StateId = utils.ParseInt64Sring(s.StateId)
+	state.Id = utils.ParseInt64String(s.Id)
+	state.StateId = utils.ParseInt64String(s.StateId)
 
 	state.Name = utils.GetStringFromPointer(s.Name)
 	state.Capital = utils.GetStringFromPointer(s.Capital)

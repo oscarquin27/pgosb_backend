@@ -44,16 +44,19 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.Summary = utils.ConvertFromText(s.Summary)
 	service.Description = utils.ConvertFromText(s.Description)
 
-	service.Unharmed = utils.ParseInt64SringPointer(s.Unharmed)
-	service.Injured = utils.ParseInt64SringPointer(s.Injured)
-	service.Transported = utils.ParseInt64SringPointer(s.Transported)
-	service.Deceased = utils.ParseInt64SringPointer(s.Deceased)
-	service.StationId = utils.ParseInt64SringPointer(s.StationId)
-	service.LocationId = utils.ParseInt64SringPointer(s.LocationId)
+	service.Unharmed = utils.ParseInt64StringPointer(s.Unharmed)
+	service.Injured = utils.ParseInt64StringPointer(s.Injured)
+	service.Transported = utils.ParseInt64StringPointer(s.Transported)
+
+	service.Deceased = utils.ParseInt64StringPointer(s.Deceased)
+	service.StationId = utils.ParseInt64StringPointer(s.StationId)
+	service.LocationId = utils.ParseInt64StringPointer(s.LocationId)
 	service.OperativeAreas = utils.ConvertFromTextArray(s.OperativeAreas)
-	service.HealthCareCenterId = utils.ParseInt64SringPointer(s.HealthCareCenterId)
+
+	service.HealthCareCenterId = utils.ParseInt64StringPointer(s.HealthCareCenterId)
 
 	if s.ManualServiceDate.Valid {
+
 		service.ManualServiceDate = s.ManualServiceDate.Time.Format("02-01-2006 15:04:05")
 	}
 
@@ -62,8 +65,8 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	}
 	service.IsImportant = s.IsImportant
 
-	service.SendingUserId = utils.ParseInt64SringPointer(s.SendingUserId)
-	service.ReceivingUserId = utils.ParseInt64SringPointer(s.ReceivingUserId)
+	service.SendingUserId = utils.ParseInt64StringPointer(s.SendingUserId)
+	service.ReceivingUserId = utils.ParseInt64StringPointer(s.ReceivingUserId)
 
 	return &service
 }

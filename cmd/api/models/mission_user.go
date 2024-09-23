@@ -20,11 +20,11 @@ type MissionUserServiceJson struct {
 func ModelToMissionUserServiceJson(s models.MissionUserService) *MissionUserServiceJson {
 	service := MissionUserServiceJson{}
 
-	service.Id = utils.ParseInt64Sring(s.Id)
-	service.ServiceId = utils.ParseInt64Sring(s.ServiceId)
+	service.Id = utils.ParseInt64String(s.Id)
+	service.ServiceId = utils.ParseInt64String(s.ServiceId)
 
 	if s.UserId.Valid {
-		service.UserId = utils.ParseInt64Sring(s.UserId.Int64)
+		service.UserId = utils.ParseInt64String(s.UserId.Int64)
 	}
 
 	if s.Name.Valid {

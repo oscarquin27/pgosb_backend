@@ -17,9 +17,9 @@ type ParishJson struct {
 func ModelToParishJson(s *models.Parish) *ParishJson {
 	state := ParishJson{}
 
-	state.Id = utils.ParseInt64Sring(s.Id)
-	state.StateId = utils.ParseInt64Sring(s.StateId)
-	state.MunicipalityId = utils.ParseInt64Sring(s.MunicipalityId)
+	state.Id = utils.ParseInt64String(s.Id)
+	state.StateId = utils.ParseInt64String(s.StateId)
+	state.MunicipalityId = utils.ParseInt64String(s.MunicipalityId)
 
 	state.Name = utils.GetStringFromPointer(s.Name)
 	state.Capital = utils.GetStringFromPointer(s.Capital)

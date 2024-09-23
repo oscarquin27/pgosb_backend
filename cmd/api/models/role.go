@@ -48,12 +48,13 @@ func ModelToRoleJson(role *models.Role) *RoleJson {
 	addPermissionsToDto(&accessSchemaDto.AssistentialCenters, role.AccessSchema.AssistentialCenters)
 
 	return &RoleJson{
-		Id:           utils.ParseInt64Sring(role.ID),
+		Id:           utils.ParseInt64String(role.ID),
 		RoleName:     role.RoleName,
 		AccessSchema: accessSchemaDto,
-		StRole:       role.StRole,
-		Created_at:   role.CreatedAt.Format(time.RFC3339),
-		Updated_at:   role.UpdatedAt.Format(time.RFC3339),
+
+		StRole:     role.StRole,
+		Created_at: role.CreatedAt.Format(time.RFC3339),
+		Updated_at: role.UpdatedAt.Format(time.RFC3339),
 	}
 }
 

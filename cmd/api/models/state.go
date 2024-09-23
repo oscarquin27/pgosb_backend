@@ -15,9 +15,10 @@ type StateJson struct {
 func ModelToStateJson(s *models.State) *StateJson {
 	state := StateJson{}
 
-	state.Id = utils.ParseInt64Sring(s.Id)
+	state.Id = utils.ParseInt64String(s.Id)
 	state.Name = utils.GetStringFromPointer(s.Name)
 	state.Capital = utils.GetStringFromPointer(s.Capital)
+
 	state.Coordinates = utils.GetStringFromPointer(s.Coordinates)
 
 	return &state

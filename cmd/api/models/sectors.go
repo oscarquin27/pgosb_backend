@@ -14,8 +14,8 @@ type SectorJson struct {
 func ModelToSectorJson(s *models.Sector) *SectorJson {
 	state := SectorJson{}
 
-	state.Id = utils.ParseInt64Sring(s.Id)
-	state.ParishId = utils.ParseInt64Sring(s.ParishId)
+	state.Id = utils.ParseInt64String(s.Id)
+	state.ParishId = utils.ParseInt64String(s.ParishId)
 	state.Name = utils.GetStringFromPointer(s.Name)
 
 	return &state

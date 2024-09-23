@@ -31,22 +31,22 @@ type MissionServiceSummaryJson struct {
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
 	service := MissionServiceSummaryJson{}
 
-	service.MissionId = utils.ParseInt64Sring(s.MissionId)
+	service.MissionId = utils.ParseInt64String(s.MissionId)
 
-	service.Id = utils.ParseInt64Sring(s.Id)
+	service.Id = utils.ParseInt64String(s.Id)
 
-	service.Unharmed = utils.ParseInt64Sring(s.Unharmed.Int64)
+	service.Unharmed = utils.ParseInt64String(s.Unharmed.Int64)
 
-	service.Injured = utils.ParseInt64Sring(s.Injured.Int64)
+	service.Injured = utils.ParseInt64String(s.Injured.Int64)
 
-	service.Deceased = utils.ParseInt64Sring(s.Deceased.Int64)
+	service.Deceased = utils.ParseInt64String(s.Deceased.Int64)
 
-	service.Transported = utils.ParseInt64Sring(s.Transported.Int64)
+	service.Transported = utils.ParseInt64String(s.Transported.Int64)
 
-	service.NumUnits = utils.ParseInt64Sring(s.NumUnits.Int64)
+	service.NumUnits = utils.ParseInt64String(s.NumUnits.Int64)
 
 	if s.AntaresId.Valid {
-		service.AntaresId = utils.ParseInt64Sring(s.AntaresId.Int64)
+		service.AntaresId = utils.ParseInt64String(s.AntaresId.Int64)
 	}
 
 	if s.Description.Valid {
@@ -66,11 +66,11 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 	}
 
 	if s.NumFirefighters.Valid {
-		service.NumFireFighters = utils.ParseInt64Sring(s.NumFirefighters.Int64)
+		service.NumFireFighters = utils.ParseInt64String(s.NumFirefighters.Int64)
 	}
 
 	if s.NumVehicles.Valid {
-		service.NumVehicles = utils.ParseInt64Sring(s.NumVehicles.Int64)
+		service.NumVehicles = utils.ParseInt64String(s.NumVehicles.Int64)
 	}
 
 	if s.Alias.Valid {

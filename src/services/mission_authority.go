@@ -8,5 +8,6 @@ import (
 
 type MissionAuthorityService interface {
 	abstract_handler.AbstractCRUDService[models.MissionAuthority]
-	GetByServiceId(id int64) *results.ResultWithValue[[]models.MissionAuthority]
+	GetByMissionId(id int64) *results.ResultWithValue[[]models.MissionAuthority]
+	GetSummaryByMissionId(id int64) *results.ResultWithValue[[]models.MissionAuthoritySummary]
 }
