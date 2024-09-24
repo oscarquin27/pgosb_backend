@@ -8,5 +8,5 @@ import (
 
 type MissionAuthorityRelateService interface {
 	abstract_handler.AbstractCRUDService[models.MissionAuthorityService]
-	GetByServiceId(id int64) *results.ResultWithValue[[]models.MissionAuthorityService]
+	GetByServiceId(id int64) *results.ResultWithValue[[]models.MissionAuthorityServiceSummary]
 }

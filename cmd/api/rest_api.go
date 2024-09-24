@@ -307,6 +307,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.GET("/all", missionServiceController.GetAll)
 		serviceMission.GET("/:id", missionServiceController.Get)
 		serviceMission.GET("/group/:id", missionServiceController.GetByMissionId)
+
 		serviceMission.POST("/create", missionServiceController.Create)
 		serviceMission.PUT("/update", missionServiceController.Update)
 		serviceMission.DELETE("/delete/:id", missionServiceController.Delete)

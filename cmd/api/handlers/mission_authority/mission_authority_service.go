@@ -72,10 +72,10 @@ func (u *MissionAuthorityServiceController) GetByServiceId(c *gin.Context) {
 		return
 	}
 
-	var data []api_models.MissionAuthorityServiceJson = make([]api_models.MissionAuthorityServiceJson, 0)
+	var data []api_models.MissionAuthorityServiceSummaryJson = make([]api_models.MissionAuthorityServiceSummaryJson, 0)
 
 	for _, v := range result.Value {
-		data = append(data, *api_models.ModelToMissionAuthorityServiceJson(&v))
+		data = append(data, *api_models.ModelToMissionAuthorityServiceSummaryJson(&v))
 	}
 
 	c.JSON(http.StatusOK, data)
