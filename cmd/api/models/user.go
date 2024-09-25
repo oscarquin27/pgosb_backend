@@ -17,7 +17,7 @@ type UserIdentificationJson struct {
 }
 
 type UserProfileJson struct {
-	User_name       string   `json:"user_name" binding:"required"`
+	User_name       string   `json:"user_name"`
 	First_name      string   `json:"first_name"`
 	Last_name       string   `json:"last_name"`
 	Email           string   `json:"email"`
@@ -79,7 +79,13 @@ func (userDto *UserJson) ToModel() models.User {
 	layout := "02-01-2006" // Layout for both dates
 
 	// Parse birth date
-	birthDate, _ := time.Parse(layout, userDto.Birth_date)
+	birthDate, err := time.Parse(layout, userDto.Birth_date)
+
+	if err != nil {
+		logger.Warn().Err(err).Msg("Error conviertiendo fecha")
+	}
+
+	birthDateParsed := birthDate.Format("2006-01-02")
 
 	// Get current date
 	currentDate := time.Now()
@@ -97,7 +103,7 @@ func (userDto *UserJson) ToModel() models.User {
 
 	var altura pgtype.Numeric
 
-	err := altura.Scan(userDto.Height)
+	err = altura.Scan(userDto.Height)
 
 	if err != nil {
 		logger.Error().Err(err).Msg("Error escanenado altura")
@@ -113,7 +119,7 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Gender = utils.ConvertToPgTypeText(userDto.Gender)
 	user.UserProfile.Phone = utils.ConvertToPgTypeText(userDto.Phone)
 	user.UserProfile.Secondary_Phone = utils.ConvertToPgTypeText(userDto.Secondary_Phone)
-	user.UserProfile.Birth_date = utils.ConvertToPgTypeText(userDto.Birth_date)
+	user.UserProfile.Birth_date = utils.ConvertToPgTypeText(birthDateParsed)
 	user.UserProfile.Age = utils.ConvertToPgTypeInt2(years)
 	user.UserProfile.Residence = utils.ConvertToPgTypeText(userDto.Residence)
 	user.UserProfile.Coordinates = utils.ConvertToPgTypeText(userDto.Coordinates)
