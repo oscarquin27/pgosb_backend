@@ -7,9 +7,10 @@ import (
 )
 
 type MissionAuthorityJson struct {
-	Id        string `json:"id"`
-	MissionId string `json:"mission_id"`
-	Alias     string `json:"alias"`
+	Id            string `json:"id"`
+	MissionId     string `json:"mission_id"`
+	Alias         string `json:"alias"`
+	InstitutionId string `json:"institution_id"`
 }
 
 type MissionAuthoritySummaryJson struct {
@@ -33,6 +34,11 @@ func (m *MissionAuthorityJson) ToModel() models.MissionAuthority {
 
 		String: m.Alias,
 		Valid:  true,
+	}
+
+	model.InstitutionId = sql.NullInt64{
+		Int64: utils.ParseInt64(m.InstitutionId),
+		Valid: true,
 	}
 
 	return model
@@ -77,6 +83,10 @@ func ModelToMissionAuthorityJson(model *models.MissionAuthority) *MissionAuthori
 
 	jsonModel.Id = utils.ParseInt64String(model.Id)
 	jsonModel.MissionId = utils.ParseInt64String(model.MissionId)
+
+	if model.InstitutionId.Valid {
+		jsonModel.InstitutionId = utils.ParseInt64String(model.InstitutionId.Int64)
+	}
 
 	if model.Alias.Valid {
 		jsonModel.Alias = model.Alias.String

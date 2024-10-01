@@ -21,9 +21,9 @@ func NewHealthcareCenterService(db *pgxpool.Pool) services.HealthcareCenterServi
 	}
 }
 
-const selectHealthcareCenterQuery = "SELECT * FROM hq.centers WHERE id = $1"
+const selectHealthcareCenterQuery = "SELECT * FROM hq.centers WHERE id = $1 ORDER BY id ASC"
 
-const selectAllHealthcareCenterQuery = "SELECT * FROM hq.centers"
+const selectAllHealthcareCenterQuery = "SELECT * FROM hq.centers ORDER BY id ASC"
 
 const insertHealthcareCenterQuery = `INSERT INTO hq.centers (
     

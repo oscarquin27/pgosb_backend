@@ -39,6 +39,8 @@ type MissionService struct {
 	HealthCareCenterId *int64 `json:"center_id" db:"center_id"`
 	SendingUserId      *int64 `json:"sending_user_id" db:"sending_user_id"`
 	ReceivingUserId    *int64 `json:"receiving_user_id" db:"receiving_user_id"`
+
+	Level sql.NullString `json:"level" db:"level"`
 }
 
 type RelevantServices struct {

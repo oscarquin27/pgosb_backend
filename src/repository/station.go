@@ -21,9 +21,9 @@ func NewStationService(db *pgxpool.Pool) services.StationService {
 	}
 }
 
-const selectStationQuery = "SELECT * FROM hq.stations WHERE id = $1"
+const selectStationQuery = "SELECT * FROM hq.stations WHERE id = $1 ORDER BY id ASC"
 
-const selectAllStationQuery = "SELECT * FROM hq.stations"
+const selectAllStationQuery = "SELECT * FROM hq.stations ORDER BY id ASC"
 
 const insertStationQuery = `INSERT INTO hq.stations (
     

@@ -1,6 +1,7 @@
 package api_models
 
 import (
+	"database/sql"
 	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/utils"
@@ -31,6 +32,7 @@ type MissionServiceJson struct {
 
 	SendingUserId   string `json:"sending_user_id"`
 	ReceivingUserId string `json:"receiving_user_id"`
+	Level           string `json:"level"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -67,6 +69,10 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 
 	service.SendingUserId = utils.ParseInt64StringPointer(s.SendingUserId)
 	service.ReceivingUserId = utils.ParseInt64StringPointer(s.ReceivingUserId)
+
+	if s.Level.Valid {
+		service.Level = s.Level.String
+	}
 
 	return &service
 }
@@ -123,6 +129,10 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.ReceivingUserId = &receivingUserId
 
 	service.IsImportant = s.IsImportant
+
+	if s.Level != "" {
+		service.Level = sql.NullString{String: s.Level, Valid: true}
+	}
 
 	return service
 }

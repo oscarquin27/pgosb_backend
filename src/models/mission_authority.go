@@ -7,11 +7,12 @@ import (
 )
 
 type MissionAuthority struct {
-	Id        int64          `db:"id"`
-	MissionId int64          `db:"mission_id"`
-	Type      sql.NullString `db:"type"`
-	CreatedAt sql.NullTime   `db:"created_at"`
-	Alias     sql.NullString `db:"alias"`
+	Id        int64 `db:"id"`
+	MissionId int64 `db:"mission_id"`
+	//Type          sql.NullString `db:"type"`
+	InstitutionId sql.NullInt64  `db:"institution_id"`
+	CreatedAt     sql.NullTime   `db:"created_at"`
+	Alias         sql.NullString `db:"alias"`
 }
 
 type MissionAuthoritySummary struct {
@@ -39,6 +40,9 @@ func (s *MissionAuthority) GetNameArgs() pgx.NamedArgs {
 	args["mission_id"] = s.MissionId
 	if s.Alias.Valid {
 		args["alias"] = s.Alias.String
+	}
+	if s.InstitutionId.Valid {
+		args["institution_id"] = s.InstitutionId.Int64
 	}
 
 	return args

@@ -51,7 +51,9 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	manual_service_date,
 	is_important,
 	sending_user_id,
-	receiving_user_id
+	receiving_user_id,
+	
+	level
 
 	
 	FROM missions.services where id = $1;`, id)
@@ -102,7 +104,10 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	manual_service_date,
 	is_important,
 	sending_user_id,
-	receiving_user_id
+	receiving_user_id,
+	
+	level
+	
 	FROM missions.services order by id desc;`)
 
 	if err != nil {
@@ -241,7 +246,10 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	manual_service_date,
 	is_important,
 	sending_user_id,
-	receiving_user_id
+	receiving_user_id,
+	
+	level
+	
 	FROM missions.services where mission_id = $1 `, id)
 
 	if err != nil {

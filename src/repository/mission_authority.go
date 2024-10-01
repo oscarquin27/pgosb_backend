@@ -32,16 +32,19 @@ const selectMissionAuthorityQuerybyMissionSummary = "SELECT * FROM missions.vw_m
 const selectAllMissionAuthorityQuery = "SELECT * FROM missions.authorities"
 
 const insertMissionAuthorityQuery = `INSERT INTO missions.authorities (
-    alias, mission_id )
+    alias, mission_id, institution_id
+)
 VALUES (
      @alias, 
-    @mission_id
+    @mission_id,
+    @institution_id
 ) RETURNING id`
 
 const updateMissionAuthorityQuery = `UPDATE missions.authorities
 SET 
     alias = @alias, 
-    mission_id = @mission_id
+    
+    institution_id = @institution_id
 WHERE id = @id; `
 
 const deleteMissionAuthorityQuery = `DELETE FROM missions.authorities WHERE id = $1`

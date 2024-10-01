@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	auth_handlers "fdms/cmd/api/handlers/auth"
 	health_check "fdms/cmd/api/handlers/health_cheack"
 	healthcare_center_handler "fdms/cmd/api/handlers/healthcare_center"
@@ -22,6 +23,10 @@ import (
 	operative_regions_handlers "fdms/cmd/api/handlers/operative_regions"
 	roles_handlers "fdms/cmd/api/handlers/roles"
 	station_handler "fdms/cmd/api/handlers/station"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 
 	authority_handler "fdms/cmd/api/handlers/authority"
 
@@ -145,7 +150,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	conf.AllowCredentials = true
 
 	conf.AllowOrigins = []string{"https://gres.local.net:8083", "http://localhost:5173",
-		"http://192.168.120.136:5173", "http://192.168.100.108:5173", "https://hackorlandodev.com:8083"}
+		"http://192.168.120.136:5173", "http://192.168.100.108:5173", "https://hackorlandodev.com:8083", "http://pruebas.gres.net:8083"}
 
 	router.Use(gin.LoggerWithConfig(gin.LoggerConfig{
 		Output: logger.Log(),
@@ -154,9 +159,9 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	router.Use(ZerologMiddleware())
 	router.Use(cors.New(conf))
 
-	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
-
 	router.GET("/health", healthCheckController.HealthCheckHandler)
+
+	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/api/v1")
 
@@ -415,17 +420,50 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		operativeRegion.GET("/all", operativeRegionController.GetAll)
 	}
 
-	if config.Get().Http.EnabledSsl {
-		if err := router.RunTLS(fmt.Sprintf("0.0.0.0:%d",
-			config.Get().Http.Port),
-			config.Get().Http.SslCert,
-			config.Get().Http.SslKey); err != nil {
+	srv := &http.Server{
+		Addr:    fmt.Sprintf("0.0.0.0:%d", config.Get().Http.Port),
+		Handler: router,
+	}
 
+	go func() {
+		if config.Get().Http.EnabledSsl {
+
+			logger.Info().Msgf("Starting REST API With SSL server on port %d Cert: %s Key: %s",
+				config.Get().Http.Port,
+				config.Get().Http.SslCert,
+				config.Get().Http.SslKey)
+
+			if err := srv.ListenAndServeTLS(
+				config.Get().Http.SslCert,
+				config.Get().Http.SslKey); err != nil {
+
+				logger.Fatal().Err(err).Msg("Failed to start REST API server")
+			}
+		} else if err := srv.ListenAndServe(); err != nil {
 			logger.Fatal().Err(err).Msg("Failed to start REST API server")
 		}
-	} else if err := router.Run(fmt.Sprintf("0.0.0.0:%d",
-		config.Get().Http.Port)); err != nil {
-		logger.Fatal().Err(err).Msg("Failed to start REST API server")
+
+	}()
+
+	logger.Info().Msg("Server started")
+	quit := make(chan os.Signal, 1)
+
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	<-quit
+
+	logger.Info().Msg("Shutting down server...")
+
+	// Create a deadline to wait for
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+
+	defer cancel()
+
+	// Shutdown the server
+	if err := srv.Shutdown(ctx); err != nil {
+		logger.Fatal().Err(err).Msg("Server forced to shutdown")
 	}
+
+	logger.Info().Msg("Server exiting")
 
 }
