@@ -40,7 +40,7 @@ const selectQuery = ` SELECT
 		   purpose, 
 		   init_kilometer
 	FROM vehicles.unit
-	WHERE id = $1`
+	WHERE id = $1 `
 
 const updateQuery = `
 	UPDATE vehicles.unit
@@ -95,7 +95,7 @@ const selectAllQuery = ` SELECT
                year, 
 			   purpose, 
 			   init_kilometer
-        FROM vehicles.unit`
+        FROM vehicles.unit ORDER BY id ASC`
 
 const insertQuery = `
 	INSERT INTO vehicles.unit (

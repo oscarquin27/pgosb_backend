@@ -33,6 +33,7 @@ type MissionServiceJson struct {
 	SendingUserId   string `json:"sending_user_id"`
 	ReceivingUserId string `json:"receiving_user_id"`
 	Level           string `json:"level"`
+	PeaceQuadrant   string `json:"peace_quadrant"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -56,6 +57,10 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.OperativeAreas = utils.ConvertFromTextArray(s.OperativeAreas)
 
 	service.HealthCareCenterId = utils.ParseInt64StringPointer(s.HealthCareCenterId)
+
+	if s.PeaceQuadrant.Valid {
+		service.PeaceQuadrant = s.PeaceQuadrant.String
+	}
 
 	if s.ManualServiceDate.Valid {
 
@@ -106,6 +111,10 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.HealthCareCenterId = &centerId
 	service.LocationId = &locationId
 	manualServiceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualServiceDate)
+
+	if s.PeaceQuadrant != "" {
+		service.PeaceQuadrant = sql.NullString{String: s.PeaceQuadrant, Valid: true}
+	}
 
 	if err == nil {
 		service.ManualServiceDate.Time = manualServiceDate

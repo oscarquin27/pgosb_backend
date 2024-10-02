@@ -40,7 +40,8 @@ type MissionService struct {
 	SendingUserId      *int64 `json:"sending_user_id" db:"sending_user_id"`
 	ReceivingUserId    *int64 `json:"receiving_user_id" db:"receiving_user_id"`
 
-	Level sql.NullString `json:"level" db:"level"`
+	Level         sql.NullString `json:"level" db:"level"`
+	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
 }
 
 type RelevantServices struct {

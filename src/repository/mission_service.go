@@ -53,7 +53,8 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	sending_user_id,
 	receiving_user_id,
 	
-	level
+	level,
+	peace_quadrant
 
 	
 	FROM missions.services where id = $1;`, id)
@@ -106,7 +107,8 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	sending_user_id,
 	receiving_user_id,
 	
-	level
+	level,
+	peace_quadrant
 	
 	FROM missions.services order by id desc;`)
 
@@ -248,7 +250,8 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	sending_user_id,
 	receiving_user_id,
 	
-	level
+	level,
+	peace_quadrant
 	
 	FROM missions.services where mission_id = $1 `, id)
 
