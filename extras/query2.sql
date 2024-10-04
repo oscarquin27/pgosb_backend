@@ -1,0 +1,3 @@
+INSERT INTO vehicles.unit
+( plate, station, unit_type, make, unit_condition, vehicle_serial, motor_serial, capacity, details, fuel_type, water_capacity, observations, hurt_capacity, doors, performance, load_capacity, model, alias, color, "year", purpose, init_kilometer)
+VALUES(nextval('vehicles.unity_id_seq'::regclass), '', '', '', '', '', '', '', '', ?, '', '', '', 0, 0, 0, 0, '', '', '', '', '', 0);

@@ -54,7 +54,8 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	receiving_user_id,
 	
 	level,
-	peace_quadrant
+	peace_quadrant,
+	location_destiny_id
 
 	
 	FROM missions.services where id = $1;`, id)
@@ -108,7 +109,8 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	receiving_user_id,
 	
 	level,
-	peace_quadrant
+	peace_quadrant,
+	location_destiny_id
 	
 	FROM missions.services order by id desc;`)
 
@@ -199,6 +201,9 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	transported,
 	deceased,
 	is_important
+	
+	
+	
 	FROM missions.vw_relevant_services
 	where service_id::text in (%s)`, id))
 
@@ -251,7 +256,8 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	receiving_user_id,
 	
 	level,
-	peace_quadrant
+	peace_quadrant,
+	location_destiny_id
 	
 	FROM missions.services where mission_id = $1 `, id)
 

@@ -432,7 +432,8 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 			street = $38,
 			beach = $39,
 			address = $40,
-			legal_id = $41
+			legal_id = $41,
+			status_user = $42
 		WHERE id = $31 returning id_keycloak`,
 		idRol,
 		user.UserProfile.First_name,
@@ -474,7 +475,8 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 		user.UserProfile.Street,
 		user.UserProfile.Beach,
 		user.UserProfile.Address,
-		user.UserProfile.Legal_id)
+		user.UserProfile.Legal_id,
+		user.UserProfile.StatusUser)
 
 	err = row.Scan(&keycloakId)
 
@@ -487,7 +489,8 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 
 	if previous.UserProfile.User_system.Bool && !user.UserProfile.User_system.Bool {
 
-		err = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", user.UserIdentification.Id).Scan(&keycloakId)
+		_ = tx.QueryRow(ctx, "select id_keycloak from users.user where id = $1", user.UserIdentification.Id).Scan(&keycloakId)
+
 		err = u.auth.DeleteUser(ctx, keycloakId.String)
 
 		if err != nil {

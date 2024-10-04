@@ -58,6 +58,8 @@ type UserProfileJson struct {
 	Address         string   `json:"address"`
 	Legal_id        string   `json:"legal_id"`
 	Role            string   `json:"role"`
+
+	StatusUser string `json:"status_user"`
 }
 
 type UserStatusJson struct {
@@ -152,6 +154,7 @@ func (userDto *UserJson) ToModel() models.User {
 	user.UserProfile.Address = utils.ConvertToPgTypeText(userDto.Address)
 	user.UserProfile.Legal_id = utils.ConvertToPgTypeText(userDto.Legal_id)
 	user.UserProfile.Role = utils.ConvertToPgTypeText(userDto.Role)
+	user.UserProfile.StatusUser = &userDto.StatusUser
 	return user
 }
 
@@ -229,6 +232,9 @@ func (userDto *UserJson) FromModel(user *models.User) *UserJson {
 	userDto.UserProfileJson.Legal_id = utils.ConvertFromText(user.Legal_id)
 	userDto.UserProfileJson.Role = utils.ConvertFromText(user.Role)
 
+	if user.StatusUser != nil {
+		userDto.UserProfileJson.StatusUser = *user.StatusUser
+	}
 	return userDto
 }
 
@@ -293,6 +299,10 @@ func ModelToUserJson(user *models.User) *UserJson {
 	userDto.UserProfileJson.Address = utils.ConvertFromText(user.Address)
 	userDto.UserProfileJson.Legal_id = utils.ConvertFromText(user.Legal_id)
 	userDto.UserProfileJson.Role = utils.ConvertFromText(user.Role)
+
+	if user.StatusUser != nil {
+		userDto.UserProfileJson.StatusUser = *user.StatusUser
+	}
 
 	return &userDto
 }

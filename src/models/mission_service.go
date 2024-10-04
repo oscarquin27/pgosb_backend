@@ -42,6 +42,8 @@ type MissionService struct {
 
 	Level         sql.NullString `json:"level" db:"level"`
 	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
+
+	LocationDestinyId *int64 `json:"location_destiny_id" db:"location_destiny_id"`
 }
 
 type RelevantServices struct {
