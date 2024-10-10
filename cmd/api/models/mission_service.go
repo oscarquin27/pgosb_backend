@@ -36,9 +36,8 @@ type MissionServiceJson struct {
 	PeaceQuadrant     string `json:"peace_quadrant"`
 	LocationDestinyId string `json:"location_destiny_id"`
 
-	NotAttended    bool `json:"not_attended"`
-	FalseAlarm     bool `json:"false_alarm"`
-	PendingForData bool `json:"pending_for_data"`
+	PendingForData bool   `json:"pending_for_data"`
+	CanceledReason string `json:"cancel_reason"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -86,12 +85,8 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 
 	service.LocationDestinyId = utils.ParseInt64StringPointer(s.LocationDestinyId)
 
-	if s.NotAttended.Valid {
-		service.NotAttended = s.NotAttended.Bool
-	}
-
-	if s.FalseAlarm.Valid {
-		service.FalseAlarm = s.FalseAlarm.Bool
+	if s.CanceledReason.Valid {
+		service.CanceledReason = s.CanceledReason.String
 	}
 
 	if s.PendingForData.Valid {
@@ -165,9 +160,7 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 		service.Level = sql.NullString{String: s.Level, Valid: true}
 	}
 
-	service.NotAttended = sql.NullBool{Bool: s.NotAttended, Valid: true}
-	service.FalseAlarm = sql.NullBool{Bool: s.FalseAlarm, Valid: true}
+	service.CanceledReason = sql.NullString{String: s.CanceledReason, Valid: true}
 	service.PendingForData = sql.NullBool{Bool: s.PendingForData, Valid: true}
-
 	return service
 }
