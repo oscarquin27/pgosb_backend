@@ -15,7 +15,7 @@ var (
 
 type MissionVehicle struct {
 	Id               pgtype.Int4 `json:"id" db:"id"`
-	ServiceId        pgtype.Int4 `json:"service_id" db:"service_id"`
+	MissionId        pgtype.Int4 `json:"mission_id" db:"mission_id"`
 	VehicleCondition pgtype.Text `json:"vehicle_condition" db:"vehicle_condition"`
 	Make             pgtype.Text `json:"make" db:"make"`
 	Model            pgtype.Text `json:"model" db:"model"`

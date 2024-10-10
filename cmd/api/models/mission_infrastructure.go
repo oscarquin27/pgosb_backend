@@ -7,7 +7,7 @@ import (
 
 type MissionInfrastructureJson struct {
 	Id              string `json:"id"`
-	ServiceId       string `json:"service_id"`
+	MissionId       string `json:"mission_id"`
 	BuildType       string `json:"build_type"`
 	BuildOccupation string `json:"build_occupation"`
 	BuildArea       string `json:"build_area"`
@@ -26,7 +26,7 @@ func ModelToMissionInfrastructureJson(s models.MissionInfrastructure) *MissionIn
 	infra := MissionInfrastructureJson{}
 
 	infra.Id = utils.ConvertFromInt4(s.Id)
-	infra.ServiceId = utils.ConvertFromInt4(s.ServiceId)
+	infra.MissionId = utils.ConvertFromInt4(s.MissionId)
 	infra.BuildType = utils.ConvertFromText(s.BuildType)
 	infra.BuildOccupation = utils.ConvertFromText(s.BuildOccupation)
 	infra.BuildArea = utils.ConvertFromText(s.BuildArea)
@@ -47,7 +47,7 @@ func (s *MissionInfrastructureJson) ToModel() models.MissionInfrastructure {
 	infra := models.MissionInfrastructure{}
 
 	infra.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	infra.ServiceId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.ServiceId))
+	infra.MissionId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.MissionId))
 	infra.BuildType = utils.ConvertToPgTypeText(s.BuildType)
 	infra.BuildOccupation = utils.ConvertToPgTypeText(s.BuildOccupation)
 	infra.BuildArea = utils.ConvertToPgTypeText(s.BuildArea)

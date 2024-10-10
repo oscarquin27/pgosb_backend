@@ -2,16 +2,71 @@ package repository
 
 import (
 	"context"
+	"database/sql"
 	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
-	"fdms/src/utils"
 	"fdms/src/utils/date_utils"
 	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+)
+
+const (
+	insertMission = `
+        INSERT INTO missions.mission (
+		id, 
+		code, 
+		created_at, 
+		alias, 
+		operative_areas, 
+		summary, 
+		description, 
+		unharmed, 
+		injured, 
+		transported, 
+		deceased, 
+		station_id, 
+		location_id, 
+		health_care_center_id, 
+		sending_user_id, 
+		receiving_user_id, 
+		level, 
+		peace_quadrant, 
+		location_destiny_id, 
+		is_important, 
+		not_attended, 
+		false_alarm, 
+		pending_for_data
+		)
+        VALUES (
+		@id, 
+		@code, 
+		@created_at, 
+		@alias, 
+		@operative_areas, 
+		@summary, 
+		@description, 
+		@unharmed, 
+		@injured, 
+		@transported, 
+		@deceased, 
+		@station_id, 
+		@location_id, 
+		@health_care_center_id, 
+		@sending_user_id, 
+		@receiving_user_id, 
+		@level, 
+		@peace_quadrant, 
+		@location_destiny_id, 
+		@is_important, 
+		@not_attended, 
+		@false_alarm, 
+		@pending_for_data
+		)
+    `
 )
 
 type MissionRepository struct {
@@ -36,7 +91,7 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, created_at, code, alias from missions.mission order by created_at desc`)
+	rows, err := conn.Query(ctx, `SELECT * from missions.mission order by created_at desc`)
 
 	if err != nil {
 		return nil, err
@@ -100,7 +155,7 @@ func (u *MissionRepository) Get(id int) (*models.Mission, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, created_at, code, alias from missions.mission where id = $1;`, id)
+	rows, err := conn.Query(ctx, `SELECT * from missions.mission where id = $1;`, id)
 
 	if err != nil {
 		logger.Error().Err(err).Msg("Error ejecutando0 querys")
@@ -125,17 +180,24 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
+
 	if err != nil {
+
 		logger.Error().Err(err).Msg("Error acquiring database connection")
+
 		return nil, err
 	}
+
 	defer conn.Release()
 
 	// 1. Get Next ID from Sequence
 	var id int64 // Use int64 for sequence value
+
 	err = conn.QueryRow(ctx, `SELECT nextval('missions.mission_id_seq'::regclass)`).Scan(&id)
+
 	if err != nil {
 		logger.Error().Err(err).Msg("Error getting next sequence value")
+
 		return nil, err // Return a more specific error
 	}
 
@@ -143,21 +205,34 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 
 	code := fmt.Sprintf("%d-%s", id, date)
 
-	// 2. Insert with the Retrieved ID
-	_, err = conn.Exec(ctx, `
-        INSERT INTO missions.mission (id, code, created_at, alias )
-        VALUES ($1, $2, $3, $4)`,
-		id, code, date, s.Alias,
-	)
+	s.Id = id
+
+	createdAt, err := time.Parse(date_utils.CompleteFormatDate, date)
+
 	if err != nil {
+
+		logger.Error().Err(err).Msg("Error parsing date")
+
+		return nil, err
+	}
+
+	s.CreatedAt = sql.NullTime{Time: createdAt, Valid: true}
+
+	s.Code = sql.NullString{String: code, Valid: true}
+
+	// 2. Insert with the Retrieved ID
+	_, err = conn.Exec(ctx, insertMission,
+		s.GetNameArgs(),
+	)
+
+	if err != nil {
+
 		logger.Error().Err(err).Msg("Error executing insert query")
+
 		return nil, models.ErrorMissionNotCreated
 	}
 
 	// 3. Set the ID in the Model (if needed)
-	s.Id = utils.ConvertToPgTypeInt4(int(id)) // Assuming you need this conversion
-	s.CreatedAt = utils.ConvertToPgTypeDate(date)
-	s.Code = utils.ConvertToPgTypeText(code)
 
 	return s, nil // Return the mission with the set ID
 }

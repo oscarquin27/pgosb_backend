@@ -15,7 +15,7 @@ var (
 
 type MissionInfrastructure struct {
 	Id              pgtype.Int4 `json:"id" db:"id"`
-	ServiceId       pgtype.Int4 `json:"service_id" db:"service_id"`
+	MissionId       pgtype.Int4 `json:"mission_id" db:"mission_id"`
 	BuildType       pgtype.Text `json:"build_type" db:"build_type"`
 	BuildOccupation pgtype.Text `json:"build_occupation" db:"build_occupation"`
 	BuildArea       pgtype.Text `json:"build_area" db:"build_area"`

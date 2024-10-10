@@ -7,7 +7,7 @@ import (
 
 type MissionUserServiceJson struct {
 	Id           string `json:"id"`
-	ServiceId    string `json:"service_id"`
+	MissionId    string `json:"mission_id"`
 	UserId       string `json:"user_id"`
 	Name         string `json:"name"`
 	UserName     string `json:"user_name"`
@@ -21,7 +21,7 @@ func ModelToMissionUserServiceJson(s models.MissionUserService) *MissionUserServ
 	service := MissionUserServiceJson{}
 
 	service.Id = utils.ParseInt64String(s.Id)
-	service.ServiceId = utils.ParseInt64String(s.ServiceId)
+	service.MissionId = utils.ParseInt64String(s.MissionId)
 
 	if s.UserId.Valid {
 		service.UserId = utils.ParseInt64String(s.UserId.Int64)

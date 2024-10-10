@@ -7,7 +7,7 @@ import (
 
 type MissionPersonJson struct {
 	Id               string `json:"id"`
-	ServiceId        string `json:"service_id"`
+	MissionId        string `json:"mission_id"`
 	UnitId           string `json:"unit_id"`
 	InfrastructureId string `json:"infrastructure_id"`
 	VehicleId        string `json:"vehicle_id"`
@@ -32,7 +32,7 @@ func ModelToMissionPersonJson(s models.MissionPerson) *MissionPersonJson {
 
 	person.Id = utils.ConvertFromInt4(s.Id)
 	person.UnitId = utils.ConvertFromInt4(s.UnitId)
-	person.ServiceId = utils.ConvertFromInt4(s.ServiceId)
+	person.MissionId = utils.ConvertFromInt4(s.MissionId)
 
 	person.InfrastructureId = utils.ConvertFromInt4(s.InfrastructureId)
 	person.VehicleId = utils.ConvertFromInt4(s.VehicleId)
@@ -58,7 +58,7 @@ func (s *MissionPersonJson) ToModel() models.MissionPerson {
 
 	person.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	person.UnitId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.UnitId))
-	person.ServiceId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.ServiceId))
+	person.MissionId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.MissionId))
 
 	person.InfrastructureId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.InfrastructureId))
 	person.VehicleId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.VehicleId))

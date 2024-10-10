@@ -4,7 +4,7 @@ import "database/sql"
 
 type MissionUserService struct {
 	Id           int64          `db:"id"`
-	ServiceId    int64          `db:"service_id"`
+	MissionId    int64          `db:"mission_id"`
 	UserId       sql.NullInt64  `db:"user_id"`
 	Name         sql.NullString `db:"name"`
 	UserName     sql.NullString `db:"user_name"`

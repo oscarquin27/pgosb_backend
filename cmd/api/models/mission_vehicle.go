@@ -7,7 +7,7 @@ import (
 
 type MissionVehicleJson struct {
 	Id               string `json:"id"`
-	ServiceId        string `json:"service_id"`
+	MissionId        string `json:"mission_id"`
 	UnitId           string `json:"unit_id"`
 	VehicleCondition string `json:"vehicle_condition"`
 	Make             string `json:"make"`
@@ -24,7 +24,7 @@ func ModelToMissionVehicleJson(s models.MissionVehicle) *MissionVehicleJson {
 	vehicle := MissionVehicleJson{}
 
 	vehicle.Id = utils.ConvertFromInt4(s.Id)
-	vehicle.ServiceId = utils.ConvertFromInt4(s.ServiceId)
+	vehicle.MissionId = utils.ConvertFromInt4(s.MissionId)
 	vehicle.VehicleCondition = utils.ConvertFromText(s.VehicleCondition)
 	vehicle.Make = utils.ConvertFromText(s.Make)
 	vehicle.Model = utils.ConvertFromText(s.Model)
@@ -42,7 +42,7 @@ func (s *MissionVehicleJson) ToModel() models.MissionVehicle {
 	vehicle := models.MissionVehicle{}
 
 	vehicle.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	vehicle.ServiceId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.ServiceId))
+	vehicle.MissionId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.MissionId))
 	vehicle.VehicleCondition = utils.ConvertToPgTypeText(s.VehicleCondition)
 	vehicle.Make = utils.ConvertToPgTypeText(s.Make)
 	vehicle.Model = utils.ConvertToPgTypeText(s.Model)

@@ -29,6 +29,22 @@ func ParseInt(s string) int {
 	return id
 }
 
+func ParseBool(s string) bool {
+	b, err := strconv.ParseBool(s)
+	if err != nil {
+		return false
+	}
+	return b
+}
+
+func ParseBoolString(s string) string {
+	b, err := strconv.ParseBool(s)
+	if err != nil {
+		return "false"
+	}
+	return strconv.FormatBool(b)
+}
+
 func GetStringFromPointer(s *string) string {
 	if s == nil {
 		return ""

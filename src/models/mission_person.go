@@ -15,7 +15,7 @@ var (
 
 type MissionPerson struct {
 	Id               pgtype.Int4 `json:"id" db:"id"`
-	ServiceId        pgtype.Int4 `json:"service_id" db:"service_id"`
+	MissionId        pgtype.Int4 `json:"mission_id" db:"mission_id"`
 	UnitId           pgtype.Int4 `json:"unit_id" db:"unit_id"`
 	InfrastructureId pgtype.Int4 `json:"infrastructure_id" db:"infrastructure_id"`
 	VehicleId        pgtype.Int4 `json:"vehicle_id" db:"vehicle_id"`

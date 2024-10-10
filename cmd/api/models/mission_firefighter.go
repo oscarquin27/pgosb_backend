@@ -17,7 +17,6 @@ func ModelToMissionFirefighterJson(s *models.MissionFirefighter) *MissionFirefig
 	service := MissionFirefighterJson{}
 	service.Id = utils.ParseInt64String(s.Id)
 	service.MissionId = utils.ParseInt64String(s.MissionId)
-	service.ServiceId = utils.ParseInt64String(s.ServiceId)
 
 	service.UserId = utils.ParseInt64String(s.UserId)
 	service.ServiceRol = utils.GetStringFromPointer(s.ServiceRol)
@@ -30,7 +29,6 @@ func (s *MissionFirefighterJson) ToModel() models.MissionFirefighter {
 
 	service.Id = utils.ParseInt64(s.Id)
 	service.MissionId = utils.ParseInt64(s.MissionId)
-	service.ServiceId = utils.ParseInt64(s.ServiceId)
 	service.UserId = utils.ParseInt64(s.UserId)
 	service.ServiceRol = &s.ServiceRol
 
