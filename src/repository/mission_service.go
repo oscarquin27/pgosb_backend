@@ -55,8 +55,11 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
+	location_destiny_id,
 
+	not_attended,
+	false_alarm,
+	pending_for_data
 	
 	FROM missions.services where id = $1;`, id)
 
@@ -110,7 +113,11 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
+	location_destiny_id,
+
+	not_attended,
+	false_alarm,
+	pending_for_data
 	
 	FROM missions.services order by id desc;`)
 
@@ -257,7 +264,11 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
+	location_destiny_id,
+
+	not_attended,
+	false_alarm,
+	pending_for_data
 	
 	FROM missions.services where mission_id = $1 `, id)
 

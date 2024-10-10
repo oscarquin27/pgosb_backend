@@ -44,6 +44,10 @@ type MissionService struct {
 	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
 
 	LocationDestinyId *int64 `json:"location_destiny_id" db:"location_destiny_id"`
+
+	NotAttended    sql.NullBool `json:"not_attended" db:"not_attended"`
+	FalseAlarm     sql.NullBool `json:"false_alarm" db:"false_alarm"`
+	PendingForData sql.NullBool `json:"pending_for_data" db:"pending_for_data"`
 }
 
 type RelevantServices struct {
