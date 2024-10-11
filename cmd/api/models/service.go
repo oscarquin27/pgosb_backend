@@ -9,36 +9,33 @@ import (
 )
 
 type MissionServiceJson struct {
-	Id         string `json:"id"`
-	MissionId  string `json:"mission_id"`
-	AntaresId  string `json:"antares_id"`
-	StationId  string `json:"station_id"`
-	LocationId string `json:"location_id"`
+	Id        string `json:"id"`
+	MissionId string `json:"mission_id"`
+	AntaresId string `json:"antares_id"`
 
-	HealthCareCenterId string   `json:"center_id"`
-	Units              []string `json:"units"`
-	Bombers            []string `json:"bombers"`
-	Summary            string   `json:"summary"`
-	Description        string   `json:"description"`
-	Unharmed           string   `json:"unharmed"`
-	Injured            string   `json:"injured"`
-	Transported        string   `json:"transported"`
-	Deceased           string   `json:"deceased"`
-	OperativeAreas     []string `json:"operative_areas"`
+	StationId         string `json:"station_id"`
+	LocationId        string `json:"location_id"`
+	LocationDestinyId string `json:"location_destiny_id"`
+
+	HealthCareCenterId string `json:"center_id"`
+
+	Summary     string `json:"summary"`
+	Description string `json:"description"`
+
+	//Unharmed           string   `json:"unharmed"`
 
 	ServiceDate       string `json:"service_date"`
 	ManualServiceDate string `json:"manual_service_date"`
 	IsImportant       bool   `json:"is_important"`
 
-	SendingUserId     string `json:"sending_user_id"`
-	ReceivingUserId   string `json:"receiving_user_id"`
-	Level             string `json:"level"`
-	PeaceQuadrant     string `json:"peace_quadrant"`
-	LocationDestinyId string `json:"location_destiny_id"`
+	SendingUserId   string `json:"sending_user_id"`
+	ReceivingUserId string `json:"receiving_user_id"`
 
-	NotAttended    bool `json:"not_attended"`
-	FalseAlarm     bool `json:"false_alarm"`
-	PendingForData bool `json:"pending_for_data"`
+	Level         string `json:"level"`
+	PeaceQuadrant string `json:"peace_quadrant"`
+
+	CanceledReason string `json:"cancel_reason"`
+	PendingForData bool   `json:"pending_for_data"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -47,19 +44,12 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service.Id = utils.ConvertFromInt4(s.Id)
 	service.MissionId = utils.ConvertFromInt2(s.MissionId)
 	service.AntaresId = utils.ConvertFromInt2(s.AntaresId)
-	service.Units = utils.ConvertFromInt2Array(s.Units)
-	service.Bombers = utils.ConvertFromInt2Array(s.Bombers)
+
 	service.Summary = utils.ConvertFromText(s.Summary)
 	service.Description = utils.ConvertFromText(s.Description)
 
-	service.Unharmed = utils.ParseInt64StringPointer(s.Unharmed)
-	service.Injured = utils.ParseInt64StringPointer(s.Injured)
-	service.Transported = utils.ParseInt64StringPointer(s.Transported)
-
-	service.Deceased = utils.ParseInt64StringPointer(s.Deceased)
 	service.StationId = utils.ParseInt64StringPointer(s.StationId)
 	service.LocationId = utils.ParseInt64StringPointer(s.LocationId)
-	service.OperativeAreas = utils.ConvertFromTextArray(s.OperativeAreas)
 
 	service.HealthCareCenterId = utils.ParseInt64StringPointer(s.HealthCareCenterId)
 
@@ -86,12 +76,8 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 
 	service.LocationDestinyId = utils.ParseInt64StringPointer(s.LocationDestinyId)
 
-	if s.NotAttended.Valid {
-		service.NotAttended = s.NotAttended.Bool
-	}
-
-	if s.FalseAlarm.Valid {
-		service.FalseAlarm = s.FalseAlarm.Bool
+	if s.CanceledReason.Valid {
+		service.CanceledReason = s.CanceledReason.String
 	}
 
 	if s.PendingForData.Valid {
@@ -107,25 +93,15 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
 	service.MissionId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.MissionId))
 	service.AntaresId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.AntaresId))
-	service.Units = utils.ConvertToInt2Array(s.Units)
-	service.Bombers = utils.ConvertToInt2Array(s.Bombers)
+
 	service.Summary = utils.ConvertToPgTypeText(s.Summary)
 	service.Description = utils.ConvertToPgTypeText(s.Description)
-	service.OperativeAreas = utils.ConvertToTextArray(s.OperativeAreas)
 
-	unharmed := utils.ParseInt64(s.Unharmed)
-	injured := utils.ParseInt64(s.Injured)
-	transported := utils.ParseInt64(s.Transported)
-	deceased := utils.ParseInt64(s.Deceased)
 	stationId := utils.ParseInt64(s.StationId)
 	centerId := utils.ParseInt64(s.HealthCareCenterId)
 
 	locationId := utils.ParseInt64(s.LocationId)
 
-	service.Unharmed = &unharmed
-	service.Injured = &injured
-	service.Transported = &transported
-	service.Deceased = &deceased
 	service.StationId = &stationId
 	service.HealthCareCenterId = &centerId
 	service.LocationId = &locationId
@@ -165,8 +141,6 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 		service.Level = sql.NullString{String: s.Level, Valid: true}
 	}
 
-	service.NotAttended = sql.NullBool{Bool: s.NotAttended, Valid: true}
-	service.FalseAlarm = sql.NullBool{Bool: s.FalseAlarm, Valid: true}
 	service.PendingForData = sql.NullBool{Bool: s.PendingForData, Valid: true}
 
 	return service

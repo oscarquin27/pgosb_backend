@@ -62,11 +62,41 @@ const (
 		@peace_quadrant, 
 		@location_destiny_id, 
 		@is_important, 
-		@not_attended, 
-		@false_alarm, 
-		@pending_for_data
+		
+		@pending_for_data,
+		@cancel_reason
 		)
     `
+
+	updateMission = `
+	UPDATE missions.mission
+	SET 
+		code = @code,
+		alias = @alias,
+		operative_areas = @operative_areas,
+		summary = @summary,
+		description = @description,
+		unharmed = @unharmed,
+		injured = @injured,
+		transported = @transported,
+		deceased = @deceased,
+		station_id = @station_id,
+		location_id = @location_id,
+		health_care_center_id = @health_care_center_id,
+		sending_user_id = @sending_user_id,
+		receiving_user_id = @receiving_user_id,
+		level = @level,
+		peace_quadrant = @peace_quadrant,
+		location_destiny_id = @location_destiny_id,
+		is_important = @is_important,
+		pending_for_data = @pending_for_data,
+		cancel_reason = @cancel_reason
+	
+		WHERE id = @id
+	`
+	deleteMission = `
+	DELETE FROM missions.mission WHERE id = $1
+	`
 )
 
 type MissionRepository struct {
@@ -248,10 +278,7 @@ func (u *MissionRepository) Update(s *models.Mission) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, `UPDATE missions.mission
-	SET code = $1,
-	    alias = $2
-	WHERE id = $3`, s.Code, s.Alias, s.Id)
+	_, err = conn.Exec(ctx, updateMission, s.GetNameArgs())
 
 	if err != nil {
 		return err
@@ -271,7 +298,7 @@ func (u *MissionRepository) Delete(id int) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, "delete from missions.mission where id = $1", id)
+	_, err = conn.Exec(ctx, deleteMission, id)
 
 	if err != nil {
 		return models.ErrorMissionServiceNotDeleted

@@ -30,8 +30,7 @@ type MissionJson struct {
 	LocationDestinyId  string   `json:"location_destiny_id"`
 	Level              string   `json:"level"`
 	PeaceQuadrant      string   `json:"peace_quadrant"`
-	NotAttended        bool     `json:"not_attended"`
-	FalseAlarm         bool     `json:"false_alarm"`
+	CanceledReason     string   `json:"cancel_reason"`
 	PendingForData     bool     `json:"pending_for_data"`
 }
 
@@ -126,9 +125,13 @@ func ModelToMissionJson(s models.Mission) *MissionJson {
 		mission.LocationDestinyId = utils.ParseInt64String(s.LocationDestinyId.Int64)
 	}
 
-	mission.NotAttended = s.NotAttended.Bool
-	mission.FalseAlarm = s.FalseAlarm.Bool
-	mission.PendingForData = s.PendingForData.Bool
+	if s.PendingForData.Valid {
+		mission.PendingForData = s.PendingForData.Bool
+	}
+
+	if s.CanceledReason.Valid {
+		mission.CanceledReason = s.CanceledReason.String
+	}
 
 	return &mission
 }
@@ -252,11 +255,10 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.LocationDestinyId.Valid = true
 	}
 
-	mission.NotAttended.Bool = s.NotAttended
-	mission.NotAttended.Valid = true
-
-	mission.FalseAlarm.Bool = s.FalseAlarm
-	mission.FalseAlarm.Valid = true
+	if s.CanceledReason != "" {
+		mission.CanceledReason.String = s.CanceledReason
+		mission.CanceledReason.Valid = true
+	}
 
 	mission.PendingForData.Bool = s.PendingForData
 	mission.PendingForData.Valid = true

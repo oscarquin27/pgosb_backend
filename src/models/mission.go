@@ -45,9 +45,8 @@ type Mission struct {
 
 	LocationDestinyId sql.NullInt64 `json:"location_destiny_id" db:"location_destiny_id"`
 
-	NotAttended    sql.NullBool `json:"not_attended" db:"not_attended"`
-	FalseAlarm     sql.NullBool `json:"false_alarm" db:"false_alarm"`
-	PendingForData sql.NullBool `json:"pending_for_data" db:"pending_for_data"`
+	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
+	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
 }
 
 func (m *Mission) SetId(id int64) {
@@ -123,14 +122,12 @@ func (m *Mission) GetNameArgs() pgx.NamedArgs {
 	if m.LocationDestinyId.Valid {
 		args["location_destiny_id"] = m.LocationDestinyId.Int64
 	}
-	if m.NotAttended.Valid {
-		args["not_attended"] = m.NotAttended.Bool
-	}
-	if m.FalseAlarm.Valid {
-		args["false_alarm"] = m.FalseAlarm.Bool
-	}
+
 	if m.PendingForData.Valid {
 		args["pending_for_data"] = m.PendingForData.Bool
+	}
+	if m.CanceledReason.Valid {
+		args["cancel_reason"] = m.CanceledReason.String
 	}
 
 	return args

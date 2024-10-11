@@ -15,39 +15,39 @@ var (
 )
 
 type MissionService struct {
-	Id             pgtype.Int4   `json:"id" db:"id"`
-	MissionId      pgtype.Int2   `json:"mission_id" db:"mission_id"`
-	AntaresId      pgtype.Int2   `json:"antares_id,omitempty" db:"antares_id"`
-	Units          []pgtype.Int2 `json:"units,omitempty" db:"units"`
-	Bombers        []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
-	OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
-	Summary        pgtype.Text   `json:"summary,omitempty" db:"summary"`
-	Description    pgtype.Text   `json:"description,omitempty" db:"description"`
+	Id        pgtype.Int4 `json:"id" db:"id"`
+	MissionId pgtype.Int2 `json:"mission_id" db:"mission_id"`
+	AntaresId pgtype.Int2 `json:"antares_id,omitempty" db:"antares_id"`
+	//Units          []pgtype.Int2 `json:"units,omitempty" db:"units"`
+	//Bombers        []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
+	//OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
 
-	Unharmed    *int64 `json:"unharmed" db:"unharmed"`
-	Injured     *int64 `json:"injured" db:"injured"`
-	Transported *int64 `json:"transported" db:"transported"`
-	Deceased    *int64 `json:"deceased" db:"deceased"`
+	Summary     pgtype.Text `json:"summary,omitempty" db:"summary"`
+	Description pgtype.Text `json:"description,omitempty" db:"description"`
 
-	StationId  *int64 `json:"station_id" db:"station_id"`
-	LocationId *int64 `json:"location_id" db:"location_id"`
+	//Unharmed    *int64 `json:"unharmed" db:"unharmed"`
+	//Injured     *int64 `json:"injured" db:"injured"`
+	//Transported *int64 `json:"transported" db:"transported"`
+	//Deceased    *int64 `json:"deceased" db:"deceased"`
+
+	StationId         *int64 `json:"station_id" db:"station_id"`
+	LocationId        *int64 `json:"location_id" db:"location_id"`
+	LocationDestinyId *int64 `json:"location_destiny_id" db:"location_destiny_id"`
 
 	ServiceDate       sql.NullTime `json:"service_date" db:"service_date"`
 	ManualServiceDate sql.NullTime `json:"manual_service_date" db:"manual_service_date"`
 	IsImportant       bool         `json:"is_important" db:"is_important"`
 
+	SendingUserId   *int64 `json:"sending_user_id" db:"sending_user_id"`
+	ReceivingUserId *int64 `json:"receiving_user_id" db:"receiving_user_id"`
+
 	HealthCareCenterId *int64 `json:"center_id" db:"center_id"`
-	SendingUserId      *int64 `json:"sending_user_id" db:"sending_user_id"`
-	ReceivingUserId    *int64 `json:"receiving_user_id" db:"receiving_user_id"`
 
 	Level         sql.NullString `json:"level" db:"level"`
 	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
 
-	LocationDestinyId *int64 `json:"location_destiny_id" db:"location_destiny_id"`
-
-	NotAttended    sql.NullBool `json:"not_attended" db:"not_attended"`
-	FalseAlarm     sql.NullBool `json:"false_alarm" db:"false_alarm"`
-	PendingForData sql.NullBool `json:"pending_for_data" db:"pending_for_data"`
+	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
+	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
 }
 
 type RelevantServices struct {
