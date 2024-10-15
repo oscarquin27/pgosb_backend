@@ -20,7 +20,12 @@ type MissionServiceSummary struct {
 	Deceased          sql.NullInt64  `db:"deceased"`
 	IsImportant       bool           `db:"is_important"`
 	OperativesAreas   []string       `db:"operative_areas"`
-	//Code              sql.NullString `db:"code"`
-
-	Alias sql.NullString `db:"alias"`
+	PendingForData    sql.NullBool   `db:"pending_for_data"`
+	PeaceQuadrant     sql.NullString `db:"peace_quadrant"`
+	Level             sql.NullString `db:"level"`
+	State             sql.NullString `db:"state"`
+	Municipality      sql.NullString `db:"municipality"`
+	Parish            sql.NullString `db:"parish"`
+	Commander         sql.NullString `db:"commander"`
+	Alias             sql.NullString `db:"alias"`
 }

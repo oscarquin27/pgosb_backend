@@ -26,6 +26,14 @@ type MissionServiceSummaryJson struct {
 	Deceased          string   `json:"deceased"`
 	ServiceDate       string   `json:"service_date"`
 	ManualServiceDate string   `json:"manual_service_date"`
+
+	Commander      string `json:"commander"`
+	PendingForData bool   `json:"pending_for_data"`
+	PeaceQuadrant  string `json:"peace_quadrant"`
+	Level          string `json:"level"`
+	State          string `json:"state"`
+	Municipality   string `json:"municipality"`
+	Parish         string `json:"parish"`
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
@@ -80,6 +88,34 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 	service.IsImportant = s.IsImportant
 
 	service.OperativesAreas = s.OperativesAreas
+
+	if s.PendingForData.Valid {
+		service.PendingForData = s.PendingForData.Bool
+	}
+
+	if s.PeaceQuadrant.Valid {
+		service.PeaceQuadrant = s.PeaceQuadrant.String
+	}
+
+	if s.Level.Valid {
+		service.Level = s.Level.String
+	}
+
+	if s.State.Valid {
+		service.State = s.State.String
+	}
+
+	if s.Municipality.Valid {
+		service.Municipality = s.Municipality.String
+	}
+
+	if s.Parish.Valid {
+		service.Parish = s.Parish.String
+	}
+
+	if s.Commander.Valid {
+		service.Commander = s.Commander.String
+	}
 
 	return &service
 }
@@ -140,6 +176,27 @@ func (s *MissionServiceSummaryJson) ToModel() models.MissionServiceSummary {
 	service.IsImportant = s.IsImportant
 
 	service.OperativesAreas = s.OperativesAreas
+
+	service.PendingForData.Bool = s.PendingForData
+	service.PendingForData.Valid = true
+
+	service.PeaceQuadrant.String = s.PeaceQuadrant
+	service.PeaceQuadrant.Valid = true
+
+	service.Level.String = s.Level
+	service.Level.Valid = true
+
+	service.State.String = s.State
+	service.State.Valid = true
+
+	service.Municipality.String = s.Municipality
+	service.Municipality.Valid = true
+
+	service.Parish.String = s.Parish
+	service.Parish.Valid = true
+
+	service.Commander.String = s.Commander
+	service.Commander.Valid = true
 
 	return service
 
