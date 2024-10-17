@@ -205,7 +205,8 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	injured,
 	transported,
 	deceased,
-	is_important
+	is_important,
+	cancel_reason
 	
 	FROM missions.vw_relevant_services
 	where service_id::text in (%s)`, id))

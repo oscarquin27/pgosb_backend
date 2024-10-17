@@ -73,6 +73,7 @@ type RelevantServices struct {
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
+	CancelReason          *string                   `db:"cancel_reason"`
 }
 
 type RelevantFirefighters struct {
