@@ -34,3 +34,43 @@ func (s *MissionFirefighterJson) ToModel() models.MissionFirefighter {
 
 	return service
 }
+
+type MissionFirefighterUserJson struct {
+	Id           string `json:"id"`
+	UserId       string `json:"user_id"`
+	Name         string `json:"name"`
+	User_name    string `json:"user_name"`
+	Rank         string `json:"rank"`
+	PersonalCode string `json:"personal_code"`
+	Legal_id     string `json:"legal_id"`
+	MissionId    string `json:"mission_id"`
+}
+
+func ModelToMissionFirefighterUserJson(s *models.MissionFirefighterUser) *MissionFirefighterUserJson {
+	service := MissionFirefighterUserJson{}
+	service.Id = utils.ParseInt64String(s.Id)
+	service.UserId = utils.ParseInt64String(s.UserId)
+	service.Name = s.Name
+
+	service.User_name = utils.GetStringFromPointer(s.User_name)
+	service.Rank = s.Rank
+	service.PersonalCode = s.PersonalCode
+	service.Legal_id = s.Legal_id
+	service.MissionId = s.MissionId
+
+	return &service
+}
+
+func (s *MissionFirefighterUserJson) ToModel() models.MissionFirefighterUser {
+	service := models.MissionFirefighterUser{}
+	service.Id = utils.ParseInt64(s.Id)
+	service.UserId = utils.ParseInt64(s.UserId)
+	service.Name = s.Name
+	service.User_name = &s.User_name
+	service.Rank = s.Rank
+	service.PersonalCode = s.PersonalCode
+	service.Legal_id = s.Legal_id
+	service.MissionId = s.MissionId
+
+	return service
+}

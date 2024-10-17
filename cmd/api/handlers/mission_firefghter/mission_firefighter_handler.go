@@ -4,20 +4,25 @@ import (
 	api_models "fdms/cmd/api/models"
 	"fdms/src/infrastructure/abstract_handler"
 	"fdms/src/models"
+	"fdms/src/services"
+	"fdms/src/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type MissionFireFigtherController struct {
-	abstractServiceHandler abstract_handler.AbstractHandler[models.MissionFirefighter, api_models.MissionFirefighterJson]
+	abstractServiceHandler    abstract_handler.AbstractHandler[models.MissionFirefighter, api_models.MissionFirefighterJson]
+	missionFirefighterService services.MissionFirefighterService
 }
 
-func NewMissionFireFigtherController(stationService abstract_handler.AbstractCRUDService[models.MissionFirefighter]) *MissionFireFigtherController {
+func NewMissionFireFigtherController(stationService abstract_handler.AbstractCRUDService[models.MissionFirefighter], missionFirefighterService services.MissionFirefighterService) *MissionFireFigtherController {
 
 	abstractHandler := abstract_handler.NewAbstractHandler[models.MissionFirefighter, api_models.MissionFirefighterJson](stationService)
 
 	return &MissionFireFigtherController{
-		abstractServiceHandler: *abstractHandler,
+		abstractServiceHandler:    *abstractHandler,
+		missionFirefighterService: missionFirefighterService,
 	}
 }
 
@@ -50,4 +55,24 @@ func (u *MissionFireFigtherController) Update(c *gin.Context) {
 func (u *MissionFireFigtherController) Delete(c *gin.Context) {
 
 	u.abstractServiceHandler.Delete(c)
+}
+
+func (u *MissionFireFigtherController) GetUsers(c *gin.Context) {
+
+	id := utils.ParseInt(c.Param("id"))
+
+	result, err := u.missionFirefighterService.GetByMissionId(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err)
+		return
+	}
+
+	firefighters := []api_models.MissionFirefighterUserJson{}
+
+	for _, firefighter := range result {
+		firefighters = append(firefighters, *api_models.ModelToMissionFirefighterUserJson(&firefighter))
+	}
+
+	c.JSON(http.StatusOK, firefighters)
 }

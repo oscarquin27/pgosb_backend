@@ -8,30 +8,30 @@ import (
 )
 
 type MissionJson struct {
-	Id                 string   `json:"id"`
-	CreatedAt          string   `json:"created_at"`
-	Code               string   `json:"code"`
-	Alias              string   `json:"alias"`
-	OperativeAreas     []string `json:"operative_areas,omitempty"`
-	Summary            string   `json:"summary,omitempty"`
-	Description        string   `json:"description,omitempty"`
-	Unharmed           string   `json:"unharmed"`
-	Injured            string   `json:"injured"`
-	Transported        string   `json:"transported"`
-	Deceased           string   `json:"deceased"`
-	StationId          string   `json:"station_id"`
-	LocationId         string   `json:"location_id"`
-	ServiceDate        string   `json:"service_date"`
-	ManualServiceDate  string   `json:"manual_service_date"`
-	IsImportant        bool     `json:"is_important"`
-	HealthCareCenterId string   `json:"center_id"`
-	SendingUserId      string   `json:"sending_user_id"`
-	ReceivingUserId    string   `json:"receiving_user_id"`
-	LocationDestinyId  string   `json:"location_destiny_id"`
-	Level              string   `json:"level"`
-	PeaceQuadrant      string   `json:"peace_quadrant"`
-	CanceledReason     string   `json:"cancel_reason"`
-	PendingForData     bool     `json:"pending_for_data"`
+	Id             string   `json:"id"`
+	CreatedAt      string   `json:"created_at"`
+	Code           string   `json:"code"`
+	Alias          string   `json:"alias"`
+	OperativeAreas []string `json:"operative_areas,omitempty"`
+	Summary        string   `json:"summary,omitempty"`
+	Description    string   `json:"description,omitempty"`
+	Unharmed       string   `json:"unharmed"`
+	Injured        string   `json:"injured"`
+	Transported    string   `json:"transported"`
+	Deceased       string   `json:"deceased"`
+	StationId      string   `json:"station_id"`
+	LocationId     string   `json:"location_id"`
+	//ServiceDate        string   `json:"service_date"`
+	ManualMissionDate  string `json:"manual_mission_date"`
+	IsImportant        bool   `json:"is_important"`
+	HealthCareCenterId string `json:"center_id"`
+	SendingUserId      string `json:"sending_user_id"`
+	ReceivingUserId    string `json:"receiving_user_id"`
+	LocationDestinyId  string `json:"location_destiny_id"`
+	Level              string `json:"level"`
+	PeaceQuadrant      string `json:"peace_quadrant"`
+	CanceledReason     string `json:"cancel_reason"`
+	PendingForData     bool   `json:"pending_for_data"`
 }
 
 func ModelToMissionJson(s models.Mission) *MissionJson {
@@ -91,12 +91,12 @@ func ModelToMissionJson(s models.Mission) *MissionJson {
 		mission.LocationId = utils.ParseInt64String(s.LocationId.Int64)
 	}
 
-	if s.ServiceDate.Valid {
-		mission.ServiceDate = s.ServiceDate.Time.Format("02-01-2006 15:04:05")
-	}
+	//if s.ServiceDate.Valid {
+	//	mission.ServiceDate = s.ServiceDate.Time.Format("02-01-2006 15:04:05")
+	//}
 
-	if s.ManualServiceDate.Valid {
-		mission.ManualServiceDate = s.ManualServiceDate.Time.Format("02-01-2006 15:04:05")
+	if s.ManualMissionDate.Valid {
+		mission.ManualMissionDate = s.ManualMissionDate.Time.Format("02-01-2006 15:04:05")
 	}
 
 	mission.IsImportant = s.IsImportant.Bool
@@ -208,17 +208,17 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.LocationId.Valid = true
 	}
 
-	if s.ServiceDate != "" {
-		if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.ServiceDate); err == nil {
-			mission.ServiceDate.Time = parsedTime
-			mission.ServiceDate.Valid = true
-		}
-	}
+	//if s.ServiceDate != "" {
+	//	if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.ServiceDate); err == nil {
+	//		mission.ServiceDate.Time = parsedTime
+	//		mission.ServiceDate.Valid = true
+	//	}
+	//}
 
-	if s.ManualServiceDate != "" {
-		if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.ManualServiceDate); err == nil {
-			mission.ManualServiceDate.Time = parsedTime
-			mission.ManualServiceDate.Valid = true
+	if s.ManualMissionDate != "" {
+		if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.ManualMissionDate); err == nil {
+			mission.ManualMissionDate.Time = parsedTime
+			mission.ManualMissionDate.Valid = true
 		}
 	}
 

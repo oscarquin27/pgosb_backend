@@ -1,10 +1,12 @@
 package repository
 
 import (
+	"context"
 	"fdms/src/models"
 	"fdms/src/services"
 	"fdms/src/utils/results"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -23,17 +25,19 @@ func NewMissionFirefighterService(db *pgxpool.Pool) services.MissionFirefighterS
 
 const selectMissionFirefighterQuery = "SELECT * FROM missions.firefighters WHERE id = $1"
 
-const selectAllMissionFirefighterQuery = "SELECT * FROM missions.firefighters WHERE service_id = $1"
+const selectAllMissionFirefighterQuery = "SELECT * FROM missions.firefighters"
 
 const insertMissionFirefighterQuery = `INSERT INTO missions.firefighters(
-	service_id, user_id, service_role,mission_id)
-	VALUES (@service_id, @user_id, @service_role,@mission_id) RETURNING id`
+	 user_id, service_role,mission_id)
+	VALUES ( @user_id, @service_role,@mission_id) RETURNING id`
 
 const updateMissionFirefighterQuery = `UPDATE missions.firefighters
-	SET  service_id=@service_id, user_id=@user_id, service_role=@service_role, mission_id=@mission_id
+	SET   user_id=@user_id, service_role=@service_role, mission_id=@mission_id
 	WHERE id = @id `
 
 const deleteMissionFirefighterQuery = `DELETE FROM missions.firefighters WHERE id = $1`
+
+const selectMissionFirefighterByMissionIdQuery = `SELECT * FROM missions.vw_firefighters_mission WHERE mission_id = $1`
 
 func (u *MissionFirefighterRepository) Get(id int64) *results.ResultWithValue[*models.MissionFirefighter] {
 	r := u.AbstractRepository.Get(id, selectMissionFirefighterQuery)
@@ -70,4 +74,33 @@ func (u *MissionFirefighterRepository) Update(MissionFirefighter *models.Mission
 func (u *MissionFirefighterRepository) Delete(id int64) *results.Result {
 
 	return u.AbstractRepository.Delete(id, deleteMissionFirefighterQuery)
+}
+
+func (u *MissionFirefighterRepository) GetByMissionId(id int) ([]models.MissionFirefighterUser, error) {
+
+	ctx := context.Background()
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, selectMissionFirefighterByMissionIdQuery, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionFirefighterUser])
+
+	if err != nil {
+		return nil, err
+	}
+
+	return users, nil
+
 }

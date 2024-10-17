@@ -124,7 +124,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionInfraController := mission_infra_handlers.NewMissionController(missionInfraService)
 
 	missionLocationController := mission_location_handler.NewMissionLocationController(missionLocationService, missionLocationService)
-	missionFireFighterController := mission_firefighter_handler.NewMissionFireFigtherController(missionFireFighterService)
+	missionFireFighterController := mission_firefighter_handler.NewMissionFireFigtherController(missionFireFighterService, missionFireFighterService)
 
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
@@ -319,7 +319,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		serviceMission.PUT("/update", missionServiceController.Update)
 		serviceMission.DELETE("/delete/:id", missionServiceController.Delete)
 		serviceMission.GET("/unit/:id", missionServiceController.GetUnits)
-		serviceMission.GET("/user/:id", missionServiceController.GetUsers)
+
 		serviceMission.GET("/summary", missionServiceController.GetAllSummary)
 		serviceMission.GET("/relevant/:id", missionServiceController.GetRelevantServices)
 	}
@@ -337,9 +337,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	firefightersMission := v1.Group("mission/firefighter")
 	{
 		firefightersMission.GET("/:id", missionFireFighterController.Get)
+		firefightersMission.GET("/all", missionFireFighterController.GetAll)
 		firefightersMission.POST("/create", missionFireFighterController.Create)
 		firefightersMission.PUT("/update", missionFireFighterController.Update)
 		firefightersMission.DELETE("/delete/:id", missionFireFighterController.Delete)
+		firefightersMission.GET("/group/:id", missionFireFighterController.GetUsers)
 
 	}
 

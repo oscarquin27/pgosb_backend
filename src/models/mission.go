@@ -32,8 +32,8 @@ type Mission struct {
 	StationId  sql.NullInt64 `json:"station_id" db:"station_id"`
 	LocationId sql.NullInt64 `json:"location_id" db:"location_id"`
 
-	ServiceDate       sql.NullTime `json:"service_date" db:"service_date"`
-	ManualServiceDate sql.NullTime `json:"manual_service_date" db:"manual_service_date"`
+	//ServiceDate       sql.NullTime `json:"service_date" db:"service_date"`
+	ManualMissionDate sql.NullTime `json:"manual_mission_date" db:"manual_mission_date"`
 	IsImportant       sql.NullBool `json:"is_important" db:"is_important"`
 
 	HealthCareCenterId sql.NullInt64 `json:"center_id" db:"center_id"`
@@ -95,11 +95,11 @@ func (m *Mission) GetNameArgs() pgx.NamedArgs {
 	if m.LocationId.Valid {
 		args["location_id"] = m.LocationId.Int64
 	}
-	if m.ServiceDate.Valid {
-		args["service_date"] = m.ServiceDate.Time
-	}
-	if m.ManualServiceDate.Valid {
-		args["manual_service_date"] = m.ManualServiceDate.Time
+	//if m.ServiceDate.Valid {
+	//	args["service_date"] = m.ServiceDate.Time
+	//}
+	if m.ManualMissionDate.Valid {
+		args["manual_mission_date"] = m.ManualMissionDate.Time
 	}
 	if m.IsImportant.Valid {
 		args["is_important"] = m.IsImportant.Bool
