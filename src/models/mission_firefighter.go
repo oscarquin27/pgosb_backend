@@ -1,15 +1,18 @@
 package models
 
 import (
+	"database/sql"
+
 	"github.com/jackc/pgx/v5"
 )
 
 type MissionFirefighter struct {
-	Id         int64   `db:"id"`
-	ServiceId  int64   `db:"service_id"`
-	MissionId  int64   `db:"mission_id"`
-	UserId     int64   `db:"user_id"`
-	ServiceRol *string `db:"service_role"`
+	Id         int64        `db:"id"`
+	ServiceId  int64        `db:"service_id"`
+	MissionId  int64        `db:"mission_id"`
+	UserId     int64        `db:"user_id"`
+	ServiceRol *string      `db:"service_role"`
+	CreatedAt  sql.NullTime `db:"created_at"`
 }
 
 func (s *MissionFirefighter) GetNameArgs() pgx.NamedArgs {
@@ -19,6 +22,7 @@ func (s *MissionFirefighter) GetNameArgs() pgx.NamedArgs {
 		"user_id":      s.UserId,
 		"service_role": s.ServiceRol,
 		"mission_id":   s.MissionId,
+		"created_at":   s.CreatedAt,
 	}
 }
 

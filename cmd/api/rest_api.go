@@ -15,6 +15,9 @@ import (
 	antares_handlers "fdms/cmd/api/handlers/mission_antares"
 	mission_authority_handler "fdms/cmd/api/handlers/mission_authority"
 	mission_firefighter_handler "fdms/cmd/api/handlers/mission_firefghter"
+
+	mission_unit_handler "fdms/cmd/api/handlers/mission_unit"
+
 	mission_infra_handlers "fdms/cmd/api/handlers/mission_infrastructure"
 	mission_location_handler "fdms/cmd/api/handlers/mission_location"
 	mission_person_handlers "fdms/cmd/api/handlers/mission_person"
@@ -98,6 +101,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionAntaresService := repository.NewAntaresService(db)
 
 	missionFireFighterService := repository.NewMissionFirefighterService(db)
+	missionUnitService := repository.NewMissionUnitService(db)
 
 	missionLocationService := repository.NewMissionLocationService(db)
 
@@ -124,7 +128,9 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionInfraController := mission_infra_handlers.NewMissionController(missionInfraService)
 
 	missionLocationController := mission_location_handler.NewMissionLocationController(missionLocationService, missionLocationService)
+
 	missionFireFighterController := mission_firefighter_handler.NewMissionFireFigtherController(missionFireFighterService, missionFireFighterService)
+	missionUnitController := mission_unit_handler.NewMissionUnitController(missionUnitService)
 
 	userController := user_handlers.NewUserController(userService)
 	roleController := roles_handlers.NewRoleController(roleService)
@@ -343,6 +349,16 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		firefightersMission.DELETE("/delete/:id", missionFireFighterController.Delete)
 		firefightersMission.GET("/group/:id", missionFireFighterController.GetUsers)
 
+	}
+
+	unitMission := v1.Group("mission/unit")
+	{
+		unitMission.GET("/:id", missionUnitController.Get)
+		unitMission.GET("/all", missionUnitController.GetAll)
+		unitMission.POST("/create", missionUnitController.Create)
+		unitMission.PUT("/update", missionUnitController.Update)
+		unitMission.DELETE("/delete/:id", missionUnitController.Delete)
+		unitMission.GET("/group/:id", missionUnitController.GetAllSummary)
 	}
 
 	infraMission := v1.Group("mission/infrastructure")
