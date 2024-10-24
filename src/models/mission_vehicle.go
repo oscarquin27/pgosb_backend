@@ -25,4 +25,7 @@ type MissionVehicle struct {
 	VehicleType      pgtype.Text `json:"vehicle_type" db:"vehicle_type"`
 	MotorSerial      pgtype.Text `json:"motor_serial" db:"motor_serial"`
 	VehicleVerified  pgtype.Bool `json:"vehicle_verified" db:"vehicle_verified"`
+
+	//Temporal
+	ServiceId pgtype.Int4 `json:"service_id" db:"service_id"`
 }

@@ -26,27 +26,15 @@ func (u *MissionInfrastructureRepository) GetAll() ([]models.MissionInfrastructu
 
 	conn, err := u.db.Acquire(ctx)
 
-	defer conn.Release()
-
 	if err != nil {
 		return nil, err
 	}
 
+	defer conn.Release()
+
 	rows, err := conn.Query(ctx, `
-	SELECT id, 
-	service_id, 
-	build_type, 
-	build_occupation, 
-	build_area, 
-	build_access, 
-	levels, 
-	people, 
-	goods_type, 
-	build_roof, 
-	build_floor, 
-	build_room_type, 
-	observations
-FROM missions.infrastructure;`)
+	SELECT *
+	FROM missions.infrastructure`)
 
 	if err != nil {
 		return nil, err
@@ -66,7 +54,7 @@ FROM missions.infrastructure;`)
 }
 
 // GetByServiceId implements services.MissionInfrastructureService.
-func (u *MissionInfrastructureRepository) GetByServiceId(id int) ([]models.MissionInfrastructure, error) {
+func (u *MissionInfrastructureRepository) GetMissionId(id int) ([]models.MissionInfrastructure, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -78,22 +66,9 @@ func (u *MissionInfrastructureRepository) GetByServiceId(id int) ([]models.Missi
 	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `
-	SELECT id, 
-	service_id, 
-	build_type, 
-	build_occupation, 
-	build_area, 
-	build_access, 
-	levels, 
-	people, 
-	goods_type, 
-	build_roof, 
-	build_floor, 
-	build_room_type, 
-	build_wall,
-	observations
-FROM missions.infrastructure
- 	where service_id = $1;`, id)
+	SELECT *
+	FROM missions.infrastructure
+	WHERE mission_id = $1`, id)
 
 	if err != nil {
 		return nil, err
@@ -124,22 +99,9 @@ func (u *MissionInfrastructureRepository) Get(id int) (*models.MissionInfrastruc
 	defer conn.Release()
 
 	rows, err := conn.Query(ctx, `
-	SELECT id, 
-	service_id, 
-	build_type, 
-	build_occupation, 
-	build_area, 
-	build_access, 
-	levels, 
-	people, 
-	goods_type, 
-	build_roof, 
-	build_floor, 
-	build_room_type, 
-	observations,
-	build_wall
-FROM missions.infrastructure
- 	where id = $1;`, id)
+	SELECT *
+	FROM missions.infrastructure
+	WHERE id = $1`, id)
 
 	if err != nil {
 		return nil, err
@@ -177,7 +139,7 @@ func (u *MissionInfrastructureRepository) Create(infra *models.MissionInfrastruc
 func (u *MissionInfrastructureRepository) Update(infra *models.MissionInfrastructure) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(infra).Omit("id").Omit("service_id").Where("id", "=", infra.Id).Update("missions.infrastructure")
+	rows, err := m.Model(infra).Omit("id").Omit("mission_id").Where("id", "=", infra.Id).Update("missions.infrastructure")
 
 	if err != nil {
 		return err

@@ -167,5 +167,4 @@ func (u *MissionAuthorityRepository) GetSummaryByMissionId(id int64) *results.Re
 	}
 
 	return rest.WithValue(registers).Success()
-
 }

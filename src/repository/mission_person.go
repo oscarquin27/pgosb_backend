@@ -20,57 +20,7 @@ func NewMissionPersonService(db *pgxpool.Pool) services.MissionPersonService {
 	}
 }
 
-// GetAll implements services.MissionPersonService.
-func (u *MissionPersonRepository) GetAll() ([]models.MissionPerson, error) {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	defer conn.Release()
-
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := conn.Query(ctx, `SELECT id, service_id, 
-	unit_id, 
-	infrastructure_id, 
-	vehicle_id, 
-	first_name, 
-	last_name, 
-	age, 
-	gender, 
-	legal_id, 
-	phone, 
-	employment,
-	state,
-	municipality, 
-	parish, 
-	address, 
-	pathology, 
-	observations, 
-	condition
-FROM missions.person where;`)
-
-	if err != nil {
-		return nil, err
-	}
-
-	person, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionPerson])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorMissionPersonNotFound
-		}
-
-		return nil, err
-	}
-
-	return person, nil
-}
-
-// GetByServiceId implements services.MissionPersonService.
-func (u *MissionPersonRepository) GetByServiceId(id int) ([]models.MissionPerson, error) {
+func (u *MissionPersonRepository) GetMissionId(id int) ([]models.MissionPerson, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -81,25 +31,9 @@ func (u *MissionPersonRepository) GetByServiceId(id int) ([]models.MissionPerson
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, service_id, 
-	unit_id, 
-	infrastructure_id, 
-	vehicle_id, 
-	first_name, 
-	last_name, 
-	age, 
-	gender, 
-	legal_id, 
-	phone, 
-	employment,
-	state,
-	municipality, 
-	parish, 
-	address, 
-	pathology, 
-	observations, 
-	condition
-FROM missions.person where service_id = $1;`, id)
+	rows, err := conn.Query(ctx, `
+	SELECT *
+	FROM missions.person WHERE mission_id = $1;`, id)
 
 	if err != nil {
 		return nil, err
@@ -129,25 +63,9 @@ func (u *MissionPersonRepository) Get(id int) (*models.MissionPerson, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT id, service_id, 
-	unit_id, 
-	infrastructure_id, 
-	vehicle_id, 
-	first_name, 
-	last_name, 
-	age, 
-	gender, 
-	legal_id, 
-	phone, 
-	employment,
-	state,
-	municipality, 
-	parish, 
-	address, 
-	pathology, 
-	observations, 
-	condition
-FROM missions.person where id = $1;`, id)
+	rows, err := conn.Query(ctx, `
+	SELECT *
+    FROM missions.person WHERE id = $1;`, id)
 
 	if err != nil {
 		return nil, err
@@ -164,6 +82,38 @@ FROM missions.person where id = $1;`, id)
 	}
 
 	return &person, nil
+}
+
+func (u *MissionPersonRepository) GetAll() ([]models.MissionPerson, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := conn.Query(ctx, `
+	SELECT *
+	FROM missions.person`)
+
+	if err != nil {
+		return nil, err
+	}
+
+	person, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionPerson])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionPersonNotFound
+		}
+
+		return nil, err
+	}
+
+	return person, nil
 }
 
 func (u *MissionPersonRepository) Create(p *models.MissionPerson) error {
@@ -185,7 +135,7 @@ func (u *MissionPersonRepository) Create(p *models.MissionPerson) error {
 func (u *MissionPersonRepository) Update(p *models.MissionPerson) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(p).Omit("id").Where("id", "=", p.Id).Update("missions.person")
+	rows, err := m.Model(p).Omit("id").Omit("mission_id").Where("id", "=", p.Id).Update("missions.person")
 
 	if err != nil {
 		return err

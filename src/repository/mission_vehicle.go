@@ -22,6 +22,7 @@ func NewMissionVehicleService(db *pgxpool.Pool) services.MissionVehicleService {
 
 // GetAll implements services.MissionVehicleService.
 func (u *MissionVehicleRepository) GetAll() ([]models.MissionVehicle, error) {
+
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -32,19 +33,9 @@ func (u *MissionVehicleRepository) GetAll() ([]models.MissionVehicle, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT 
-	id, 
-	service_id, 
-	vehicle_condition, 
-	make, 
-	model, 
-	year, 
-	plate, 
-	color, 
-	vehicle_type, 
-	motor_serial, 
-	vehicle_verified
-	FROM missions.vehicles;`)
+	rows, err := conn.Query(ctx, `
+	SELECT *
+	FROM missions.vehicles`)
 
 	if err != nil {
 		return nil, err
@@ -64,7 +55,7 @@ func (u *MissionVehicleRepository) GetAll() ([]models.MissionVehicle, error) {
 }
 
 // GetByServiceId implements services.MissionVehicleService.
-func (u *MissionVehicleRepository) GetByServiceId(id int) ([]models.MissionVehicle, error) {
+func (u *MissionVehicleRepository) GetMissionId(id int) ([]models.MissionVehicle, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -75,20 +66,10 @@ func (u *MissionVehicleRepository) GetByServiceId(id int) ([]models.MissionVehic
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT 
-	id, 
-	service_id, 
-	vehicle_condition, 
-	make, 
-	model, 
-	year, 
-	plate, 
-	color, 
-	vehicle_type, 
-	motor_serial, 
-	vehicle_verified
+	rows, err := conn.Query(ctx, `
+	SELECT *
 	FROM missions.vehicles
- 	where service_id = $1;`, id)
+ 	WHERE mission_id = $1`, id)
 
 	if err != nil {
 		return nil, err
@@ -118,20 +99,10 @@ func (u *MissionVehicleRepository) Get(id int) (*models.MissionVehicle, error) {
 		return nil, err
 	}
 
-	rows, err := conn.Query(ctx, `SELECT 
-	id, 
-	service_id, 
-	vehicle_condition, 
-	make, 
-	model, 
-	year, 
-	plate, 
-	color, 
-	vehicle_type, 
-	motor_serial, 
-	vehicle_verified
+	rows, err := conn.Query(ctx, `
+	SELECT *
 	FROM missions.vehicles
- 	where id = $1;`, id)
+ 	where id = $1`, id)
 
 	if err != nil {
 		return nil, err
@@ -169,7 +140,8 @@ func (u *MissionVehicleRepository) Create(vehicle *models.MissionVehicle) error 
 func (u *MissionVehicleRepository) Update(vehicle *models.MissionVehicle) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(vehicle).Omit("id").Where("id", "=", vehicle.Id).Update("missions.vehicles")
+	rows, err := m.Model(vehicle).Omit("id").
+		Omit("mission_id").Where("id", "=", vehicle.Id).Update("missions.vehicles")
 
 	if err != nil {
 		return err

@@ -5,7 +5,7 @@ import "fdms/src/models"
 type MissionInfrastructureService interface {
 	Get(id int) (*models.MissionInfrastructure, error)
 	GetAll() ([]models.MissionInfrastructure, error)
-	GetByServiceId(id int) ([]models.MissionInfrastructure, error)
+	GetMissionId(id int) ([]models.MissionInfrastructure, error)
 	Create(infra *models.MissionInfrastructure) error
 	Update(infra *models.MissionInfrastructure) error
 	Delete(id int) error

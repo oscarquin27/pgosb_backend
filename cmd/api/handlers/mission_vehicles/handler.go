@@ -65,11 +65,11 @@ func (u *MissionVehicleController) GetAll(c *gin.Context) {
 	c.JSON(http.StatusOK, missionDto)
 }
 
-func (u *MissionVehicleController) GetByServiceId(c *gin.Context) {
+func (u *MissionVehicleController) GetMissionId(c *gin.Context) {
 
 	id := utils.ParseInt(c.Param("id"))
 
-	mission, err := u.missionService.GetByServiceId(id)
+	mission, err := u.missionService.GetMissionId(id)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {

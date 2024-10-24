@@ -333,7 +333,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	vehicleMission := v1.Group("mission/vehicle")
 	{
 		vehicleMission.GET("/:id", missionVehicleController.GetVehicle)
-		vehicleMission.GET("/group/:id", missionVehicleController.GetByServiceId)
+		vehicleMission.GET("/group/:id", missionVehicleController.GetMissionId)
 		vehicleMission.GET("/all", missionVehicleController.GetAll)
 		vehicleMission.POST("/create", missionVehicleController.Create)
 		vehicleMission.PUT("/update", missionVehicleController.Update)
@@ -364,7 +364,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	infraMission := v1.Group("mission/infrastructure")
 	{
 		infraMission.GET("/:id", missionInfraController.GetInfrastructure)
-		infraMission.GET("/group/:id", missionInfraController.GetByServiceId)
+		infraMission.GET("/group/:id", missionInfraController.GetMissionId)
 		infraMission.GET("/all", missionInfraController.GetAll)
 		infraMission.POST("/create", missionInfraController.Create)
 		infraMission.PUT("/update", missionInfraController.Update)
@@ -374,7 +374,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	personMission := v1.Group("mission/person")
 	{
 		personMission.GET("/:id", missionPersonController.Get)
-		personMission.GET("/group/:id", missionPersonController.GetByServiceId)
+		personMission.GET("/group/:id", missionPersonController.GetMissionId)
 		personMission.GET("/all", missionPersonController.GetAll)
 		personMission.POST("/create", missionPersonController.Create)
 		personMission.PUT("/update", missionPersonController.Update)

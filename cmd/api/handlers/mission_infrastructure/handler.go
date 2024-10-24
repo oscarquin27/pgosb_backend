@@ -40,10 +40,10 @@ func (u *MissionInfrastructureController) GetInfrastructure(c *gin.Context) {
 	c.JSON(http.StatusOK, missionDto)
 }
 
-func (u *MissionInfrastructureController) GetByServiceId(c *gin.Context) {
+func (u *MissionInfrastructureController) GetMissionId(c *gin.Context) {
 	id := utils.ParseInt(c.Param("id"))
 
-	mission, err := u.missionService.GetByServiceId(id)
+	mission, err := u.missionService.GetMissionId(id)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {

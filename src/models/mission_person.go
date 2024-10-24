@@ -33,4 +33,7 @@ type MissionPerson struct {
 	Pathology        pgtype.Text `json:"pathology" db:"pathology"`
 	Observations     pgtype.Text `json:"observations" db:"observations"`
 	Condition        pgtype.Text `json:"condition" db:"condition"`
+
+	//Temporal
+	ServiceId pgtype.Int4 `json:"service_id" db:"service_id"`
 }
