@@ -161,6 +161,11 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	}
 
 	service.CanceledReason = sql.NullString{String: s.CanceledReason, Valid: true}
+
+	if service.CanceledReason.String == "" || service.CanceledReason.String == "N/A" {
+		service.CanceledReason = sql.NullString{String: "", Valid: true}
+	}
+
 	service.PendingForData = sql.NullBool{Bool: s.PendingForData, Valid: true}
 	return service
 }
