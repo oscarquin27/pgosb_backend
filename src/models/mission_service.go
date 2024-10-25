@@ -47,6 +47,8 @@ type MissionService struct {
 
 	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
 	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
+
+	//UnitsPlates []string `json:"units_plates" db:"units_plates"`
 }
 
 type RelevantServices struct {

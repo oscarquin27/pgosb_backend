@@ -27,13 +27,14 @@ type MissionServiceSummaryJson struct {
 	ServiceDate       string   `json:"service_date"`
 	ManualServiceDate string   `json:"manual_service_date"`
 
-	Commander      string `json:"commander"`
-	PendingForData bool   `json:"pending_for_data"`
-	PeaceQuadrant  string `json:"peace_quadrant"`
-	Level          string `json:"level"`
-	State          string `json:"state"`
-	Municipality   string `json:"municipality"`
-	Parish         string `json:"parish"`
+	Commander      string   `json:"commander"`
+	PendingForData bool     `json:"pending_for_data"`
+	PeaceQuadrant  string   `json:"peace_quadrant"`
+	Level          string   `json:"level"`
+	State          string   `json:"state"`
+	Municipality   string   `json:"municipality"`
+	Parish         string   `json:"parish"`
+	UnitsPlates    []string `json:"units_plates"`
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
@@ -117,6 +118,8 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 		service.Commander = s.Commander.String
 	}
 
+	service.UnitsPlates = s.UnitsPlates
+
 	return &service
 }
 
@@ -197,6 +200,8 @@ func (s *MissionServiceSummaryJson) ToModel() models.MissionServiceSummary {
 
 	service.Commander.String = s.Commander
 	service.Commander.Valid = true
+
+	service.UnitsPlates = s.UnitsPlates
 
 	return service
 

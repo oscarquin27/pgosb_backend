@@ -28,4 +28,5 @@ type MissionServiceSummary struct {
 	Parish            sql.NullString `db:"parish"`
 	Commander         sql.NullString `db:"commander"`
 	Alias             sql.NullString `db:"alias"`
+	UnitsPlates       []string       `db:"units_plates"`
 }
