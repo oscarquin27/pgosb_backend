@@ -7,8 +7,8 @@ import (
 )
 
 type MissionFirefighter struct {
-	Id         int64        `db:"id"`
-	ServiceId  int64        `db:"service_id"`
+	Id int64 `db:"id"`
+	//ServiceId  int64        `db:"service_id"`
 	MissionId  int64        `db:"mission_id"`
 	UserId     int64        `db:"user_id"`
 	ServiceRol *string      `db:"service_role"`
@@ -17,8 +17,8 @@ type MissionFirefighter struct {
 
 func (s *MissionFirefighter) GetNameArgs() pgx.NamedArgs {
 	return pgx.NamedArgs{
-		"id":           s.Id,
-		"service_id":   s.ServiceId,
+		"id": s.Id,
+		//"service_id":   s.ServiceId,
 		"user_id":      s.UserId,
 		"service_role": s.ServiceRol,
 		"mission_id":   s.MissionId,
@@ -39,6 +39,7 @@ type MissionFirefighterUser struct {
 	PersonalCode string  `db:"personal_code"`
 	Legal_id     string  `db:"legal_id"`
 	MissionId    string  `db:"mission_id"`
+	ServiceRole  string  `db:"service_role"`
 }
 
 func (s *MissionFirefighterUser) GetNameArgs() pgx.NamedArgs {
@@ -51,6 +52,7 @@ func (s *MissionFirefighterUser) GetNameArgs() pgx.NamedArgs {
 		"personal_code": s.PersonalCode,
 		"legal_id":      s.Legal_id,
 		"mission_id":    s.MissionId,
+		"service_role":  s.ServiceRole,
 	}
 }
 

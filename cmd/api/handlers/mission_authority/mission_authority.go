@@ -72,7 +72,13 @@ func (u *MissionAuthorityController) GetByMissionId(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": result.Value})
+	var data []api_models.MissionAuthorityJson = make([]api_models.MissionAuthorityJson, 0)
+
+	for _, v := range result.Value {
+		data = append(data, *api_models.ModelToMissionAuthorityJson(&v))
+	}
+
+	c.JSON(http.StatusOK, data)
 }
 
 func (u *MissionAuthorityController) GetSummaryByMissionId(c *gin.Context) {

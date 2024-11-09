@@ -384,12 +384,12 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	missionAuthority := v1.Group("mission/authority")
 	{
 		missionAuthority.GET("/:id", missionAuthorityController.Get)
-		missionAuthority.GET("/group/:id", missionAuthorityController.GetByMissionId)
+		missionAuthority.GET("/group/:id", missionAuthorityController.GetSummaryByMissionId)
 		missionAuthority.GET("/all", missionAuthorityController.GetAll)
 		missionAuthority.POST("/create", missionAuthorityController.Create)
 		missionAuthority.PUT("/update", missionAuthorityController.Update)
 		missionAuthority.DELETE("/delete/:id", missionAuthorityController.Delete)
-		missionAuthority.GET("/summary/:id", missionAuthorityController.GetSummaryByMissionId)
+		//missionAuthority.GET("/summary/:id", missionAuthorityController.GetSummaryByMissionId)
 	}
 
 	missionAuthorityVehicle := v1.Group("mission/authority/vehicle")
@@ -484,5 +484,4 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	}
 
 	logger.Info().Msg("Server exiting")
-
 }

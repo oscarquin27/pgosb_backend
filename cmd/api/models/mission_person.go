@@ -25,6 +25,7 @@ type MissionPersonJson struct {
 	Pathology        string `json:"pathology"`
 	Observations     string `json:"observations"`
 	Condition        string `json:"condition"`
+	PersonCondition  string `json:"person_condition"`
 }
 
 func ModelToMissionPersonJson(s models.MissionPerson) *MissionPersonJson {
@@ -49,7 +50,7 @@ func ModelToMissionPersonJson(s models.MissionPerson) *MissionPersonJson {
 	person.Pathology = utils.ConvertFromText(s.Pathology)
 	person.Observations = utils.ConvertFromText(s.Observations)
 	person.Condition = utils.ConvertFromText(s.Condition)
-
+	person.PersonCondition = utils.ConvertFromText(s.PersonCondition)
 	return &person
 }
 
@@ -75,6 +76,6 @@ func (s *MissionPersonJson) ToModel() models.MissionPerson {
 	person.Pathology = utils.ConvertToPgTypeText(s.Pathology)
 	person.Observations = utils.ConvertToPgTypeText(s.Observations)
 	person.Condition = utils.ConvertToPgTypeText(s.Condition)
-
+	person.PersonCondition = utils.ConvertToPgTypeText(s.PersonCondition)
 	return person
 }

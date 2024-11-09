@@ -33,35 +33,9 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
-	antares_id, 
-	units, 
-	bombers,
-	operative_areas,
-	summary, 
-	description,
-	unharmed,
-	injured,
-	transported,
-	deceased,
-	station_id,
-	center_id,
-	location_id,
-	service_date,
-	manual_service_date,
-	is_important,
-	sending_user_id,
-	receiving_user_id,
+	rows, err := conn.Query(ctx, `SELECT *
 	
-	level,
-	peace_quadrant,
-	location_destiny_id,
-
-	not_attended,
-	false_alarm,
-	pending_for_data
-	
-	FROM missions.services where id = $1;`, id)
+	FROM services.service where id = $1;`, id)
 
 	if err != nil {
 		return nil, err
@@ -91,35 +65,9 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
-	antares_id, 
-	units, 
-	bombers, 
-	operative_areas,
-	summary,
-	description,
-	unharmed,
-	injured ,
-	transported ,
-	deceased ,
-	station_id,
-	center_id,
-	location_id,
-    service_date,
-	manual_service_date,
-	is_important,
-	sending_user_id,
-	receiving_user_id,
+	rows, err := conn.Query(ctx, `SELECT *
 	
-	level,
-	peace_quadrant,
-	location_destiny_id,
-
-	not_attended,
-	false_alarm,
-	pending_for_data
-	
-	FROM missions.services order by id desc;`)
+	FROM services.service order by id desc;`)
 
 	if err != nil {
 		return nil, err
@@ -242,35 +190,9 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT id, mission_id, 
-	antares_id, 
-	units, 
-	bombers,
-	operative_areas, 
-	summary, 
-	description,
-	unharmed,
-	injured ,
-	transported ,
-	deceased ,
-	station_id,
-	center_id,
-	location_id,
-	service_date,
-	manual_service_date,
-	is_important,
-	sending_user_id,
-	receiving_user_id,
+	rows, err := conn.Query(ctx, `SELECT *
 	
-	level,
-	peace_quadrant,
-	location_destiny_id,
-
-	not_attended,
-	false_alarm,
-	pending_for_data
-	
-	FROM missions.services where mission_id = $1 `, id)
+	FROM services.service where mission_id = $1 `, id)
 
 	if err != nil {
 		return nil, err
@@ -312,7 +234,7 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 		FROM  vehicles.unit u
 		where id in (select 
 			unnest(s.units) as id
-		from missions.services s
+		from services.service s
 		where s.id = $1)`, id)
 
 	if err != nil {
@@ -371,8 +293,10 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
 	m := mikro.NewMkModel(u.db)
 
-	err := m.Model(s).Omit("id").Omit("service_date").
-		Returning().InsertReturning("missions.services")
+	err := m.Model(s).Omit("id").
+		Omit("service_date").
+		Returning().
+		InsertReturning("services.service")
 
 	if err != nil {
 		return nil, err
@@ -388,7 +312,12 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.Mis
 func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	m := mikro.NewMkModel(u.db)
 
-	rows, err := m.Model(s).Omit("id").Omit("service_date").Where("id", "=", s.Id).Update("missions.services")
+	rows, err := m.Model(s).
+		Omit("id").
+		Omit("service_date").
+		Omit("mission_id").
+		Where("id", "=", s.Id).
+		Update("services.service")
 
 	if err != nil {
 		return err
@@ -412,7 +341,7 @@ func (u *MissionServiceRepository) Delete(id int) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, "delete from missions.services where id = $1", id)
+	_, err = conn.Exec(ctx, "delete from services.service where id = $1", id)
 
 	if err != nil {
 		return models.ErrorMissionServiceNotDeleted

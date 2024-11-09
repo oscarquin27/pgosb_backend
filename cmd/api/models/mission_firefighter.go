@@ -31,7 +31,6 @@ func (s *MissionFirefighterJson) ToModel() models.MissionFirefighter {
 	service.MissionId = utils.ParseInt64(s.MissionId)
 	service.UserId = utils.ParseInt64(s.UserId)
 	service.ServiceRol = &s.ServiceRol
-
 	return service
 }
 
@@ -44,6 +43,7 @@ type MissionFirefighterUserJson struct {
 	PersonalCode string `json:"personal_code"`
 	Legal_id     string `json:"legal_id"`
 	MissionId    string `json:"mission_id"`
+	ServiceRole  string `json:"service_role"`
 }
 
 func ModelToMissionFirefighterUserJson(s *models.MissionFirefighterUser) *MissionFirefighterUserJson {
@@ -57,7 +57,7 @@ func ModelToMissionFirefighterUserJson(s *models.MissionFirefighterUser) *Missio
 	service.PersonalCode = s.PersonalCode
 	service.Legal_id = s.Legal_id
 	service.MissionId = s.MissionId
-
+	service.ServiceRole = s.ServiceRole
 	return &service
 }
 
@@ -71,6 +71,6 @@ func (s *MissionFirefighterUserJson) ToModel() models.MissionFirefighterUser {
 	service.PersonalCode = s.PersonalCode
 	service.Legal_id = s.Legal_id
 	service.MissionId = s.MissionId
-
+	service.ServiceRole = s.ServiceRole
 	return service
 }
