@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"strings"
 
+	logger "fdms/src/infrastructure/log"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -36,6 +38,8 @@ func (mk *MkModel) Insert(table string) (int64, error) {
 
 	sentence := buildInsert(fields, table)
 
+	logger.Info().Str("QUERY", sentence).Msg("INSERT")
+
 	return executeSentence(mk.db, sentence, values)
 }
 
@@ -51,6 +55,8 @@ func (mk *MkModel) InsertReturning(table string) error {
 	sentence := buildInsert(fields, table)
 
 	sentence += mk.returning
+
+	logger.Info().Str("QUERY", sentence).Msg("INSERT RETURNING")
 
 	return executeSentenceReturning(mk.db, sentence, values, mk)
 }
@@ -71,6 +77,8 @@ func (mk *MkModel) UpdateReturning(table string) error {
 	sentence := buildUpdate(fields, table, *mk)
 	sentence += mk.returning
 
+	logger.Info().Str("QUERY", sentence).Msg("UPDATE RETURNING")
+
 	return executeSentenceReturning(mk.db, sentence, values, mk)
 }
 
@@ -88,6 +96,8 @@ func (mk *MkModel) Update(table string) (int64, error) {
 	}
 
 	sentence := buildUpdate(fields, table, *mk)
+
+	logger.Info().Str("QUERY", sentence).Msg("UPDATE")
 
 	return executeSentence(mk.db, sentence, values)
 }
@@ -109,6 +119,8 @@ func executeSentence(pg *pgxpool.Pool, sql string, values []interface{}) (int64,
 		return 0, err
 	}
 
+	logger.Info().Str("QUERY", sql).Msg("EXECUTE SENTENCE")
+
 	return rows.RowsAffected(), nil
 
 }
@@ -124,11 +136,19 @@ func executeSentenceReturning(pg *pgxpool.Pool, sql string, values []interface{}
 
 	defer conn.Release()
 
+	logger.Info().Str("QUERY", sql).Msg("EXECUTE SENTENCE RETURNING")
+
+	for _, v := range values {
+		logger.Info().Interface("VALUE", v).Msg("VALUE")
+	}
+
 	err = conn.QueryRow(ctx, sql, values...).Scan(model.model)
 
 	if err != nil {
 		return err
 	}
+
+	logger.Info().Str("QUERY", sql).Msg("EXECUTE SENTENCE RETURNING")
 
 	return nil
 

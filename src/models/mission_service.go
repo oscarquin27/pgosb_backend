@@ -16,10 +16,10 @@ var (
 
 type MissionService struct {
 	Id             pgtype.Int4   `json:"id" db:"id"`
-	MissionId      pgtype.Int2   `json:"mission_id" db:"mission_id"`
-	AntaresId      pgtype.Int2   `json:"antares_id,omitempty" db:"antares_id"`
-	Units          []pgtype.Int2 `json:"units,omitempty" db:"units"`
-	Bombers        []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
+	MissionId      pgtype.Int4   `json:"mission_id" db:"mission_id"`
+	AntaresId      pgtype.Int4   `json:"antares_id,omitempty" db:"antares_id"`
+	Units          []pgtype.Int4 `json:"units,omitempty" db:"units"`
+	Bombers        []pgtype.Int4 `json:"bombers,omitempty" db:"Bombers"`
 	OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
 	Summary        pgtype.Text   `json:"summary,omitempty" db:"summary"`
 	Description    pgtype.Text   `json:"description,omitempty" db:"description"`
