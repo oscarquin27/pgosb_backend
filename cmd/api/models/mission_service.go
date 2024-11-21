@@ -35,16 +35,19 @@ type MissionServiceJson struct {
 	Level             string `json:"level"`
 	PeaceQuadrant     string `json:"peace_quadrant"`
 	LocationDestinyId string `json:"location_destiny_id"`
+
+	PendingForData bool   `json:"pending_for_data"`
+	CanceledReason string `json:"cancel_reason"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service := MissionServiceJson{}
 
 	service.Id = utils.ConvertFromInt4(s.Id)
-	service.MissionId = utils.ConvertFromInt2(s.MissionId)
-	service.AntaresId = utils.ConvertFromInt2(s.AntaresId)
-	service.Units = utils.ConvertFromInt2Array(s.Units)
-	service.Bombers = utils.ConvertFromInt2Array(s.Bombers)
+	service.MissionId = utils.ConvertFromInt4(s.MissionId)
+	service.AntaresId = utils.ConvertFromInt4(s.AntaresId)
+	service.Units = utils.ConvertFromInt4Array(s.Units)
+	service.Bombers = utils.ConvertFromInt4Array(s.Bombers)
 	service.Summary = utils.ConvertFromText(s.Summary)
 	service.Description = utils.ConvertFromText(s.Description)
 
@@ -82,6 +85,14 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 
 	service.LocationDestinyId = utils.ParseInt64StringPointer(s.LocationDestinyId)
 
+	if s.CanceledReason.Valid {
+		service.CanceledReason = s.CanceledReason.String
+	}
+
+	if s.PendingForData.Valid {
+		service.PendingForData = s.PendingForData.Bool
+	}
+
 	return &service
 }
 
@@ -89,10 +100,10 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	service := models.MissionService{}
 
 	service.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	service.MissionId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.MissionId))
-	service.AntaresId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.AntaresId))
-	service.Units = utils.ConvertToInt2Array(s.Units)
-	service.Bombers = utils.ConvertToInt2Array(s.Bombers)
+	service.MissionId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.MissionId))
+	service.AntaresId = utils.ConvertToPgTypeInt4(utils.ParseInt(s.AntaresId))
+	service.Units = utils.ConvertToInt4Array(s.Units)
+	service.Bombers = utils.ConvertToInt4Array(s.Bombers)
 	service.Summary = utils.ConvertToPgTypeText(s.Summary)
 	service.Description = utils.ConvertToPgTypeText(s.Description)
 	service.OperativeAreas = utils.ConvertToTextArray(s.OperativeAreas)
@@ -149,5 +160,12 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 		service.Level = sql.NullString{String: s.Level, Valid: true}
 	}
 
+	service.CanceledReason = sql.NullString{String: s.CanceledReason, Valid: true}
+
+	if service.CanceledReason.String == "" || service.CanceledReason.String == "N/A" {
+		service.CanceledReason = sql.NullString{String: "", Valid: true}
+	}
+
+	service.PendingForData = sql.NullBool{Bool: s.PendingForData, Valid: true}
 	return service
 }

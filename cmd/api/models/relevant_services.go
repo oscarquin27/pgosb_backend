@@ -30,9 +30,7 @@ type RelevantServicesJson struct {
 	Centers               []models.RelevantCenter          `json:"centers"`
 	AuthorityData		  []models.AuthorityData		   `json:"authority_data"`
 	IsImportant           bool                             `json:"is_important"`
-	Destiny 			  []models.RelevantServiceLocation `json:"destiny"`
-	PeaceQuadrant         string 						   `json:"peace_quadrant"`
-	Level                 string                           `json:"level"`
+	CancelReason          string                           `json:"cancel_reason"`
 }
 
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
@@ -77,6 +75,10 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 		relevantService.Units = make([]string, 0)
 	} else {
 		relevantService.Units = r.Units
+	}
+
+	if r.CancelReason != nil {
+		relevantService.CancelReason = *r.CancelReason
 	}
 
 	return relevantService
@@ -124,5 +126,7 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.Transported = &transported
 	relevantService.Deceased = &deceased
 	relevantService.IsImportant = r.IsImportant
+	relevantService.CancelReason = &r.CancelReason
+
 	return relevantService
 }

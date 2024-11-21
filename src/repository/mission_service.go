@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	logger "fdms/src/infrastructure/log"
 	"fdms/src/mikro"
 	"fdms/src/models"
 	"fdms/src/services"
@@ -55,8 +56,10 @@ func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
-
+	location_destiny_id,
+	
+	pending_for_data,
+	cancel_reason
 	
 	FROM missions.services where id = $1;`, id)
 
@@ -110,7 +113,10 @@ func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
+	location_destiny_id,
+	
+	pending_for_data,
+	cancel_reason
 	
 	FROM missions.services order by id desc;`)
 
@@ -201,9 +207,8 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	transported,
 	deceased,
 	is_important,
-	destiny,
-	authority_data,
-	level
+	cancel_reason
+	
 	FROM missions.vw_relevant_services
 	where service_id::text in (%s)`, id))
 
@@ -257,7 +262,10 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 	
 	level,
 	peace_quadrant,
-	location_destiny_id
+	location_destiny_id,
+	
+	pending_for_data,
+	cancel_reason
 	
 	FROM missions.services where mission_id = $1 `, id)
 
@@ -323,6 +331,7 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 
 // GetUsers implements services.MissionServiceService.
 func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.MissionUserService] {
+	logger.Info().Msg("Getting users")
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -348,9 +357,11 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 
 	if err != nil {
 		if err == pgx.ErrNoRows || len(users) == 0 {
+			logger.Info().Msg("No users found")
 			return r.Success()
 		}
 
+		logger.Error().Err(err).Msg("Error getting users")
 		return r.WithError(results.NewError(err.Error(), err))
 	}
 
@@ -358,39 +369,50 @@ func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]m
 }
 
 func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
+	logger.Info().Msg("Creating mission service")
 	m := mikro.NewMkModel(u.db)
+
+	//s.PrintInfo()
 
 	err := m.Model(s).Omit("id").Omit("service_date").
 		Returning().InsertReturning("missions.services")
 
 	if err != nil {
+		logger.Error().Err(err).Msg("Error creating mission service")
 		return nil, err
 	}
 
 	if s.Id.Int32 >= 0 {
+		logger.Info().Msg("Mission service created")
 		return s, nil
 	}
 
+	logger.Error().Msg("Mission service not created")
 	return nil, models.ErrorMissionServiceNotCreated
 }
 
 func (u *MissionServiceRepository) Update(s *models.MissionService) error {
+	logger.Info().Msg("Updating mission service")
 	m := mikro.NewMkModel(u.db)
 
 	rows, err := m.Model(s).Omit("id").Omit("service_date").Where("id", "=", s.Id).Update("missions.services")
 
 	if err != nil {
+		logger.Error().Err(err).Msg("Error updating mission service")
 		return err
 	}
 
 	if rows == 1 {
+		logger.Info().Msg("Mission service updated")
 		return nil
 	}
 
+	logger.Error().Msg("Mission service not updated")
 	return models.ErrorMissionServiceNotUpdated
 }
 
 func (u *MissionServiceRepository) Delete(id int) error {
+	logger.Info().Msg("Deleting mission service")
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -398,12 +420,14 @@ func (u *MissionServiceRepository) Delete(id int) error {
 	defer conn.Release()
 
 	if err != nil {
+		logger.Error().Err(err).Msg("Error deleting mission service")
 		return err
 	}
 
 	_, err = conn.Exec(ctx, "delete from missions.services where id = $1", id)
 
 	if err != nil {
+		logger.Error().Err(err).Msg("Error deleting mission service")
 		return models.ErrorMissionServiceNotDeleted
 	}
 

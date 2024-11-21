@@ -16,10 +16,10 @@ var (
 
 type MissionService struct {
 	Id             pgtype.Int4   `json:"id" db:"id"`
-	MissionId      pgtype.Int2   `json:"mission_id" db:"mission_id"`
-	AntaresId      pgtype.Int2   `json:"antares_id,omitempty" db:"antares_id"`
-	Units          []pgtype.Int2 `json:"units,omitempty" db:"units"`
-	Bombers        []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
+	MissionId      pgtype.Int4   `json:"mission_id" db:"mission_id"`
+	AntaresId      pgtype.Int4   `json:"antares_id,omitempty" db:"antares_id"`
+	Units          []pgtype.Int4 `json:"units,omitempty" db:"units"`
+	Bombers        []pgtype.Int4 `json:"bombers,omitempty" db:"Bombers"`
 	OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
 	Summary        pgtype.Text   `json:"summary,omitempty" db:"summary"`
 	Description    pgtype.Text   `json:"description,omitempty" db:"description"`
@@ -44,6 +44,11 @@ type MissionService struct {
 	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
 
 	LocationDestinyId *int64 `json:"location_destiny_id" db:"location_destiny_id"`
+
+	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
+	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
+
+	//UnitsPlates []string `json:"units_plates" db:"units_plates"`
 }
 
 type RelevantServices struct {
@@ -70,10 +75,7 @@ type RelevantServices struct {
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
-	Destiny 			  []RelevantServiceLocation `db:"destiny"`
-	AuthorityData         []AuthorityData			`db:"authority_data"`
-	Level 				  *string					`db:"level"`
-	PeaceQuadrant         *string					`db:"peace_quadrant"`
+	CancelReason          *string                   `db:"cancel_reason"`
 }
 
 type RelevantFirefighters struct {
