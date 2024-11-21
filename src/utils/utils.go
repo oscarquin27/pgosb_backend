@@ -21,6 +21,11 @@ func ConvertIntToString(s int) string {
 	return id
 }
 
+func ConvertInt64ToString(s int64) string {
+	id := strconv.FormatInt(s, 10)
+	return id
+}
+
 func ParseInt(s string) int {
 	id, err := strconv.Atoi(s)
 	if err != nil {

@@ -192,7 +192,7 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 
 	rows, err := conn.Query(ctx, `SELECT *
 	
-	FROM services.service where mission_id = $1 `, id)
+	FROM services.vw_services where mission_id = $1 `, id)
 
 	if err != nil {
 		return nil, err

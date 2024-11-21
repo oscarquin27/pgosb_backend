@@ -36,6 +36,9 @@ type MissionServiceJson struct {
 
 	CanceledReason string `json:"cancel_reason"`
 	PendingForData bool   `json:"pending_for_data"`
+
+	AntaresType        string `json:"antares_type"`
+	AntaresDescription string `json:"antares_description"`
 }
 
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
@@ -82,6 +85,14 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 
 	if s.PendingForData.Valid {
 		service.PendingForData = s.PendingForData.Bool
+	}
+
+	if s.AntaresType.Valid {
+		service.AntaresType = s.AntaresType.String
+	}
+
+	if s.AntaresDescription.Valid {
+		service.AntaresDescription = s.AntaresDescription.String
 	}
 
 	return &service
@@ -142,6 +153,14 @@ func (s *MissionServiceJson) ToModel() models.MissionService {
 	}
 
 	service.PendingForData = sql.NullBool{Bool: s.PendingForData, Valid: true}
+
+	if s.AntaresType != "" {
+		service.AntaresType = sql.NullString{String: s.AntaresType, Valid: true}
+	}
+
+	if s.AntaresDescription != "" {
+		service.AntaresDescription = sql.NullString{String: s.AntaresDescription, Valid: true}
+	}
 
 	return service
 }

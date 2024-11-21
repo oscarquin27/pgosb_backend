@@ -109,7 +109,9 @@ func (u *AbstractHandler[T, F]) Create(model AbstactModel[T, F], FromModel func(
 		return
 	}
 
-	c.JSON(http.StatusOK, FromModel(r.Value))
+	returnValue := FromModel(r.Value)
+
+	c.JSON(http.StatusOK, returnValue)
 }
 
 func (u *AbstractHandler[T, F]) Update(model AbstactModel[T, F], FromModel func(*T) *F, c *gin.Context) {

@@ -38,10 +38,15 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.MissionCode = *r.MissionCode
 	relevantService.RegionAreaDescription = *r.RegionAreaDescription
 
-	relevantService.AntaresId = utils.ConvertIntToString(*r.AntaresId)
+	if r.AntaresId != nil {
+		relevantService.AntaresId = utils.ConvertInt64ToString(*r.AntaresId)
+	}
 	relevantService.AntaresType = *r.AntaresType
 	relevantService.AntaresDescription = *r.AntaresDescription
-	relevantService.ServiceId = utils.ConvertIntToString(*r.ServiceId)
+
+	if r.ServiceId != nil {
+		relevantService.ServiceId = utils.ConvertInt64ToString(*r.ServiceId)
+	}
 
 	relevantService.ServiceDescription = *r.ServiceDescription
 	relevantService.ServiceDate = *r.ServiceDate
@@ -78,8 +83,8 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService := models.RelevantServices{}
 
-	antaresId := utils.ParseInt(r.AntaresId)
-	serviceId := utils.ParseInt(r.ServiceId)
+	antaresId := utils.ParseInt64(r.AntaresId)
+	serviceId := utils.ParseInt64(r.ServiceId)
 
 	relevantService.Id = utils.ParseInt64(r.Id) // Assuming utils.ConvertToPgTypeInt4 converts string to int32
 	relevantService.RegionAreaDescription = &r.RegionAreaDescription

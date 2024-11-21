@@ -16,7 +16,8 @@ type MissionFireFigtherController struct {
 	missionFirefighterService services.MissionFirefighterService
 }
 
-func NewMissionFireFigtherController(stationService abstract_handler.AbstractCRUDService[models.MissionFirefighter], missionFirefighterService services.MissionFirefighterService) *MissionFireFigtherController {
+func NewMissionFireFigtherController(stationService abstract_handler.AbstractCRUDService[models.MissionFirefighter],
+	missionFirefighterService services.MissionFirefighterService) *MissionFireFigtherController {
 
 	abstractHandler := abstract_handler.NewAbstractHandler[models.MissionFirefighter, api_models.MissionFirefighterJson](stationService)
 

@@ -105,7 +105,7 @@ func (m *Mission) GetNameArgs() pgx.NamedArgs {
 		args["is_important"] = m.IsImportant.Bool
 	}
 	if m.HealthCareCenterId.Valid {
-		args["health_care_center_id"] = m.HealthCareCenterId.Int64
+		args["center_id"] = m.HealthCareCenterId.Int64
 	}
 	if m.SendingUserId.Valid {
 		args["sending_user_id"] = m.SendingUserId.Int64

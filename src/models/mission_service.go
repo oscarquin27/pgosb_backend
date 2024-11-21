@@ -46,18 +46,20 @@ type MissionService struct {
 	Level         sql.NullString `json:"level" db:"level"`
 	PeaceQuadrant sql.NullString `json:"peace_quadrant" db:"peace_quadrant"`
 
-	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
-	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
+	CanceledReason     sql.NullString `json:"cancel_reason" db:"cancel_reason"`
+	PendingForData     sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
+	AntaresType        sql.NullString `json:"antares_type" db:"antares_type"`
+	AntaresDescription sql.NullString `json:"antares_description" db:"antares_description"`
 }
 
 type RelevantServices struct {
 	Id                    int64                     `db:"id"`
 	RegionAreaDescription *string                   `db:"region_area"`
 	MissionCode           *string                   `db:"mission_code"`
-	AntaresId             *int                      `db:"antares_id"`
+	AntaresId             *int64                    `db:"antares_id"`
 	AntaresType           *string                   `db:"antares_type"`
 	AntaresDescription    *string                   `db:"antares_description"`
-	ServiceId             *int                      `db:"service_id"`
+	ServiceId             *int64                    `db:"service_id"`
 	OprativeAreaName      []string                  `db:"operative_area_name"`
 	ServiceDescription    *string                   `db:"service_description"`
 	ServiceDate           *string                   `db:"service_date"`

@@ -30,16 +30,17 @@ const (
 		deceased, 
 		station_id, 
 		location_id, 
-		health_care_center_id, 
+		center_id, 
 		sending_user_id, 
 		receiving_user_id, 
 		level, 
 		peace_quadrant, 
 		location_destiny_id, 
 		is_important, 
-		not_attended, 
-		false_alarm, 
-		pending_for_data
+		pending_for_data,
+		cancel_reason,
+		manual_mission_date
+		
 		)
         VALUES (
 		@id, 
@@ -55,16 +56,16 @@ const (
 		@deceased, 
 		@station_id, 
 		@location_id, 
-		@health_care_center_id, 
+		@center_id, 
 		@sending_user_id, 
 		@receiving_user_id, 
 		@level, 
 		@peace_quadrant, 
 		@location_destiny_id, 
 		@is_important, 
-		
 		@pending_for_data,
-		@cancel_reason
+		@cancel_reason,
+		@manual_mission_date
 		)
     `
 
@@ -82,7 +83,7 @@ const (
 		deceased = @deceased,
 		station_id = @station_id,
 		location_id = @location_id,
-		health_care_center_id = @health_care_center_id,
+		center_id = @center_id,
 		sending_user_id = @sending_user_id,
 		receiving_user_id = @receiving_user_id,
 		level = @level,
@@ -90,7 +91,8 @@ const (
 		location_destiny_id = @location_destiny_id,
 		is_important = @is_important,
 		pending_for_data = @pending_for_data,
-		cancel_reason = @cancel_reason
+		cancel_reason = @cancel_reason,
+		manual_mission_date = @manual_mission_date
 	
 		WHERE id = @id
 	`
