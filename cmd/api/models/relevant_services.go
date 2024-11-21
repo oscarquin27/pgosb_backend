@@ -28,7 +28,11 @@ type RelevantServicesJson struct {
 	ServiceLocations      []models.RelevantServiceLocation `json:"service_locations"`
 	ServiceStations       []models.RelevantServiceStation  `json:"service_stations"`
 	Centers               []models.RelevantCenter          `json:"centers"`
+	AuthorityData		  []models.AuthorityData		   `json:"authority_data"`
 	IsImportant           bool                             `json:"is_important"`
+	Destiny 			  []models.RelevantServiceLocation `json:"destiny"`
+	PeaceQuadrant         string 						   `json:"peace_quadrant"`
+	Level                 string                           `json:"level"`
 }
 
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
@@ -52,10 +56,13 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
+	relevantService.AuthorityData = r.AuthorityData
+	relevantService.Destiny = r.Destiny
 	relevantService.Unharmed = utils.ParseInt64StringPointer(r.Unharmed)
 	relevantService.Injured = utils.ParseInt64StringPointer(r.Injured)
 	relevantService.Transported = utils.ParseInt64StringPointer(r.Transported)
-
+	relevantService.PeaceQuadrant = *r.PeaceQuadrant
+	relevantService.Level = *r.Level
 	relevantService.Deceased = utils.ParseInt64StringPointer(r.Deceased)
 
 	relevantService.IsImportant = r.IsImportant
@@ -102,7 +109,11 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
-
+	relevantService.AuthorityData = r.AuthorityData
+	relevantService.PeaceQuadrant = &r.PeaceQuadrant
+	relevantService.Level = &r.Level
+	relevantService.AuthorityData = r.AuthorityData
+	relevantService.Destiny = r.Destiny
 	unharmed := utils.ParseInt64(r.Unharmed)
 	injured := utils.ParseInt64(r.Injured)
 	transported := utils.ParseInt64(r.Transported)

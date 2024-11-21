@@ -70,6 +70,10 @@ type RelevantServices struct {
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
+	Destiny 			  []RelevantServiceLocation `db:"destiny"`
+	AuthorityData         []AuthorityData			`db:"authority_data"`
+	Level 				  *string					`db:"level"`
+	PeaceQuadrant         *string					`db:"peace_quadrant"`
 }
 
 type RelevantFirefighters struct {
@@ -109,6 +113,8 @@ type RelevantVehicle struct {
 	Color  *string `json:"color"`
 	Type   *string `json:"type"`
 	Serial *string `json:"serial"`
+	CreatedAt *string `json:"created_at"`
+	Description *string `json:"description"`
 }
 
 type RelevantServiceLocation struct {
@@ -138,4 +144,26 @@ type RelevantCenter struct {
 	Parish       *string `json:"parish"`
 	Sector       *string `json:"sector"`
 	Urb          *string `json:"urb"`
+}
+
+type AuthorityData struct {
+	Id *int `json:"id"`
+	Government *string `json:"government"`
+	AuthorityName *string `json:"authority_name"`
+	AuthorityAbbreviation *string `json:"authority_abbreviation"`
+	AuthorityPerson  []AuthorityPerson `json:"person"`
+	AuthorityVehicle []RelevantVehicle `json:"vehicle"`
+}
+
+type AuthorityPerson struct {
+	Name *string `json:"name"`
+	Phone *string `json:"phone"`
+	Gender *string `json:"gender"`
+	LegalId *string `json:"legal_id"`
+	CreatedAt *string `json:"created_at"`
+	Government *string `json:"government"`
+	Observations *string `json:"observations"`
+	AuthorityName *string `json:"authority_name"`
+	IdentificationNumber *string `json:"identification_number"`
+	AuthorityAbbreviation *string `json:"authority_abbreviation"`
 }
