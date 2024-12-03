@@ -42,7 +42,7 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 
 	
 	relevantService.ServiceDescription = *r.ServiceDescription
-	relevantService.ServiceDate = *r.ServiceDate
+	relevantService.ServiceDate = utils.ParseStringPointer(r.ServiceDate)
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People
 	relevantService.Infrastructures = r.Infrastructures

@@ -98,6 +98,14 @@ func ParseInt64StringPointer(n *int64) string {
 	return s
 }
 
+func ParseStringPointer(n *string) string {
+	if n == nil {
+		return ""
+	}
+
+	return *n
+}
+
 func ReadJwt(tokenString string) (*jwt.Token, error) {
 	token, _, err := new(jwt.Parser).ParseUnverified(tokenString, jwt.MapClaims{})
 
