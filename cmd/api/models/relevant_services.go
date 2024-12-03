@@ -33,15 +33,15 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService := &RelevantServicesJson{}
 
 	relevantService.Id = utils.ParseInt64String(r.Id) // Assuming utils.ConvertFromInt4 converts int32 to string
-	relevantService.MissionCode = *r.MissionCode
-	relevantService.RegionAreaDescription = *r.RegionAreaDescription
+	relevantService.MissionCode = utils.GetStringFromPointer(r.MissionCode)
+	relevantService.RegionAreaDescription = utils.GetStringFromPointer(r.RegionAreaDescription)
 
 	if r.ServiceId != nil {
 		relevantService.ServiceId = utils.ConvertInt64ToString(*r.ServiceId)
 	}
 
 	
-	relevantService.ServiceDescription = *r.ServiceDescription
+	relevantService.ServiceDescription = utils.GetStringFromPointer(r.ServiceDescription)
 	relevantService.ServiceDate = utils.ParseStringPointer(r.ServiceDate)
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People

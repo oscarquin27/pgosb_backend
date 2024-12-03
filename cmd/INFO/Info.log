@@ -29997,3 +29997,6 @@
 {"level":"info","SYCOMISMTC04":"","time":"2024-12-03T18:27:29.014809","message":"Starting REST API With SSL server on port 8082 Cert: ./config/pruebas.gres.net.pem Key: ./config/pruebas.gres.net-key.pem"}
 {"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/mission/relevant/'1','2'","ip":"::1","latency":2868.6804,"status":200,"time":"2024-12-03T18:28:07.632"}
 {"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/mission/relevant/'1','27'","ip":"::1","latency":2256.9109,"status":200,"time":"2024-12-03T18:28:18.27213"}
+{"level":"info","SYCOMISMTC04":"","time":"2024-12-03T18:58:16.576415","message":"Starting REST API With SSL server on port 8082 Cert: ./config/pruebas.gres.net.pem Key: ./config/pruebas.gres.net-key.pem"}
+{"level":"info","SYCOMISMTC04":"","time":"2024-12-03T18:58:16.57589","message":"Server started"}
+{"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/mission/relevant/'26,'27','28','29','30'","ip":"::1","latency":9708.1391,"status":500,"time":"2024-12-03T18:59:01.195255"}
