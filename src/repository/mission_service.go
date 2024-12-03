@@ -156,9 +156,71 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	transported,
 	deceased,
 	is_important
-	
-	
-	
+	cancel_reason,
+	authority_data,
+	destiny,
+	peace_quadrant,
+	level	
+	FROM missions.vw_relevant_services
+	where service_id::text in (%s)`, id))
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RelevantServices])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return defaultValue, models.ErrorMissionNotFound
+		}
+
+		return defaultValue, err
+	}
+
+	return services, nil
+}
+
+func (u *MissionServiceRepository) GetRelevantMissions(id string) ([]models.RelevantServices, error) {
+
+	defaultValue := make([]models.RelevantServices, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	rows, err := conn.Query(ctx, fmt.Sprintf(`SELECT id, 
+	region_area, 
+	mission_code, 
+	antares, 
+	service_id, 
+	operative_area_name, 
+	service_description, 
+	service_date::varchar, 
+	units, 
+	firefighters, 
+	people, 
+	infrastructures, 
+	vehicles, 
+	mission_locations as service_locations, 
+	mission_stations as service_stations, 
+	centers,
+	unharmed,
+	injured,
+	transported,
+	deceased,
+	is_important,
+	cancel_reason,
+	authority_data,
+	destiny,
+	peace_quadrant,
+	level	
 	FROM missions.vw_relevant_services
 	where service_id::text in (%s)`, id))
 

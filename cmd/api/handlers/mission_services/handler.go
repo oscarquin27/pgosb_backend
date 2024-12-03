@@ -269,3 +269,30 @@ func (u *MissionServiceController) GetRelevantServices(c *gin.Context){
 	c.JSON(http.StatusOK, missionDto)
 	return	
 }
+
+func (u *MissionServiceController) GetRelevantMissions(c *gin.Context){
+
+	id := string(c.Param("id"))
+
+	mission, err := u.missionService.GetRelevantMissions(id)
+
+	if err != nil {
+		if err == models.ErrorMissionNotFound {
+			c.JSON(http.StatusNotFound, err.Error())
+			return
+		}
+
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var missionDto []api_models.RelevantServicesJson = make([]api_models.RelevantServicesJson, 0)
+
+	for _, s := range mission {
+		newMission := api_models.ModelToRelevantServicesJson(s)
+		missionDto = append(missionDto, *newMission)
+	}
+
+	c.JSON(http.StatusOK, missionDto)
+	return	
+}

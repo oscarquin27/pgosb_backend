@@ -308,6 +308,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		mission.POST("/create", missionController.Create)
 		mission.PUT("/update", missionController.Update)
 		mission.DELETE("/:id", missionController.Delete)
+		mission.GET("/relevant/:id", missionServiceController.GetRelevantMissions)
 	}
 
 	antaresMission := v1.Group("mission/antares")

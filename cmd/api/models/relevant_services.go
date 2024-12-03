@@ -9,9 +9,7 @@ type RelevantServicesJson struct {
 	Id                    string                           `json:"id"`
 	RegionAreaDescription string                           `json:"region_area"`
 	MissionCode           string                           `json:"mission_code"`
-	AntaresId             string                           `json:"antares_id"`
-	AntaresType           string                           `json:"antares_type"`
-	AntaresDescription    string                           `json:"antares_description"`
+	Antares				  []models.RelevantAntares 		   `json:"antares"`
 	ServiceId             string                           `json:"service_id"`
 	OprativeAreaName      []string                         `json:"operative_area_name"`
 	ServiceDescription    string                           `json:"service_description"`
@@ -38,21 +36,17 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.MissionCode = *r.MissionCode
 	relevantService.RegionAreaDescription = *r.RegionAreaDescription
 
-	if r.AntaresId != nil {
-		relevantService.AntaresId = utils.ConvertInt64ToString(*r.AntaresId)
-	}
-	relevantService.AntaresType = *r.AntaresType
-	relevantService.AntaresDescription = *r.AntaresDescription
-
 	if r.ServiceId != nil {
 		relevantService.ServiceId = utils.ConvertInt64ToString(*r.ServiceId)
 	}
 
+	
 	relevantService.ServiceDescription = *r.ServiceDescription
 	relevantService.ServiceDate = *r.ServiceDate
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People
 	relevantService.Infrastructures = r.Infrastructures
+	relevantService.Antares = r.Antares
 	relevantService.Vehicles = r.Vehicles
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
@@ -83,13 +77,11 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService := models.RelevantServices{}
 
-	antaresId := utils.ParseInt64(r.AntaresId)
 	serviceId := utils.ParseInt64(r.ServiceId)
 
 	relevantService.Id = utils.ParseInt64(r.Id) // Assuming utils.ConvertToPgTypeInt4 converts string to int32
 	relevantService.RegionAreaDescription = &r.RegionAreaDescription
 	relevantService.MissionCode = &r.MissionCode
-	relevantService.AntaresId = &antaresId
 
 	//operativeAreaName := make([]*string, len(r.OprativeAreaName))
 	//units := make([]*string, len(r.Units))
@@ -103,6 +95,7 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.Firefighters = r.Firefighters
 	relevantService.People = r.People
 	relevantService.Infrastructures = r.Infrastructures
+	relevantService.Antares = r.Antares
 	relevantService.Vehicles = r.Vehicles
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations

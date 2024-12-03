@@ -56,9 +56,7 @@ type RelevantServices struct {
 	Id                    int64                     `db:"id"`
 	RegionAreaDescription *string                   `db:"region_area"`
 	MissionCode           *string                   `db:"mission_code"`
-	AntaresId             *int64                    `db:"antares_id"`
-	AntaresType           *string                   `db:"antares_type"`
-	AntaresDescription    *string                   `db:"antares_description"`
+	Antares 			  []RelevantAntares         `db:"antares"`
 	ServiceId             *int64                    `db:"service_id"`
 	OprativeAreaName      []string                  `db:"operative_area_name"`
 	ServiceDescription    *string                   `db:"service_description"`
@@ -76,6 +74,25 @@ type RelevantServices struct {
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
+    CanceledReason        *string					`db:"cancel_reason"`
+	AuthorityData         []RelevantAuthorityData   `db:"authority_data"`
+	Destiny               []RelevantServiceLocation `db:"destiny"`
+	PeaceQuadrant         *string				    `db:"peace_quadrant"`
+	Level				  *string                   `db:"level"`
+}
+
+type RelevantAntares struct {
+	Id *int64 `json:"id"`
+	Type *string `json:"type"`
+	AntaresDescription *string `json:"antaresDescription"`
+}
+type RelevantAuthorityData struct {
+	Id *int64 `json:"id"`
+	//Person []AuthorityPerson `json:"person"`
+}
+
+type Person struct {
+
 }
 
 type RelevantFirefighters struct {
