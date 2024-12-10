@@ -26,6 +26,7 @@ type RelevantServicesJson struct {
 	ServiceLocations      []models.RelevantServiceLocation `json:"service_locations"`
 	ServiceStations       []models.RelevantServiceStation  `json:"service_stations"`
 	Centers               []models.RelevantCenter          `json:"centers"`
+	AuthorityData         []models.RelevantAuthorityData   `json:"authority_data"`
 	IsImportant           bool                             `json:"is_important"`
 }
 
@@ -54,7 +55,7 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	relevantService.Unharmed = utils.ParseInt64StringPointer(r.Unharmed)
 	relevantService.Injured = utils.ParseInt64StringPointer(r.Injured)
 	relevantService.Transported = utils.ParseInt64StringPointer(r.Transported)
-
+	relevantService.AuthorityData = r.AuthorityData
 	relevantService.Deceased = utils.ParseInt64StringPointer(r.Deceased)
 
 	relevantService.IsImportant = r.IsImportant
@@ -100,7 +101,7 @@ func (r *RelevantServicesJson) ToModel() models.RelevantServices {
 	relevantService.ServiceLocations = r.ServiceLocations
 	relevantService.ServiceStations = r.ServiceStations
 	relevantService.Centers = r.Centers
-
+	relevantService.AuthorityData = r.AuthorityData
 	unharmed := utils.ParseInt64(r.Unharmed)
 	injured := utils.ParseInt64(r.Injured)
 	transported := utils.ParseInt64(r.Transported)

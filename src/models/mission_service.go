@@ -88,10 +88,38 @@ type RelevantAntares struct {
 }
 type RelevantAuthorityData struct {
 	Id *int64 `json:"id"`
-	//Person []AuthorityPerson `json:"person"`
+	AuthorityName *string `json:"authority_name"`
+	AuthorityAbbreviation *string `json:"authority_abbreviation"`
+	Government *string `json:"government"`
+	Person []AuthorityPerson `json:"person"`
+	Vechicle []AuthorityVehicle `json:"vehicle"`
 }
 
-type Person struct {
+type AuthorityPerson struct {
+	AuthorityName *string `json:"authority_name"`
+	Abbreviation *string `json:"authority_abbreviation"`
+	Government *string  `json:"government"`
+	Name *string  `json:"name"`
+	LegalId *string `json:"legal_id"`
+	IdentificationNumber *string `json:"identification_number"`
+	Phone *string `json:"phone"`
+	Gender *string `json:"gender"`
+	Observations *string `json:"observations"`
+	CreatedAt *string `json:"created_at"`
+}
+
+type AuthorityVehicle struct {
+	AuthorityName *string `json:"authority_name"`
+	AuthorityAbbreviation *string `json:"authority_abbreviation"`
+	Government *string `json:"government"`
+	Type *string `json:"type"`
+	Make *string `json:"make"`
+	Model *string `json:"model"`
+	Plate *string `json:"plate"`
+	Year *string `json:"year"`
+	Color *string `json:"color"`
+	Description *string `json:"description"`
+    CreatedAt *string `json:"created_at"`
 
 }
 
