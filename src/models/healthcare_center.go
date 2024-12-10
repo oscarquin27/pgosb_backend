@@ -6,6 +6,7 @@ import (
 
 type HealthcareCenter struct {
 	Id           int64    `db:"id"`
+	Code         int64    `db:"code"`
 	Name         *string  `db:"name"`
 	Description  *string  `db:"description"`
 	Abbreviation *string  `db:"abbreviation"`
@@ -39,6 +40,7 @@ func (s *HealthcareCenter) SetId(id int64) {
 func (s *HealthcareCenter) GetNameArgs() pgx.NamedArgs {
 	return pgx.NamedArgs{
 		"id":              s.Id,
+		"code":            s.Code,
 		"name":            s.Name,
 		"description":     s.Description,
 		"abbreviation":    s.Abbreviation,

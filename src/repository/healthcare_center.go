@@ -21,13 +21,13 @@ func NewHealthcareCenterService(db *pgxpool.Pool) services.HealthcareCenterServi
 	}
 }
 
-const selectHealthcareCenterQuery = "SELECT * FROM hq.centers WHERE id = $1 ORDER BY id ASC"
+const selectHealthcareCenterQuery = "SELECT * FROM hq.centers WHERE code = $1 ORDER BY id ASC"
 
-const selectAllHealthcareCenterQuery = "SELECT * FROM hq.centers ORDER BY id ASC"
+const selectAllHealthcareCenterQuery = "SELECT * FROM hq.centers ORDER BY code ASC"
 
 const insertHealthcareCenterQuery = `INSERT INTO hq.centers (
     
-    id,name, description, abbreviation, phones, region_id, 
+    code,name, description, abbreviation, phones, region_id, 
     state_id, state, municipality_id, municipality, parish_id,
     parish, sector_id, sector, urb_id, urb, street, address
 )
@@ -58,7 +58,7 @@ SET
     address = @address
 WHERE id = @id; `
 
-const deleteHealthcareCenterQuery = `DELETE FROM hq.centers WHERE id = $1`
+const deleteHealthcareCenterQuery = `DELETE FROM hq.centers WHERE code = $1`
 
 func (u *HealthcareCenterRepository) Get(id int64) *results.ResultWithValue[*models.HealthcareCenter] {
 	r := u.AbstractRepository.Get(id, selectHealthcareCenterQuery)

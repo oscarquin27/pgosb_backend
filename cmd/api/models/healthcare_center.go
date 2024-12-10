@@ -35,7 +35,7 @@ type HealthcareCenterJson struct {
 
 func ModelToHealthcareCenterJson(s *models.HealthcareCenter) *HealthcareCenterJson {
 	station := HealthcareCenterJson{
-		Id:       utils.ParseInt64String(s.Id),
+		Id:       utils.ParseInt64String(s.Code),
 		RegionId: utils.ParseInt64StringPointer(s.RegionId),
 		StateId:  utils.ParseInt64StringPointer(s.StateId),
 
@@ -71,7 +71,7 @@ func (s *HealthcareCenterJson) ToModel() models.HealthcareCenter {
 
 	station := models.HealthcareCenter{
 
-		Id: utils.ParseInt64(s.Id),
+		Code: utils.ParseInt64(s.Id),
 
 		RegionId:       &regionId,
 		StateId:        &state_id,
