@@ -8,32 +8,39 @@ import (
 )
 
 type MissionServiceSummaryJson struct {
-	Id                string   `json:"id"`
-	MissionId         string   `json:"mission_id"`
-	Alias             string   `json:"alias"`
+	Id                string `json:"id"`
+	Alias 			  string `json:"alias"`
+	Code              string `json:"code"`
 	CreatedAt         string   `json:"created_at"`
-	AntaresId         string   `json:"antares_id"`
-	Description       string   `json:"description"`
-	IsImportant       bool     `json:"is_important"`
-	NumFireFighters   string   `json:"num_firefighters"`
-	NumUnits          string   `json:"num_units"`
-	StationName       string   `json:"station_name"`
-	NumVehicles       string   `json:"num_vehicles"`
-	OperativesAreas   []string `json:"operative_areas"`
+	NumServices       string   `json:"num_services"`
 	Unharmed          string   `json:"unharmed"`
 	Injured           string   `json:"injured"`
 	Transported       string   `json:"transported"`
 	Deceased          string   `json:"deceased"`
-	ServiceDate       string   `json:"service_date"`
-	ManualServiceDate string   `json:"manual_service_date"`
+	NumVehicles       string   `json:"num_vehicles"`
+	NumFirefighters   string   `json:"num_firefighters"`
+	OperativesAreas   []string       `json:"operative_areas"`
+	NumAuthorities	  string   `json:"num_authorities"`
+	NumAuthorityServices  string   `json:"num_authority_services"`
+	NumAuthorityPerson  string   `json:"num_authority_person"`
+	NumAuthorityVehicle string   `json:"num_authority_vehicle"`
+	IsImportant       bool           `json:"is_important"`
+	ManualMissionDate	string   `json:"manual_mission_date"`
+	StationName       string   `json:"station_name"`
+	AntaresId		  string   `json:"antares_id"`
+	AntaresDescription string   `json:"antares_description"`
 }
 
 func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionServiceSummaryJson {
 	service := MissionServiceSummaryJson{}
 
-	service.MissionId = utils.ParseInt64String(s.MissionId)
-
 	service.Id = utils.ParseInt64String(s.Id)
+	
+	if s.Code.Valid {
+		service.Code = s.Code.String
+	}
+
+	service.CreatedAt = s.ManualMissionDate.Time.String()
 
 	service.Unharmed = utils.ParseInt64String(s.Unharmed.Int64)
 
@@ -43,30 +50,34 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 
 	service.Transported = utils.ParseInt64String(s.Transported.Int64)
 
-	service.NumUnits = utils.ParseInt64String(s.NumUnits.Int64)
+	service.AntaresDescription = s.AntaresDescription.String
+	
+	if s.NumServices.Valid {
+		service.NumServices = utils.ParseInt64String(s.NumServices.Int64)
+	}
+
+	if s.NumAuthorityServices.Valid {
+		service.NumAuthorityServices = utils.ParseInt64String(s.NumAuthorityServices.Int64)
+	}
+
+	if s.NumAuthorityPerson.Valid {
+		service.NumAuthorityPerson = utils.ParseInt64String(s.NumAuthorityPerson.Int64)
+	}
+
+	if s.NumAuthorityVehicle.Valid {
+		service.NumAuthorityVehicle = utils.ParseInt64String(s.NumAuthorityVehicle.Int64)
+	}
+
+	if s.NumServices.Valid {
+		service.NumServices = utils.ParseInt64String(s.NumServices.Int64)
+	}
 
 	if s.AntaresId.Valid {
 		service.AntaresId = utils.ParseInt64String(s.AntaresId.Int64)
 	}
 
-	if s.Description.Valid {
-		service.Description = s.Description.String
-	}
-
 	if s.StationName.Valid {
 		service.StationName = s.StationName.String
-	}
-
-	if s.ServiceDate.Valid {
-		service.ServiceDate = s.ServiceDate.Time.Format("02-01-2006 15:04:05")
-	}
-
-	if s.ManualServiceDate.Valid {
-		service.ManualServiceDate = s.ManualServiceDate.Time.Format("02-01-2006 15:04:05")
-	}
-
-	if s.NumFirefighters.Valid {
-		service.NumFireFighters = utils.ParseInt64String(s.NumFirefighters.Int64)
 	}
 
 	if s.NumVehicles.Valid {
@@ -87,39 +98,35 @@ func ModelToMissionServiceSummaryJson(s models.MissionServiceSummary) *MissionSe
 func (s *MissionServiceSummaryJson) ToModel() models.MissionServiceSummary {
 	service := models.MissionServiceSummary{}
 
-	service.MissionId = utils.ParseInt64(s.MissionId)
 
 	service.Id = utils.ParseInt64(s.Id)
 
 	service.AntaresId.Int64 = utils.ParseInt64(s.AntaresId)
 	service.AntaresId.Valid = true
 
-	service.Description.String = s.Description
-	service.Description.Valid = true
-
 	service.StationName.String = s.StationName
 	service.StationName.Valid = true
 
-	serviceDate, err := time.Parse("02-01-2006 15:04:05", s.ServiceDate)
+	serviceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualMissionDate)
 	if err == nil {
-		service.ServiceDate.Time = serviceDate
-		service.ServiceDate.Valid = true
+		service.ManualMissionDate.Time = serviceDate
+		service.ManualMissionDate.Valid = true
 	} else {
 		logger.Warn().Err(err).Msg("Problema parseando service date")
 	}
 
-	manualServiceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualServiceDate)
+	manualServiceDate, err := time.Parse("02-01-2006 15:04:05", s.ManualMissionDate)
 	if err == nil {
-		service.ManualServiceDate.Time = manualServiceDate
-		service.ManualServiceDate.Valid = true
+		service.ManualMissionDate.Time = manualServiceDate
+		service.ManualMissionDate.Valid = true
 	} else {
 		logger.Warn().Err(err).Msg("Problema parseando manual service date")
 	}
 
-	service.NumUnits.Int64 = utils.ParseInt64(s.NumUnits)
-	service.NumUnits.Valid = true
+	service.NumVehicles.Int64 = utils.ParseInt64(s.NumVehicles)
+	service.NumVehicles.Valid = true
 
-	service.NumFirefighters.Int64 = utils.ParseInt64(s.NumFireFighters)
+	service.NumFirefighters.Int64 = utils.ParseInt64(s.NumFirefighters)
 	service.NumFirefighters.Valid = true
 
 	service.NumVehicles.Int64 = utils.ParseInt64(s.NumVehicles)
