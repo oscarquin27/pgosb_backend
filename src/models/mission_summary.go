@@ -25,8 +25,13 @@ type MissionSummary struct {
 	AntaresId		  sql.NullInt64  `db:"antares_id"`
 	AntaresDescription sql.NullString `db:"antares_description"`
 	Description        sql.NullString `db:"description"`
-   	Level        sql.NullInt64 `db:"level"`
+   	Level        sql.NullString `db:"level"`
    	PeaceQuadrant        sql.NullString `db:"peace_quadrant"`
    	PendingForData        bool `db:"pending_for_data"`
 	CancelReason		sql.NullString `db:"cancel_reason"`
+	UnitArray			[]sql.NullString `db:"unit_array"`
+	FirefighterArray    []sql.NullString `db:"firefighter_array"`
+	LocationId          sql.NullInt64 `db:"location_id"`
+	LocationDestinyId   sql.NullInt64  `db:"location_destiny_id"`
+	Commander			sql.NullString `db:"commander"`
 }

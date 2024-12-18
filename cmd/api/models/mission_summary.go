@@ -30,11 +30,15 @@ type MissionSummaryJson struct {
 	AntaresId		  string   `json:"antares_id"`
 	AntaresDescription string   `json:"antares_description"`
    	Description        string `json:"description"`
-   	Level        string `json:"level"`
+   	Level        		string `json:"level"`
    	PeaceQuadrant        string `json:"peace_quadrant"`
    	PendingForData        bool `json:"pending_for_data"`
-	CancelReason		string `db:"cancel_reason"`
-
+	CancelReason		string `json:"cancel_reason"`
+	UnitArray			[]string `json:"unit_array"`
+	FirefighterArray    []string `json:"firefighter_array"`
+	LocationId          string	 `json:"location_id"`
+	LocationDestinyId   string   `json:"location_destiny_id"`
+	Commander			string `json:"commander"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
@@ -48,7 +52,7 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	}
 
 	if s.Level.Valid {
-		service.Level = utils.ParseInt64String(s.Level.Int64)
+		service.Level = s.Level.String
 	}
 
 	if s.PeaceQuadrant.Valid {
@@ -56,6 +60,10 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	}
 
 	service.PendingForData = s.PendingForData
+
+	if s.CancelReason.Valid {
+		service.CancelReason = s.CancelReason.String
+	}
 
 	if s.AntaresDescription.Valid {
 
@@ -103,11 +111,29 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.Code = s.Code.String
 	}
 
+	service.IsImportant = s.IsImportant
+
 	op := make([]string, 0)
 
 	for _, i := range s.OperativesAreas {
 		if i.Valid {
 			op = append(op, i.String)
+		}
+	}
+
+	un := make([]string, 0)
+
+	for _, i := range s.UnitArray {
+		if i.Valid {
+			un = append(un, i.String)
+		}
+	}
+
+	fa := make([]string, 0)
+
+	for _, i := range s.FirefighterArray {
+		if i.Valid {
+			fa = append(fa, i.String)
 		}
 	}
 
@@ -128,6 +154,37 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	}
 
 	service.OperativesAreas = op
+	service.UnitArray = un
+	service.FirefighterArray = fa
+
+	if s.ManualMissionDate.Valid {
+		service.ManualMissionDate = s.ManualMissionDate.Time.Format("02-01-2006 15:04:05")
+
+	}
+
+	if s.StationName.Valid {
+		service.StationName = s.StationName.String
+	}
+
+	if s.AntaresId.Valid {
+		service.AntaresId = utils.ParseInt64String(s.AntaresId.Int64)
+	}
+
+	if s.AntaresDescription.Valid {
+		service.AntaresDescription = s.AntaresDescription.String
+	}
+
+	if s.LocationId.Valid {
+		service.LocationId = utils.ParseInt64String(s.LocationId.Int64)
+	}
+
+	if s.LocationDestinyId.Valid {
+		service.LocationDestinyId = utils.ParseInt64String(s.LocationDestinyId.Int64)
+	}	
+
+	if s.Commander.Valid {
+		service.Commander = s.Commander.String
+	}
 
 	return &service
 }
