@@ -83,7 +83,7 @@ func (u *MissionLocationRepository) Create(state *models.MissionLocation) *resul
 
 	r, id := u.AbstractRepository.Create(*state, insertMissionLocationQuery, state.GetNameArgs(), state.SetId)
 
-	state.Id = id
+	r.Value.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

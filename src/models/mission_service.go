@@ -82,6 +82,7 @@ type RelevantServices struct {
 }
 
 type RelevantAntares struct {
+	Id   *string  `json:"id"`
 	Type *string `json:"type"`
 	AntaresDescription *string `json:"antaresDescription"`
 }
