@@ -8,28 +8,67 @@ import (
 )
 
 type MissionSummaryJson struct {
-	Id                   string   `json:"id"`
-	Alias                string   `json:"alias"`
-	CreatedAt            string   `json:"created_at"`
-	NumServices          string   `json:"num_services"`
-	NumFireFighters      string   `json:"num_firefighters"`
-	NumVehicles          string   `json:"num_vehicles"`
-	Unharmed             string   `json:"unharmed"`
-	Injured              string   `json:"injured"`
-	Transported          string   `json:"transported"`
-	Deceased             string   `json:"deceased"`
-	Code                 string   `json:"code"`
-	OperativeAreas       []string `json:"operative_areas"`
-	NumAuthorities       string   `json:"num_authorities"`
-	NumAuthorityServices string   `json:"num_authority_services"`
-	NumAuthorityPeople   string   `json:"num_authority_people"`
-	NumAuthorityVehicles string   `json:"num_authority_vehicles"`
+	Id                string `json:"id"`
+	Alias 			  string `json:"alias"`
+	Code              string `json:"code"`
+	CreatedAt         string   `json:"created_at"`
+	NumServices       string   `json:"num_services"`
+	Unharmed          string   `json:"unharmed"`
+	Injured           string   `json:"injured"`
+	Transported       string   `json:"transported"`
+	Deceased          string   `json:"deceased"`
+	NumVehicles       string   `json:"num_vehicles"`
+	NumFirefighters   string   `json:"num_firefighters"`
+	OperativesAreas   []string       `json:"operative_areas"`
+	NumAuthorities	  string   `json:"num_authorities"`
+	NumAuthorityServices  string   `json:"num_authority_services"`
+	NumAuthorityPerson  string   `json:"num_authority_person"`
+	NumAuthorityVehicle string   `json:"num_authority_vehicle"`
+	IsImportant       bool           `json:"is_important"`
+	ManualMissionDate	string   `json:"manual_mission_date"`
+	StationName       string   `json:"station_name"`
+	AntaresId		  string   `json:"antares_id"`
+	AntaresDescription string   `json:"antares_description"`
+   	Description        string `json:"description"`
+   	Level        		string `json:"level"`
+   	PeaceQuadrant        string `json:"peace_quadrant"`
+   	PendingForData        bool `json:"pending_for_data"`
+	CancelReason		string `json:"cancel_reason"`
+	UnitArray			[]string `json:"unit_array"`
+	FirefighterArray    []string `json:"firefighter_array"`
+	LocationId          string	 `json:"location_id"`
+	LocationDestinyId   string   `json:"location_destiny_id"`
+	Commander			string `json:"commander"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 	service := MissionSummaryJson{}
 
 	service.Id = utils.ParseInt64String(s.Id)
+
+
+	if s.Description.Valid {
+		service.Description = s.Description.String
+	}
+
+	if s.Level.Valid {
+		service.Level = s.Level.String
+	}
+
+	if s.PeaceQuadrant.Valid {
+		service.PeaceQuadrant = s.PeaceQuadrant.String
+	}
+
+	service.PendingForData = s.PendingForData
+
+	if s.CancelReason.Valid {
+		service.CancelReason = s.CancelReason.String
+	}
+
+	if s.AntaresDescription.Valid {
+
+		service.AntaresDescription = s.AntaresDescription.String
+	}
 
 	if s.Alias.Valid {
 
@@ -48,8 +87,8 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.NumVehicles = utils.ParseInt64String(s.NumVehicles.Int64)
 	}
 
-	if s.NumFireFighters.Valid {
-		service.NumFireFighters = utils.ParseInt64String(s.NumFireFighters.Int64)
+	if s.NumFirefighters.Valid {
+		service.NumFirefighters = utils.ParseInt64String(s.NumFirefighters.Int64)
 	}
 
 	if s.Unharmed.Valid {
@@ -72,11 +111,29 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.Code = s.Code.String
 	}
 
+	service.IsImportant = s.IsImportant
+
 	op := make([]string, 0)
 
-	for _, i := range s.OperativeAreas {
+	for _, i := range s.OperativesAreas {
 		if i.Valid {
 			op = append(op, i.String)
+		}
+	}
+
+	un := make([]string, 0)
+
+	for _, i := range s.UnitArray {
+		if i.Valid {
+			un = append(un, i.String)
+		}
+	}
+
+	fa := make([]string, 0)
+
+	for _, i := range s.FirefighterArray {
+		if i.Valid {
+			fa = append(fa, i.String)
 		}
 	}
 
@@ -88,15 +145,46 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.NumAuthorityServices = utils.ParseInt64String(s.NumAuthorityServices.Int64)
 	}
 
-	if s.NumAuthorityPeople.Valid {
-		service.NumAuthorityPeople = utils.ParseInt64String(s.NumAuthorityPeople.Int64)
+	if s.NumAuthorityPerson.Valid {
+		service.NumAuthorityPerson = utils.ParseInt64String(s.NumAuthorityPerson.Int64)
 	}
 
-	if s.NumAuthorityVehicles.Valid {
-		service.NumAuthorityVehicles = utils.ParseInt64String(s.NumAuthorityVehicles.Int64)
+	if s.NumAuthorityVehicle.Valid {
+		service.NumAuthorityVehicle = utils.ParseInt64String(s.NumAuthorityVehicle.Int64)
 	}
 
-	service.OperativeAreas = op
+	service.OperativesAreas = op
+	service.UnitArray = un
+	service.FirefighterArray = fa
+
+	if s.ManualMissionDate.Valid {
+		service.ManualMissionDate = s.ManualMissionDate.Time.Format("02-01-2006 15:04:05")
+
+	}
+
+	if s.StationName.Valid {
+		service.StationName = s.StationName.String
+	}
+
+	if s.AntaresId.Valid {
+		service.AntaresId = utils.ParseInt64String(s.AntaresId.Int64)
+	}
+
+	if s.AntaresDescription.Valid {
+		service.AntaresDescription = s.AntaresDescription.String
+	}
+
+	if s.LocationId.Valid {
+		service.LocationId = utils.ParseInt64String(s.LocationId.Int64)
+	}
+
+	if s.LocationDestinyId.Valid {
+		service.LocationDestinyId = utils.ParseInt64String(s.LocationDestinyId.Int64)
+	}	
+
+	if s.Commander.Valid {
+		service.Commander = s.Commander.String
+	}
 
 	return &service
 }
@@ -129,9 +217,9 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 		service.NumVehicles.Valid = true
 	}
 
-	if s.NumFireFighters != "" {
-		service.NumFireFighters.Int64 = utils.ParseInt64(s.NumFireFighters)
-		service.NumFireFighters.Valid = true
+	if s.NumFirefighters != "" {
+		service.NumFirefighters.Int64 = utils.ParseInt64(s.NumFirefighters)
+		service.NumFirefighters.Valid = true
 	}
 
 	if s.Unharmed != "" {
@@ -169,19 +257,19 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 		service.NumAuthorityServices.Valid = true
 	}
 
-	if s.NumAuthorityPeople != "" {
-		service.NumAuthorityPeople.Int64 = utils.ParseInt64(s.NumAuthorityPeople)
-		service.NumAuthorityPeople.Valid = true
+	if s.NumAuthorityPerson != "" {
+		service.NumAuthorityPerson.Int64 = utils.ParseInt64(s.NumAuthorityPerson)
+		service.NumAuthorityPerson.Valid = true
 	}
 
-	if s.NumAuthorityVehicles != "" {
-		service.NumAuthorityVehicles.Int64 = utils.ParseInt64(s.NumAuthorityVehicles)
-		service.NumAuthorityVehicles.Valid = true
+	if s.NumAuthorityPerson != "" {
+		service.NumAuthorityPerson.Int64 = utils.ParseInt64(s.NumAuthorityPerson)
+		service.NumAuthorityPerson.Valid = true
 	}
 
 	op := make([]sql.NullString, 0)
 
-	for _, i := range s.OperativeAreas {
+	for _, i := range s.OperativesAreas {
 		val := sql.NullString{
 			String: i,
 			Valid:  true,
@@ -189,7 +277,7 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 		op = append(op, val)
 	}
 
-	service.OperativeAreas = op
+	service.OperativesAreas = op
 
 	return service
 }
