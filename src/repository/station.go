@@ -81,7 +81,9 @@ func (u *StationRepository) GetAll(params ...string) ([]models.Station, *results
 
 func (u *StationRepository) Create(state *models.Station) *results.ResultWithValue[*models.Station] {
 
-	r := u.AbstractRepository.Create(*state, insertStationQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertStationQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

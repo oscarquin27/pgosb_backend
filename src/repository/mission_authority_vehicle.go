@@ -94,7 +94,9 @@ func (u *MissionAuthorityVehicleRepository) GetAll(params ...string) ([]models.M
 
 func (u *MissionAuthorityVehicleRepository) Create(state *models.MissionAuthorityVehicle) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
 
-	r := u.AbstractRepository.Create(*state, insertMissionAuthorityVehicleQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMissionAuthorityVehicleQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

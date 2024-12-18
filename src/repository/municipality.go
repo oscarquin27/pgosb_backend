@@ -57,7 +57,9 @@ func (u *MunicipalityRepository) GetAll(params ...string) ([]models.Municipality
 
 func (u *MunicipalityRepository) Create(state *models.Municipality) *results.ResultWithValue[*models.Municipality] {
 
-	r := u.AbstractRepository.Create(*state, insertMunicipalityQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMunicipalityQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

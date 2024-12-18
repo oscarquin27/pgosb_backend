@@ -55,7 +55,9 @@ func (u *OperativeRegionsRepository) GetAll(params ...string) ([]models.Operativ
 
 func (u *OperativeRegionsRepository) Create(operativeRegions *models.OperativeRegions) *results.ResultWithValue[*models.OperativeRegions] {
 
-	r := u.AbstractRepository.Create(*operativeRegions, insertOperativeRegion, operativeRegions.GetNameArgs(), operativeRegions.SetId)
+	r, id := u.AbstractRepository.Create(*operativeRegions, insertOperativeRegion, operativeRegions.GetNameArgs(), operativeRegions.SetId)
+
+	operativeRegions.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

@@ -81,7 +81,9 @@ func (u *MissionLocationRepository) GetAll(params ...string) ([]models.MissionLo
 
 func (u *MissionLocationRepository) Create(state *models.MissionLocation) *results.ResultWithValue[*models.MissionLocation] {
 
-	r := u.AbstractRepository.Create(*state, insertMissionLocationQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMissionLocationQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

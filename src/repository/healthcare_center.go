@@ -81,7 +81,9 @@ func (u *HealthcareCenterRepository) GetAll(params ...string) ([]models.Healthca
 
 func (u *HealthcareCenterRepository) Create(state *models.HealthcareCenter) *results.ResultWithValue[*models.HealthcareCenter] {
 
-	r := u.AbstractRepository.Create(*state, insertHealthcareCenterQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertHealthcareCenterQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

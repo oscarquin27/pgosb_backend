@@ -57,7 +57,9 @@ func (u *ParishRepository) GetAll(params ...string) ([]models.Parish, *results.G
 
 func (u *ParishRepository) Create(state *models.Parish) *results.ResultWithValue[*models.Parish] {
 
-	r := u.AbstractRepository.Create(*state, insertParishQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertParishQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

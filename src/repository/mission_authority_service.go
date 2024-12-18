@@ -79,7 +79,9 @@ func (u *MissionAuthorityServiceRepository) GetAll(params ...string) ([]models.M
 
 func (u *MissionAuthorityServiceRepository) Create(state *models.MissionAuthorityService) *results.ResultWithValue[*models.MissionAuthorityService] {
 
-	r := u.AbstractRepository.Create(*state, insertMissionAuthorityServiceQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMissionAuthorityServiceQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

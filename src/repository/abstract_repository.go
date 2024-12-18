@@ -102,7 +102,7 @@ func (u *AbstractRepository[T]) GetAll(query string, params ...string) ([]T, *re
 	return registers, nil
 }
 
-func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.NamedArgs, SetId func(int64)) *results.ResultWithValue[T] {
+func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.NamedArgs, SetId func(int64)) (*results.ResultWithValue[T], int64) {
 
 	r := results.NewResultWithZeroValue[T]("Create-Unit", false, nil).Failure()
 
@@ -112,7 +112,7 @@ func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.
 
 	if err != nil {
 		return r.WithError(
-			results.NewUnknowError("no se pudo adquirir conexion", err))
+			results.NewUnknowError("no se pudo adquirir conexion", err)), 0
 	}
 
 	defer conn.Release()
@@ -125,12 +125,12 @@ func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.
 
 	if err != nil {
 		return r.WithError(
-			results.NewUnknowError("no se pudo ejecutar query", err))
+			results.NewUnknowError("no se pudo ejecutar query", err)), 0
 	}
 
 	SetId(id)
 
-	return r.Success().WithValue(register)
+	return r.Success().WithValue(register), id
 }
 
 func (u *AbstractRepository[T]) Update(register T, updateQuery string, args pgx.NamedArgs) *results.ResultWithValue[T] {

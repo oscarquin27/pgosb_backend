@@ -60,7 +60,9 @@ func (u *MissionUnitRepository) GetAll(params ...string) ([]models.MissionUnit, 
 
 func (u *MissionUnitRepository) Create(MissionUnit *models.MissionUnit) *results.ResultWithValue[*models.MissionUnit] {
 
-	r := u.AbstractRepository.Create(*MissionUnit, insertMissionUnitQuery, MissionUnit.GetNameArgs(), MissionUnit.SetId)
+	r, id := u.AbstractRepository.Create(*MissionUnit, insertMissionUnitQuery, MissionUnit.GetNameArgs(), MissionUnit.SetId)
+
+	MissionUnit.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }

@@ -56,7 +56,9 @@ func (u *SectorRepository) GetAll(params ...string) ([]models.Sector, *results.G
 
 func (u *SectorRepository) Create(state *models.Sector) *results.ResultWithValue[*models.Sector] {
 
-	r := u.AbstractRepository.Create(*state, insertSectorQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertSectorQuery, state.GetNameArgs(), state.SetId)
+
+	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
