@@ -75,7 +75,7 @@ type RelevantServices struct {
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
     CanceledReason        *string					`db:"cancel_reason"`
-	AuthorityData         []RelevantAuthorityData   `db:"authority_data"`
+	AuthorityData         RelevantAuthorityData   `db:"authority_data"`
 	Destiny               []RelevantServiceLocation `db:"destiny"`
 	PeaceQuadrant         *string				    `db:"peace_quadrant"`
 	Level				  *string                   `db:"level"`
@@ -86,12 +86,16 @@ type RelevantAntares struct {
 	AntaresDescription *string `json:"antaresDescription"`
 }
 type RelevantAuthorityData struct {
+	Authority []Authorities `json:"authorities"`
+	Person []AuthorityPerson `json:"person"`
+	Vechicle []AuthorityVehicle `json:"vehicle"`
+}
+
+type Authorities struct {
 	Id *int64 `json:"id"`
 	AuthorityName *string `json:"authority_name"`
 	AuthorityAbbreviation *string `json:"authority_abbreviation"`
 	Government *string `json:"government"`
-	Person []AuthorityPerson `json:"person"`
-	Vechicle []AuthorityVehicle `json:"vehicle"`
 }
 
 type AuthorityPerson struct {

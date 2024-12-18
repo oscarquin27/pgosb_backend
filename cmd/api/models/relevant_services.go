@@ -26,8 +26,12 @@ type RelevantServicesJson struct {
 	ServiceLocations      []models.RelevantServiceLocation `json:"service_locations"`
 	ServiceStations       []models.RelevantServiceStation  `json:"service_stations"`
 	Centers               []models.RelevantCenter          `json:"centers"`
-	AuthorityData         []models.RelevantAuthorityData   `json:"authority_data"`
+	AuthorityData         models.RelevantAuthorityData   `json:"authority_data"`
 	IsImportant           bool                             `json:"is_important"`
+	CancelReason          string						   `json:"cancel_reason"`
+	PeaceQuadrant         string						   `json:"peace_quadrant"`
+	Level                 string						   `json:"level"`
+	Destiny               []models.RelevantServiceLocation `json:"destiny"`
 }
 
 func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJson {
@@ -71,6 +75,11 @@ func ModelToRelevantServicesJson(r models.RelevantServices) *RelevantServicesJso
 	} else {
 		relevantService.Units = r.Units
 	}
+
+	relevantService.CancelReason = utils.GetStringFromPointer(r.CanceledReason)
+	relevantService.PeaceQuadrant = utils.GetStringFromPointer(r.PeaceQuadrant)
+	relevantService.Destiny = r.Destiny
+	relevantService.Level = utils.GetStringFromPointer(r.Level)
 
 	return relevantService
 }
