@@ -15,9 +15,9 @@ var (
 )
 
 type MissionService struct {
-	Id        pgtype.Int4 `json:"id" db:"id"`
-	MissionId pgtype.Int2 `json:"mission_id" db:"mission_id"`
-	AntaresId pgtype.Int2 `json:"antares_id,omitempty" db:"antares_id"`
+	Id        pgtype.Int8 `json:"id" db:"id"`
+	MissionId pgtype.Int8 `json:"mission_id" db:"mission_id"`
+	AntaresId pgtype.Int8 `json:"antares_id,omitempty" db:"antares_id"`
 	//Units          []pgtype.Int2 `json:"units,omitempty" db:"units"`
 	//Bombers        []pgtype.Int2 `json:"bombers,omitempty" db:"Bombers"`
 	//OperativeAreas []pgtype.Text `json:"operative_areas,omitempty" db:"operative_areas"`
@@ -56,7 +56,7 @@ type RelevantServices struct {
 	Id                    int64                     `db:"id"`
 	RegionAreaDescription *string                   `db:"region_area"`
 	MissionCode           *string                   `db:"mission_code"`
-	Antares 			  []RelevantAntares         `db:"antares"`
+	Antares               []RelevantAntares         `db:"antares"`
 	ServiceId             *int64                    `db:"service_id"`
 	OprativeAreaName      []string                  `db:"operative_area_name"`
 	ServiceDescription    *string                   `db:"service_description"`
@@ -74,57 +74,56 @@ type RelevantServices struct {
 	Transported           *int64                    `db:"transported"`
 	Deceased              *int64                    `db:"deceased"`
 	IsImportant           bool                      `db:"is_important"`
-    CanceledReason        *string					`db:"cancel_reason"`
-	AuthorityData         RelevantAuthorityData   `db:"authority_data"`
+	CanceledReason        *string                   `db:"cancel_reason"`
+	AuthorityData         RelevantAuthorityData     `db:"authority_data"`
 	Destiny               []RelevantServiceLocation `db:"destiny"`
-	PeaceQuadrant         *string				    `db:"peace_quadrant"`
-	Level				  *string                   `db:"level"`
+	PeaceQuadrant         *string                   `db:"peace_quadrant"`
+	Level                 *string                   `db:"level"`
 }
 
 type RelevantAntares struct {
-	Id   *string  `json:"id"`
-	Type *string `json:"type"`
+	Id                 *string `json:"id"`
+	Type               *string `json:"type"`
 	AntaresDescription *string `json:"antaresDescription"`
 }
 type RelevantAuthorityData struct {
-	Authority []Authorities `json:"authorities"`
-	Person []AuthorityPerson `json:"person"`
-	Vechicle []AuthorityVehicle `json:"vehicle"`
+	Authority []Authorities      `json:"authorities"`
+	Person    []AuthorityPerson  `json:"person"`
+	Vechicle  []AuthorityVehicle `json:"vehicle"`
 }
 
 type Authorities struct {
-	Id *int64 `json:"id"`
-	AuthorityName *string `json:"authority_name"`
+	Id                    *int64  `json:"id"`
+	AuthorityName         *string `json:"authority_name"`
 	AuthorityAbbreviation *string `json:"authority_abbreviation"`
-	Government *string `json:"government"`
+	Government            *string `json:"government"`
 }
 
 type AuthorityPerson struct {
-	AuthorityName *string `json:"authority_name"`
-	Abbreviation *string `json:"authority_abbreviation"`
-	Government *string  `json:"government"`
-	Name *string  `json:"name"`
-	LegalId *string `json:"legal_id"`
+	AuthorityName        *string `json:"authority_name"`
+	Abbreviation         *string `json:"authority_abbreviation"`
+	Government           *string `json:"government"`
+	Name                 *string `json:"name"`
+	LegalId              *string `json:"legal_id"`
 	IdentificationNumber *string `json:"identification_number"`
-	Phone *string `json:"phone"`
-	Gender *string `json:"gender"`
-	Observations *string `json:"observations"`
-	CreatedAt *string `json:"created_at"`
+	Phone                *string `json:"phone"`
+	Gender               *string `json:"gender"`
+	Observations         *string `json:"observations"`
+	CreatedAt            *string `json:"created_at"`
 }
 
 type AuthorityVehicle struct {
-	AuthorityName *string `json:"authority_name"`
+	AuthorityName         *string `json:"authority_name"`
 	AuthorityAbbreviation *string `json:"authority_abbreviation"`
-	Government *string `json:"government"`
-	Type *string `json:"type"`
-	Make *string `json:"make"`
-	Model *string `json:"model"`
-	Plate *string `json:"plate"`
-	Year *string `json:"year"`
-	Color *string `json:"color"`
-	Description *string `json:"description"`
-    CreatedAt *string `json:"created_at"`
-
+	Government            *string `json:"government"`
+	Type                  *string `json:"type"`
+	Make                  *string `json:"make"`
+	Model                 *string `json:"model"`
+	Plate                 *string `json:"plate"`
+	Year                  *string `json:"year"`
+	Color                 *string `json:"color"`
+	Description           *string `json:"description"`
+	CreatedAt             *string `json:"created_at"`
 }
 
 type RelevantFirefighters struct {

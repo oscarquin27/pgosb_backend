@@ -175,7 +175,7 @@ func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, err
 	return services, nil
 }
 
-func (u *MissionRepository) Get(id int) (*models.Mission, error) {
+func (u *MissionRepository) Get(id int64) (*models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -289,7 +289,7 @@ func (u *MissionRepository) Update(s *models.Mission) error {
 	return nil
 }
 
-func (u *MissionRepository) Delete(id int) error {
+func (u *MissionRepository) Delete(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)

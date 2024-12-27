@@ -212,6 +212,14 @@ func ConvertFromInt2(i pgtype.Int2) string {
 	return strconv.Itoa(int(i.Int16))
 }
 
+func ConvertToPgTypeInt8(i int64) pgtype.Int8 {
+	return pgtype.Int8{Int64: i, Valid: true}
+}
+
+func ConvertFromInt8(i pgtype.Int8) string {
+	return strconv.FormatInt(i.Int64, 10)
+}
+
 func ConvertToPgTypeDate(d string) pgtype.Date {
 	t, err := time.Parse("2000-01-01", d)
 	if err != nil {

@@ -24,7 +24,7 @@ func NewServiceServiceController(missionService services.MissionServiceService) 
 
 func (u *MissionServiceController) Get(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	mission, err := u.missionService.Get(id)
 
@@ -46,7 +46,7 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 
 func (u *MissionServiceController) GetByMissionId(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	mission, err := u.missionService.GetByMissionId(id)
 
@@ -121,7 +121,7 @@ func (u *MissionServiceController) GetAllSummary(c *gin.Context) {
 
 func (u *MissionServiceController) GetUnits(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	result := u.missionService.GetUnits(id)
 
@@ -143,7 +143,7 @@ func (u *MissionServiceController) GetUnits(c *gin.Context) {
 
 func (u *MissionServiceController) GetUsers(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	result := u.missionService.GetUsers(id)
 
@@ -225,7 +225,7 @@ func (u *MissionServiceController) Update(c *gin.Context) {
 
 func (u *MissionServiceController) Delete(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	err := u.missionService.Delete(id)
 
@@ -242,8 +242,7 @@ func (u *MissionServiceController) Delete(c *gin.Context) {
 
 }
 
-
-func (u *MissionServiceController) GetRelevantServices(c *gin.Context){
+func (u *MissionServiceController) GetRelevantServices(c *gin.Context) {
 
 	id := string(c.Param("id"))
 
@@ -267,10 +266,10 @@ func (u *MissionServiceController) GetRelevantServices(c *gin.Context){
 	}
 
 	c.JSON(http.StatusOK, missionDto)
-	return	
+	return
 }
 
-func (u *MissionServiceController) GetRelevantMissions(c *gin.Context){
+func (u *MissionServiceController) GetRelevantMissions(c *gin.Context) {
 
 	id := string(c.Param("id"))
 
@@ -294,5 +293,5 @@ func (u *MissionServiceController) GetRelevantMissions(c *gin.Context){
 	}
 
 	c.JSON(http.StatusOK, missionDto)
-	return	
+	return
 }

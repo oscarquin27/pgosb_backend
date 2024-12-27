@@ -44,9 +44,9 @@ type MissionServiceJson struct {
 func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 	service := MissionServiceJson{}
 
-	service.Id = utils.ConvertFromInt4(s.Id)
-	service.MissionId = utils.ConvertFromInt2(s.MissionId)
-	service.AntaresId = utils.ConvertFromInt2(s.AntaresId)
+	service.Id = utils.ConvertFromInt8(s.Id)
+	service.MissionId = utils.ConvertFromInt8(s.MissionId)
+	service.AntaresId = utils.ConvertFromInt8(s.AntaresId)
 
 	service.Summary = utils.ConvertFromText(s.Summary)
 	service.Description = utils.ConvertFromText(s.Description)
@@ -101,9 +101,9 @@ func ModelToMissionServiceJson(s models.MissionService) *MissionServiceJson {
 func (s *MissionServiceJson) ToModel() models.MissionService {
 	service := models.MissionService{}
 
-	service.Id = utils.ConvertToPgTypeInt4(utils.ParseInt(s.Id))
-	service.MissionId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.MissionId))
-	service.AntaresId = utils.ConvertToPgTypeInt2(utils.ParseInt(s.AntaresId))
+	service.Id = utils.ConvertToPgTypeInt8(utils.ParseInt64(s.Id))
+	service.MissionId = utils.ConvertToPgTypeInt8(utils.ParseInt64(s.MissionId))
+	service.AntaresId = utils.ConvertToPgTypeInt8(utils.ParseInt64(s.AntaresId))
 
 	service.Summary = utils.ConvertToPgTypeText(s.Summary)
 	service.Description = utils.ConvertToPgTypeText(s.Description)

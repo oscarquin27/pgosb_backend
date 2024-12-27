@@ -23,7 +23,7 @@ func NewMissionController(missionService services.MissionService) *MissionContro
 
 func (u *MissionController) GetMission(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	mission, err := u.missionService.Get(id)
 
@@ -112,7 +112,7 @@ func (u *MissionController) Update(c *gin.Context) {
 
 func (u *MissionController) Delete(c *gin.Context) {
 
-	id := utils.ParseInt(c.Param("id"))
+	id := utils.ParseInt64(c.Param("id"))
 
 	err := u.missionService.Delete(id)
 

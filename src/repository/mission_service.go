@@ -22,7 +22,7 @@ func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
 	}
 }
 
-func (u *MissionServiceRepository) Get(id int) (*models.MissionService, error) {
+func (u *MissionServiceRepository) Get(id int64) (*models.MissionService, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -241,7 +241,7 @@ func (u *MissionServiceRepository) GetRelevantMissions(id string) ([]models.Rele
 	return services, nil
 }
 
-func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionService, error) {
+func (u *MissionServiceRepository) GetByMissionId(id int64) ([]models.MissionService, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -274,7 +274,7 @@ func (u *MissionServiceRepository) GetByMissionId(id int) ([]models.MissionServi
 }
 
 // GetUnits implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]models.UnitSimple] {
+func (u *MissionServiceRepository) GetUnits(id int64) *results.ResultWithValue[[]models.UnitSimple] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -317,7 +317,7 @@ func (u *MissionServiceRepository) GetUnits(id int) *results.ResultWithValue[[]m
 }
 
 // GetUsers implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUsers(id int) *results.ResultWithValue[[]models.MissionUserService] {
+func (u *MissionServiceRepository) GetUsers(id int64) *results.ResultWithValue[[]models.MissionUserService] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -364,7 +364,7 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.Mis
 		return nil, err
 	}
 
-	if s.Id.Int32 >= 0 {
+	if s.Id.Int64 >= 0 {
 		return s, nil
 	}
 
@@ -392,7 +392,7 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	return models.ErrorMissionServiceNotUpdated
 }
 
-func (u *MissionServiceRepository) Delete(id int) error {
+func (u *MissionServiceRepository) Delete(id int64) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
