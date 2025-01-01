@@ -141,10 +141,18 @@ func (s *MissionJson) ToModel() models.Mission {
 		Id: utils.ParseInt64(s.Id),
 	}
 
+	createdAtParse := false
 	if s.CreatedAt != "" {
 		if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.CreatedAt); err == nil {
 			mission.CreatedAt.Time = parsedTime
 			mission.CreatedAt.Valid = true
+			createdAtParse = true
+		}
+	}
+	if !createdAtParse {
+		mission.CreatedAt = sql.NullTime{
+			Time:  time.Now(),
+			Valid: true,
 		}
 	}
 
@@ -215,11 +223,18 @@ func (s *MissionJson) ToModel() models.Mission {
 	//	}
 	//}
 
+	manualMissionDateParse := false
 	if s.ManualMissionDate != "" {
+
 		if parsedTime, err := time.Parse("02-01-2006 15:04:05", s.ManualMissionDate); err == nil {
 			mission.ManualMissionDate.Time = parsedTime
 			mission.ManualMissionDate.Valid = true
+			manualMissionDateParse = true
 		}
+	}
+
+	if !manualMissionDateParse {
+		mission.ManualMissionDate = mission.CreatedAt
 	}
 
 	mission.IsImportant.Bool = s.IsImportant

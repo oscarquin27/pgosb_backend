@@ -163,7 +163,7 @@ func (u *UserRepository) GetAll(params ...string) ([]models.User, *results.Gener
 	
 	ra.role_name as role
 FROM users.user u
-left join users.roles ra on ra.id = u.id_role`)
+left join users.roles ra on ra.id = u.id_role ORDER BY u.id DESC`)
 
 	if err != nil {
 		return usersDefault, results.
