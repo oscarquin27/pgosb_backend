@@ -35,6 +35,9 @@ type MissionSummaryJson struct {
 	Deceased             string   `json:"deceased"`
 	LocationId           string   `json:"location_id"`
 	LocationDestinyId    string   `json:"location_destiny_id"`
+	State				 string	  `json:"state"`
+	Municipality		 string	  `json:"municipality"`
+	Parish				 string	  `json:"parish"`
 	NumAuthorities       string   `json:"num_authorities"`
 	NumAuthorityServices string   `json:"num_authority_services"`
 	NumAuthorityPerson   string   `json:"num_authority_person"`
@@ -113,6 +116,18 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 
 	if s.StationId.Valid {
 		service.StationId = utils.ParseInt64String(s.StationId.Int64)
+	}
+
+	if s.State.Valid {
+		service.State = s.State.String
+	}
+
+	if s.Municipality.Valid {
+		service.Municipality = s.Municipality.String
+	}
+
+	if s.Parish.Valid {
+		service.Parish = s.Parish.String
 	}
 
 	service.IsImportant = s.IsImportant

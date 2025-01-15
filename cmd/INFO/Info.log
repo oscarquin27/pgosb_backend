@@ -33523,3 +33523,6 @@
 {"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/location/sector/all","ip":"192.168.120.136","latency":381.7126,"status":200,"time":"2024-12-18T18:14:21.826725"}
 {"level":"info","SYCOMISMTC04":"","method":"POST","path":"/api/v1/mission/location/create","ip":"192.168.120.136","latency":19.2214,"status":200,"time":"2024-12-18T18:14:24.32854"}
 {"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/mission/location/group/38","ip":"192.168.120.136","latency":10.3421,"status":200,"time":"2024-12-18T18:14:24.377398"}
+{"level":"info","SYCOMISMTC04":"","time":"2025-01-15T11:57:27.108358","message":"Server started"}
+{"level":"info","SYCOMISMTC04":"","time":"2025-01-15T11:57:27.108358","message":"Starting REST API With SSL server on port 8082 Cert: ./config/pruebas.gres.net.pem Key: ./config/pruebas.gres.net-key.pem"}
+{"level":"info","SYCOMISMTC04":"","method":"GET","path":"/api/v1/mission/all","ip":"::1","latency":260.4748,"status":200,"time":"2025-01-15T11:57:36.789808"}
