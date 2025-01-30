@@ -23,7 +23,6 @@ func ModelToMissionUnitJson(s *models.MissionUnit) *MissionUnitJson {
 	if s.CreatedAt.Valid {
 		service.CreatedAt = s.CreatedAt.Time.Format("2006-01-02 15:04:05")
 	}
-
 	return &service
 }
 

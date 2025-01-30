@@ -6,8 +6,6 @@ import (
 	logger "fdms/src/infrastructure/log"
 	"fdms/src/models"
 	"fdms/src/services"
-	"fdms/src/utils/date_utils"
-	"fmt"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -17,9 +15,9 @@ import (
 const (
 	insertMission = `
         INSERT INTO missions.mission (
-		id, 
+		 
 		code, 
-		created_at, 
+		
 		alias, 
 		operative_areas, 
 		summary, 
@@ -43,9 +41,9 @@ const (
 		
 		)
         VALUES (
-		@id, 
+		
 		@code, 
-		@created_at, 
+	
 		@alias, 
 		@operative_areas, 
 		@summary, 
@@ -65,8 +63,11 @@ const (
 		@is_important, 
 		@pending_for_data,
 		@cancel_reason,
-		@manual_mission_date
-		)
+		@manual_mission_date 
+		
+		
+		) 
+		RETURNING id , created_at
     `
 
 	updateMission = `
@@ -223,39 +224,43 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 	defer conn.Release()
 
 	// 1. Get Next ID from Sequence
-	var id int64 // Use int64 for sequence value
+	//var id int64 // Use int64 for sequence value
 
-	err = conn.QueryRow(ctx, `SELECT nextval('missions.mission_id_seq'::regclass)`).Scan(&id)
+	// err = conn.QueryRow(ctx, `SELECT nextval('missions.mission_id_seq'::regclass)`).Scan(&id)
 
-	if err != nil {
-		logger.Error().Err(err).Msg("Error getting next sequence value")
+	// if err != nil {
+	// 	logger.Error().Err(err).Msg("Error getting next sequence value")
 
-		return nil, err // Return a more specific error
-	}
+	// 	return nil, err // Return a more specific error
+	// }
 
-	date := time.Now().Format(date_utils.CompleteFormatDate)
+	// date := time.Now().Format(date_utils.CompleteFormatDate)
 
-	code := fmt.Sprintf("%d-%s", id, date)
+	// code := fmt.Sprintf("%d-%s", id, date)
 
-	s.Id = id
+	// s.Id = id
 
-	createdAt, err := time.Parse(date_utils.CompleteFormatDate, date)
+	// createdAt, err := time.Parse(date_utils.CompleteFormatDate, date)
 
-	if err != nil {
+	// if err != nil {
 
-		logger.Error().Err(err).Msg("Error parsing date")
+	// 	logger.Error().Err(err).Msg("Error parsing date")
 
-		return nil, err
-	}
+	// 	return nil, err
+	// }
 
-	s.CreatedAt = sql.NullTime{Time: createdAt, Valid: true}
+	//s.CreatedAt = sql.NullTime{Time: createdAt, Valid: true}
 
-	s.Code = sql.NullString{String: code, Valid: true}
+	s.Code = sql.NullString{String: "", Valid: true}
 
 	// 2. Insert with the Retrieved ID
-	_, err = conn.Exec(ctx, insertMission,
+
+	var id int64
+	var createdAt time.Time
+
+	err = conn.QueryRow(ctx, insertMission,
 		s.GetNameArgs(),
-	)
+	).Scan(&id, &createdAt)
 
 	if err != nil {
 
@@ -263,6 +268,9 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 
 		return nil, models.ErrorMissionNotCreated
 	}
+
+	s.Id = id
+	s.CreatedAt = sql.NullTime{Time: createdAt, Valid: true}
 
 	// 3. Set the ID in the Model (if needed)
 

@@ -30,9 +30,10 @@ type MissionSummary struct {
 	Deceased             sql.NullInt64    `db:"deceased"`
 	LocationId           sql.NullInt64    `db:"location_id"`
 	LocationDestinyId    sql.NullInt64    `db:"location_destiny_id"`
-	State				 sql.NullString	  `db:"state"`
-	Municipality		 sql.NullString	  `db:"municipality"`
-	Parish				 sql.NullString	  `db:"parish"`
+	State                sql.NullString   `db:"state"`
+	Municipality         sql.NullString   `db:"municipality"`
+	Parish               sql.NullString   `db:"parish"`
+	Sector               sql.NullString   `db:"sector"`
 	NumAuthorities       sql.NullInt64    `db:"num_authorities"`
 	NumAuthorityServices sql.NullInt64    `db:"num_authority_services"`
 	NumAuthorityPerson   sql.NullInt64    `db:"num_authority_person"`

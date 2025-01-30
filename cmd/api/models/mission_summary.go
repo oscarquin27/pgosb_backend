@@ -35,9 +35,10 @@ type MissionSummaryJson struct {
 	Deceased             string   `json:"deceased"`
 	LocationId           string   `json:"location_id"`
 	LocationDestinyId    string   `json:"location_destiny_id"`
-	State				 string	  `json:"state"`
-	Municipality		 string	  `json:"municipality"`
-	Parish				 string	  `json:"parish"`
+	State                string   `json:"state"`
+	Municipality         string   `json:"municipality"`
+	Parish               string   `json:"parish"`
+	Sector               string   `json:"sector"`
 	NumAuthorities       string   `json:"num_authorities"`
 	NumAuthorityServices string   `json:"num_authority_services"`
 	NumAuthorityPerson   string   `json:"num_authority_person"`
@@ -154,6 +155,10 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		if i.Valid {
 			fa = append(fa, i.String)
 		}
+	}
+
+	if s.Sector.Valid {
+		service.Sector = s.Sector.String
 	}
 
 	if s.NumAuthorities.Valid {
@@ -289,6 +294,11 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 	if s.StationId != "" {
 		service.StationId.Int64 = utils.ParseInt64(s.StationId)
 		service.StationId.Valid = true
+	}
+
+	if s.Sector != "" {
+		service.Sector.String = s.Sector
+		service.Sector.Valid = true
 	}
 
 	op := make([]sql.NullString, 0)

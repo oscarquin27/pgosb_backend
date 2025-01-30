@@ -189,21 +189,33 @@ func (s *MissionJson) ToModel() models.Mission {
 	if s.Unharmed != "" {
 		mission.Unharmed.Int64 = utils.ParseInt64(s.Unharmed)
 		mission.Unharmed.Valid = true
+	} else {
+		mission.Unharmed.Valid = false
+		mission.Unharmed.Int64 = 0
 	}
 
 	if s.Injured != "" {
 		mission.Injured.Int64 = utils.ParseInt64(s.Injured)
 		mission.Injured.Valid = true
+	} else {
+		mission.Injured.Valid = false
+		mission.Injured.Int64 = 0
 	}
 
 	if s.Transported != "" {
 		mission.Transported.Int64 = utils.ParseInt64(s.Transported)
 		mission.Transported.Valid = true
+	} else {
+		mission.Transported.Valid = false
+		mission.Transported.Int64 = 0
 	}
 
 	if s.Deceased != "" {
 		mission.Deceased.Int64 = utils.ParseInt64(s.Deceased)
 		mission.Deceased.Valid = true
+	} else {
+		mission.Deceased.Valid = false
+		mission.Deceased.Int64 = 0
 	}
 
 	if s.StationId != "" {
