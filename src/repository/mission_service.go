@@ -12,128 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type MissionServiceRepository struct {
-	db *pgxpool.Pool
-}
-
-func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
-	return &MissionServiceRepository{
-		db: db,
-	}
-}
-
-func (u *MissionServiceRepository) Get(id int64) (*models.MissionService, error) {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Query(ctx, `SELECT *
-	
-	FROM services.service where id = $1;`, id)
-
-	if err != nil {
-		return nil, err
-	}
-
-	service, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.MissionService])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorMissionServiceNotFound
-		}
-
-		return nil, err
-	}
-
-	return &service, nil
-}
-
-func (u *MissionServiceRepository) GetAll() ([]models.MissionService, error) {
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Query(ctx, `SELECT *
-	
-	FROM services.service order by id desc;`)
-
-	if err != nil {
-		return nil, err
-	}
-
-	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionService])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return nil, models.ErrorMissionServiceNotFound
-		}
-
-		return nil, err
-	}
-
-	return services, nil
-}
-
-func (u *MissionServiceRepository) GetAllMissionServiceSummary() ([]models.MissionServiceSummary, error) {
-
-	defaultValue := make([]models.MissionServiceSummary, 0)
-
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return defaultValue, err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Query(ctx, `SELECT * FROM missions.vw_mission_summary ORDER BY id DESC , id DESC`)
-
-	if err != nil {
-		return defaultValue, err
-	}
-
-	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionServiceSummary])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return defaultValue, models.ErrorMissionNotFound
-		}
-
-		return defaultValue, err
-	}
-
-	return services, nil
-}
-
-func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.RelevantServices, error) {
-
-	defaultValue := make([]models.RelevantServices, 0)
-
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return defaultValue, err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Query(ctx, fmt.Sprintf(`SELECT id, 
+const (
+	selectRelevantServices = `SELECT id, 
 	region_area, 
 	mission_code, 
 	antares_id, 
@@ -162,40 +42,40 @@ func (u *MissionServiceRepository) GetRelevantServices(id string) ([]models.Rele
 	peace_quadrant,
 	level	
 	FROM missions.vw_relevant_services
-	where service_id::text in (%s)`, id))
+	where service_id::text in (%s)`
 
-	if err != nil {
-		return defaultValue, err
-	}
+	selectRelevantServicesTemplate = `SELECT id, 
+	region_area, 
+	mission_code, 
+	antares_id, 
+	antares_type, 
+	antares_description, 
+	service_id, 
+	operative_area_name, 
+	service_description, 
+	service_date::varchar, 
+	units, 
+	firefighters, 
+	people, 
+	infrastructures, 
+	vehicles, 
+	service_locations, 
+	service_stations, 
+	centers,
+	unharmed,
+	injured,
+	transported,
+	deceased,
+	is_important
+	cancel_reason,
+	authority_data,
+	destiny,
+	peace_quadrant,
+	level	
+	FROM missions.vw_relevant_services_template
+	where service_id::text in (%s)`
 
-	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RelevantServices])
-
-	if err != nil {
-		if err == pgx.ErrNoRows {
-			return defaultValue, models.ErrorMissionNotFound
-		}
-
-		return defaultValue, err
-	}
-
-	return services, nil
-}
-
-func (u *MissionServiceRepository) GetRelevantMissions(id string) ([]models.RelevantServices, error) {
-
-	defaultValue := make([]models.RelevantServices, 0)
-
-	ctx := context.Background()
-
-	conn, err := u.db.Acquire(ctx)
-
-	if err != nil {
-		return defaultValue, err
-	}
-
-	defer conn.Release()
-
-	rows, err := conn.Query(ctx, fmt.Sprintf(`SELECT id, 
+	selectRelevantMissions = `SELECT id, 
 	region_area, 
 	mission_code, 
 	antares, 
@@ -222,7 +102,211 @@ func (u *MissionServiceRepository) GetRelevantMissions(id string) ([]models.Rele
 	peace_quadrant,
 	level	
 	FROM missions.vw_relevant_services
-	where service_id::text in (%s)`, id))
+	where service_id::text in (%s)`
+
+	selectRelevantMissionsTemplate = `SELECT id, 
+	region_area, 
+	mission_code, 
+	antares, 
+	service_id, 
+	operative_area_name, 
+	service_description, 
+	service_date::varchar, 
+	units, 
+	firefighters, 
+	people, 
+	infrastructures, 
+	vehicles, 
+	mission_locations as service_locations, 
+	mission_stations as service_stations, 
+	centers,
+	unharmed,
+	injured,
+	transported,
+	deceased,
+	is_important,
+	cancel_reason,
+	authority_data,
+	destiny,
+	peace_quadrant,
+	level	
+	FROM missions.vw_relevant_services_template
+
+	where service_id::text in (%s)`
+
+	selectUnits = `SELECT coalesce(id::varchar, '') as id, 
+		coalesce(plate::varchar, '') as plate, 
+		coalesce(station::varchar, '') as station, 
+		coalesce(unit_type::varchar, '') as unit_type, 
+		coalesce(alias::varchar, '') as alias
+		FROM  vehicles.unit u
+		where id in (select 
+			unnest(s.units) as id
+		from services.service s
+		where s.id = $1)`
+
+	selectUnitsTemplate = `SELECT coalesce(id::varchar, '') as id, 
+		coalesce(plate::varchar, '') as plate, 
+		coalesce(station::varchar, '') as station, 
+		coalesce(unit_type::varchar, '') as unit_type, 
+		coalesce(alias::varchar, '') as alias
+		FROM  vehicles.unit u
+		where id in (select 
+			unnest(s.units) as id
+		from services.service_template s
+		where s.id = $1)`
+)
+
+type MissionServiceRepository struct {
+	db *pgxpool.Pool
+}
+
+func NewMissionServiceService(db *pgxpool.Pool) services.MissionServiceService {
+	return &MissionServiceRepository{
+		db: db,
+	}
+}
+
+func (u *MissionServiceRepository) Get(id int64, isTemplate bool) (*models.MissionService, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer conn.Release()
+
+	query := `SELECT *
+	
+	FROM services.service where id = $1;`
+
+	if isTemplate {
+		query = `SELECT *
+	
+	FROM services.service_template where id = $1;`
+	}
+
+	rows, err := conn.Query(ctx, query, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	service, err := pgx.CollectOneRow(rows, pgx.RowToStructByName[models.MissionService])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionServiceNotFound
+		}
+
+		return nil, err
+	}
+
+	return &service, nil
+}
+
+func (u *MissionServiceRepository) GetAll(isTemplate bool) ([]models.MissionService, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer conn.Release()
+
+	query := `SELECT *
+	
+	FROM services.service order by id desc;`
+
+	if isTemplate {
+		query = `SELECT *
+	
+	FROM services.service_template order by id desc;`
+	}
+
+	rows, err := conn.Query(ctx, query)
+
+	if err != nil {
+		return nil, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionService])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return nil, models.ErrorMissionServiceNotFound
+		}
+
+		return nil, err
+	}
+
+	return services, nil
+}
+
+func (u *MissionServiceRepository) GetAllMissionServiceSummary(isTemplate bool) ([]models.MissionServiceSummary, error) {
+
+	defaultValue := make([]models.MissionServiceSummary, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	query := `SELECT * FROM missions.vw_mission_summary ORDER BY id DESC , id DESC`
+
+	if isTemplate {
+		query = `SELECT * FROM missions.vw_mission_summary_template ORDER BY id DESC , id DESC`
+	}
+
+	rows, err := conn.Query(ctx, query)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MissionServiceSummary])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return defaultValue, models.ErrorMissionNotFound
+		}
+
+		return defaultValue, err
+	}
+
+	return services, nil
+}
+
+func (u *MissionServiceRepository) GetRelevantServices(id string, isTemplate bool) ([]models.RelevantServices, error) {
+
+	defaultValue := make([]models.RelevantServices, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	query := fmt.Sprintf(selectRelevantServices, id)
+
+	if isTemplate {
+		query = fmt.Sprintf(selectRelevantServicesTemplate, id)
+	}
+
+	rows, err := conn.Query(ctx, query)
 
 	if err != nil {
 		return defaultValue, err
@@ -241,7 +325,46 @@ func (u *MissionServiceRepository) GetRelevantMissions(id string) ([]models.Rele
 	return services, nil
 }
 
-func (u *MissionServiceRepository) GetByMissionId(id int64) ([]models.MissionService, error) {
+func (u *MissionServiceRepository) GetRelevantMissions(id string, isTemplate bool) ([]models.RelevantServices, error) {
+
+	defaultValue := make([]models.RelevantServices, 0)
+
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	defer conn.Release()
+
+	query := fmt.Sprintf(selectRelevantMissions, id)
+
+	if isTemplate {
+		query = fmt.Sprintf(selectRelevantMissionsTemplate, id)
+	}
+
+	rows, err := conn.Query(ctx, query)
+
+	if err != nil {
+		return defaultValue, err
+	}
+
+	services, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.RelevantServices])
+
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			return defaultValue, models.ErrorMissionNotFound
+		}
+
+		return defaultValue, err
+	}
+
+	return services, nil
+}
+
+func (u *MissionServiceRepository) GetByMissionId(id int64, isTemplate bool) ([]models.MissionService, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -252,9 +375,17 @@ func (u *MissionServiceRepository) GetByMissionId(id int64) ([]models.MissionSer
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT *
+	query := `SELECT *
 	
-	FROM services.vw_services where mission_id = $1 `, id)
+	FROM services.vw_services where mission_id = $1 `
+
+	if isTemplate {
+		query = `SELECT *
+	
+	FROM services.vw_services_template where mission_id = $1 `
+	}
+
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		return nil, err
@@ -274,7 +405,7 @@ func (u *MissionServiceRepository) GetByMissionId(id int64) ([]models.MissionSer
 }
 
 // GetUnits implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUnits(id int64) *results.ResultWithValue[[]models.UnitSimple] {
+func (u *MissionServiceRepository) GetUnits(id int64, isTemplate bool) *results.ResultWithValue[[]models.UnitSimple] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -288,16 +419,13 @@ func (u *MissionServiceRepository) GetUnits(id int64) *results.ResultWithValue[[
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT coalesce(id::varchar, '') as id, 
-		coalesce(plate::varchar, '') as plate, 
-		coalesce(station::varchar, '') as station, 
-		coalesce(unit_type::varchar, '') as unit_type, 
-		coalesce(alias::varchar, '') as alias
-		FROM  vehicles.unit u
-		where id in (select 
-			unnest(s.units) as id
-		from services.service s
-		where s.id = $1)`, id)
+	query := selectUnits
+
+	if isTemplate {
+		query = selectUnitsTemplate
+	}
+
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		return r.WithError(results.NewError(err.Error(), err))
@@ -317,7 +445,7 @@ func (u *MissionServiceRepository) GetUnits(id int64) *results.ResultWithValue[[
 }
 
 // GetUsers implements services.MissionServiceService.
-func (u *MissionServiceRepository) GetUsers(id int64) *results.ResultWithValue[[]models.MissionUserService] {
+func (u *MissionServiceRepository) GetUsers(id int64, isTemplate bool) *results.ResultWithValue[[]models.MissionUserService] {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -332,6 +460,10 @@ func (u *MissionServiceRepository) GetUsers(id int64) *results.ResultWithValue[[
 	defer conn.Release()
 
 	query := "SELECT * FROM missions.vw_services_firefighter WHERE service_id = $1"
+
+	if isTemplate {
+		query = "SELECT * FROM missions.vw_services_firefighter_template WHERE service_id = $1"
+	}
 
 	rows, err := conn.Query(ctx, query, id)
 
@@ -352,13 +484,19 @@ func (u *MissionServiceRepository) GetUsers(id int64) *results.ResultWithValue[[
 	return r.Success().WithValue(users)
 }
 
-func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.MissionService, error) {
+func (u *MissionServiceRepository) Create(s *models.MissionService, isTemplate bool) (*models.MissionService, error) {
 	m := mikro.NewMkModel(u.db)
+
+	schema := "services.service"
+
+	if isTemplate {
+		schema = "services.service_template"
+	}
 
 	err := m.Model(s).Omit("id").
 		Omit("service_date").
 		Returning().
-		InsertReturning("services.service")
+		InsertReturning(schema)
 
 	if err != nil {
 		return nil, err
@@ -371,15 +509,21 @@ func (u *MissionServiceRepository) Create(s *models.MissionService) (*models.Mis
 	return nil, models.ErrorMissionServiceNotCreated
 }
 
-func (u *MissionServiceRepository) Update(s *models.MissionService) error {
+func (u *MissionServiceRepository) Update(s *models.MissionService, isTemplate bool) error {
 	m := mikro.NewMkModel(u.db)
+
+	schema := "services.service"
+
+	if isTemplate {
+		schema = "services.service_template"
+	}
 
 	rows, err := m.Model(s).
 		Omit("id").
 		Omit("service_date").
 		Omit("mission_id").
 		Where("id", "=", s.Id).
-		Update("services.service")
+		Update(schema)
 
 	if err != nil {
 		return err
@@ -392,7 +536,7 @@ func (u *MissionServiceRepository) Update(s *models.MissionService) error {
 	return models.ErrorMissionServiceNotUpdated
 }
 
-func (u *MissionServiceRepository) Delete(id int64) error {
+func (u *MissionServiceRepository) Delete(id int64, isTemplate bool) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -403,7 +547,13 @@ func (u *MissionServiceRepository) Delete(id int64) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, "delete from services.service where id = $1", id)
+	query := "delete from services.service where id = $1"
+
+	if isTemplate {
+		query = "delete from services.service_template where id = $1"
+	}
+
+	_, err = conn.Exec(ctx, query, id)
 
 	if err != nil {
 		return models.ErrorMissionServiceNotDeleted

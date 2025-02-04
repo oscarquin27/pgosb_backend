@@ -8,6 +8,7 @@ import (
 	"fdms/src/utils"
 	"fdms/src/utils/results"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +27,9 @@ func (u *MissionServiceController) Get(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	mission, err := u.missionService.Get(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.Get(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -48,7 +51,9 @@ func (u *MissionServiceController) GetByMissionId(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	mission, err := u.missionService.GetByMissionId(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetByMissionId(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -72,7 +77,9 @@ func (u *MissionServiceController) GetByMissionId(c *gin.Context) {
 
 func (u *MissionServiceController) GetAll(c *gin.Context) {
 
-	mission, err := u.missionService.GetAll()
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetAll(isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -97,7 +104,9 @@ func (u *MissionServiceController) GetAll(c *gin.Context) {
 
 func (u *MissionServiceController) GetAllSummary(c *gin.Context) {
 
-	mission, err := u.missionService.GetAllMissionServiceSummary()
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetAllMissionServiceSummary(isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -123,7 +132,9 @@ func (u *MissionServiceController) GetUnits(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	result := u.missionService.GetUnits(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	result := u.missionService.GetUnits(id, isTemplate)
 
 	if !result.IsSuccessful {
 
@@ -145,7 +156,9 @@ func (u *MissionServiceController) GetUsers(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	result := u.missionService.GetUsers(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	result := u.missionService.GetUsers(id, isTemplate)
 
 	if !result.IsSuccessful {
 
@@ -173,6 +186,8 @@ func (u *MissionServiceController) GetUsers(c *gin.Context) {
 func (u *MissionServiceController) Create(c *gin.Context) {
 	var missionJson api_models.MissionServiceJson
 
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
 	if err := c.BindJSON(&missionJson); err != nil {
 
 		logger.Error().Err(err).Msg("Error Parseando MissionService")
@@ -189,7 +204,7 @@ func (u *MissionServiceController) Create(c *gin.Context) {
 	mission.Summary.Valid = true
 	mission.Description.Valid = true
 
-	id, err := u.missionService.Create(&mission)
+	id, err := u.missionService.Create(&mission, isTemplate)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -212,7 +227,9 @@ func (u *MissionServiceController) Update(c *gin.Context) {
 
 	mission := missionJson.ToModel()
 
-	err := u.missionService.Update(&mission)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	err := u.missionService.Update(&mission, isTemplate)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -227,7 +244,9 @@ func (u *MissionServiceController) Delete(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	err := u.missionService.Delete(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	err := u.missionService.Delete(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorUserNotDeleted {
@@ -246,7 +265,9 @@ func (u *MissionServiceController) GetRelevantServices(c *gin.Context) {
 
 	id := string(c.Param("id"))
 
-	mission, err := u.missionService.GetRelevantServices(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetRelevantServices(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -273,7 +294,9 @@ func (u *MissionServiceController) GetRelevantMissions(c *gin.Context) {
 
 	id := string(c.Param("id"))
 
-	mission, err := u.missionService.GetRelevantMissions(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetRelevantMissions(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {

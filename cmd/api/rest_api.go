@@ -311,6 +311,16 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		mission.GET("/relevant/:id", missionServiceController.GetRelevantMissions)
 	}
 
+	missionTemplate := v1.Group("mission/template")
+	{
+		missionTemplate.GET("/:id", missionController.GetMission)
+		missionTemplate.GET("/all", missionController.GetAllMissions)
+		missionTemplate.POST("/create", missionController.Create)
+		missionTemplate.PUT("/update", missionController.Update)
+		missionTemplate.DELETE("/:id", missionController.Delete)
+		missionTemplate.GET("/relevant/:id", missionServiceController.GetRelevantMissions)
+	}
+
 	antaresMission := v1.Group("mission/antares")
 	{
 		antaresMission.GET("/all", missionAntaresController.GetAll)
@@ -329,6 +339,20 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 		serviceMission.GET("/summary", missionServiceController.GetAllSummary)
 		serviceMission.GET("/relevant/:id", missionServiceController.GetRelevantServices)
+	}
+
+	serviceMissionTemplate := v1.Group("mission/service/template")
+	{
+		serviceMissionTemplate.GET("/all", missionServiceController.GetAll)
+		serviceMissionTemplate.GET("/:id", missionServiceController.Get)
+		serviceMissionTemplate.GET("/group/:id", missionServiceController.GetByMissionId)
+
+		serviceMissionTemplate.POST("/create", missionServiceController.Create)
+		serviceMissionTemplate.PUT("/update", missionServiceController.Update)
+		serviceMissionTemplate.DELETE("/delete/:id", missionServiceController.Delete)
+		serviceMissionTemplate.GET("/unit/:id", missionServiceController.GetUnits)
+		serviceMissionTemplate.GET("/summary", missionServiceController.GetAllSummary)
+		serviceMissionTemplate.GET("/relevant/:id", missionServiceController.GetRelevantServices)
 	}
 
 	vehicleMission := v1.Group("mission/vehicle")

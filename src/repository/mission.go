@@ -13,7 +13,15 @@ import (
 )
 
 const (
+	selectAllMissions = `
+	SELECT * from missions.mission order by created_at desc
+	`
+	selectAllMissionsTemplate = `
+	SELECT * from missions.mission_template order by created_at desc
+	`
+
 	insertMission = `
+
         INSERT INTO missions.mission (
 		 
 		code, 
@@ -70,6 +78,14 @@ const (
 		RETURNING id , created_at
     `
 
+	insertMissionTemplate = `
+	INSERT INTO missions.mission_template (
+		name, description, status, created_at, updated_at, deleted_at
+	) VALUES (
+		$1, $2, $3, $4, $5, $6
+	) RETURNING *
+	`
+
 	updateMission = `
 	UPDATE missions.mission
 	SET 
@@ -97,9 +113,32 @@ const (
 	
 		WHERE id = @id
 	`
+
+	updateMissionTemplate = `
+	UPDATE missions.mission_template 
+	SET name = $1,
+		description = $2,
+		status = $3,
+		updated_at = $4
+	WHERE id = $5
+	RETURNING *
+	`
+
 	deleteMission = `
 	DELETE FROM missions.mission WHERE id = $1
 	`
+
+	deleteMissionTemplate = `
+	DELETE FROM missions.mission_template WHERE id = $1
+	`
+
+	selectMissionSummary = `SELECT * FROM missions.vw_mission_summary ORDER BY id DESC`
+
+	selectMissionSummaryTemplate = `SELECT * FROM missions.vw_mission_summary_template ORDER BY id DESC`
+
+	selectMissionById = `SELECT * FROM missions.mission WHERE id = $1`
+
+	selectMissionByIdTemplate = `SELECT * FROM missions.mission_template WHERE id = $1`
 )
 
 type MissionRepository struct {
@@ -113,7 +152,7 @@ func NewMissionService(db *pgxpool.Pool) services.MissionService {
 }
 
 // GetAll implements services.MissionService.
-func (u *MissionRepository) GetAll() ([]models.Mission, error) {
+func (u *MissionRepository) GetAll(isTemplate bool) ([]models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -124,7 +163,13 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT * from missions.mission order by created_at desc`)
+	query := selectAllMissions
+
+	if isTemplate {
+		query = selectAllMissionsTemplate
+	}
+
+	rows, err := conn.Query(ctx, query)
 
 	if err != nil {
 		return nil, err
@@ -143,7 +188,7 @@ func (u *MissionRepository) GetAll() ([]models.Mission, error) {
 	return services, nil
 }
 
-func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, error) {
+func (u *MissionRepository) GetAllMissionSummary(isTemplate bool) ([]models.MissionSummary, error) {
 
 	defaultValue := make([]models.MissionSummary, 0)
 
@@ -157,7 +202,13 @@ func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, err
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT * FROM missions.vw_mission_summary ORDER BY id DESC`)
+	query := selectMissionSummary
+
+	if isTemplate {
+		query = selectMissionSummaryTemplate
+	}
+
+	rows, err := conn.Query(ctx, query)
 
 	if err != nil {
 		return defaultValue, err
@@ -176,7 +227,7 @@ func (u *MissionRepository) GetAllMissionSummary() ([]models.MissionSummary, err
 	return services, nil
 }
 
-func (u *MissionRepository) Get(id int64) (*models.Mission, error) {
+func (u *MissionRepository) Get(id int64, isTemplate bool) (*models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -188,7 +239,13 @@ func (u *MissionRepository) Get(id int64) (*models.Mission, error) {
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, `SELECT * from missions.mission where id = $1;`, id)
+	query := selectMissionById
+
+	if isTemplate {
+		query = selectMissionByIdTemplate
+	}
+
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		logger.Error().Err(err).Msg("Error ejecutando0 querys")
@@ -209,7 +266,7 @@ func (u *MissionRepository) Get(id int64) (*models.Mission, error) {
 	return &services, nil
 }
 
-func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
+func (u *MissionRepository) Create(s *models.Mission, isTemplate bool) (*models.Mission, error) {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -223,33 +280,11 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 
 	defer conn.Release()
 
-	// 1. Get Next ID from Sequence
-	//var id int64 // Use int64 for sequence value
+	query := insertMission
 
-	// err = conn.QueryRow(ctx, `SELECT nextval('missions.mission_id_seq'::regclass)`).Scan(&id)
-
-	// if err != nil {
-	// 	logger.Error().Err(err).Msg("Error getting next sequence value")
-
-	// 	return nil, err // Return a more specific error
-	// }
-
-	// date := time.Now().Format(date_utils.CompleteFormatDate)
-
-	// code := fmt.Sprintf("%d-%s", id, date)
-
-	// s.Id = id
-
-	// createdAt, err := time.Parse(date_utils.CompleteFormatDate, date)
-
-	// if err != nil {
-
-	// 	logger.Error().Err(err).Msg("Error parsing date")
-
-	// 	return nil, err
-	// }
-
-	//s.CreatedAt = sql.NullTime{Time: createdAt, Valid: true}
+	if isTemplate {
+		query = insertMissionTemplate
+	}
 
 	s.Code = sql.NullString{String: "", Valid: true}
 
@@ -258,7 +293,7 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 	var id int64
 	var createdAt time.Time
 
-	err = conn.QueryRow(ctx, insertMission,
+	err = conn.QueryRow(ctx, query,
 		s.GetNameArgs(),
 	).Scan(&id, &createdAt)
 
@@ -277,7 +312,7 @@ func (u *MissionRepository) Create(s *models.Mission) (*models.Mission, error) {
 	return s, nil // Return the mission with the set ID
 }
 
-func (u *MissionRepository) Update(s *models.Mission) error {
+func (u *MissionRepository) Update(s *models.Mission, isTemplate bool) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -288,7 +323,13 @@ func (u *MissionRepository) Update(s *models.Mission) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, updateMission, s.GetNameArgs())
+	query := updateMission
+
+	if isTemplate {
+		query = updateMissionTemplate
+	}
+
+	_, err = conn.Exec(ctx, query, s.GetNameArgs())
 
 	if err != nil {
 		return err
@@ -297,7 +338,7 @@ func (u *MissionRepository) Update(s *models.Mission) error {
 	return nil
 }
 
-func (u *MissionRepository) Delete(id int64) error {
+func (u *MissionRepository) Delete(id int64, isTemplate bool) error {
 	ctx := context.Background()
 
 	conn, err := u.db.Acquire(ctx)
@@ -308,7 +349,13 @@ func (u *MissionRepository) Delete(id int64) error {
 		return err
 	}
 
-	_, err = conn.Exec(ctx, deleteMission, id)
+	query := deleteMission
+
+	if isTemplate {
+		query = deleteMissionTemplate
+	}
+
+	_, err = conn.Exec(ctx, query, id)
 
 	if err != nil {
 		return models.ErrorMissionServiceNotDeleted

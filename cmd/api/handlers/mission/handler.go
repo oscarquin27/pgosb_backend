@@ -7,6 +7,7 @@ import (
 	"fdms/src/services"
 	"fdms/src/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,7 +26,9 @@ func (u *MissionController) GetMission(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	mission, err := u.missionService.Get(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.Get(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -42,7 +45,9 @@ func (u *MissionController) GetMission(c *gin.Context) {
 
 func (u *MissionController) GetAllMissions(c *gin.Context) {
 
-	mission, err := u.missionService.GetAllMissionSummary()
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	mission, err := u.missionService.GetAllMissionSummary(isTemplate)
 
 	if err != nil {
 		if err == models.ErrorMissionNotFound {
@@ -66,6 +71,7 @@ func (u *MissionController) GetAllMissions(c *gin.Context) {
 }
 
 func (u *MissionController) Create(c *gin.Context) {
+
 	var mission api_models.MissionJson
 
 	if err := c.BindJSON(&mission); err != nil {
@@ -76,7 +82,9 @@ func (u *MissionController) Create(c *gin.Context) {
 
 	missionEntity := mission.ToModel()
 
-	id, err := u.missionService.Create(&missionEntity)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	id, err := u.missionService.Create(&missionEntity, isTemplate)
 
 	if err != nil {
 		logger.Error().Err(err).Msg("Error Creando Mission")
@@ -100,7 +108,9 @@ func (u *MissionController) Update(c *gin.Context) {
 
 	mission := missionJson.ToModel()
 
-	err := u.missionService.Update(&mission)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	err := u.missionService.Update(&mission, isTemplate)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -114,10 +124,13 @@ func (u *MissionController) Delete(c *gin.Context) {
 
 	id := utils.ParseInt64(c.Param("id"))
 
-	err := u.missionService.Delete(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	err := u.missionService.Delete(id, isTemplate)
 
 	if err != nil {
 		if err == models.ErrorUserNotDeleted {
+
 			c.JSON(http.StatusConflict, err.Error())
 			return
 		}
