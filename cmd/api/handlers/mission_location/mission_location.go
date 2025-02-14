@@ -9,6 +9,7 @@ import (
 	"fdms/src/utils/results"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,9 +65,11 @@ func (u *MissionLocationController) GetLocationsByServiceId(c *gin.Context) {
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
 	var returnList []api_models.MissionLocationJson = make([]api_models.MissionLocationJson, 0)
 
-	r := u.missionService.GetLocationsByServiceId(id)
+	r := u.missionService.GetLocationsByServiceId(id, isTemplate)
 
 	if !r.IsSuccessful {
 

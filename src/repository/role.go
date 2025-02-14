@@ -21,7 +21,7 @@ func NewRoleService(connPool *pgxpool.Pool) services.RoleService {
 	}
 }
 
-func (u *RoleRepositoy) Get(id int64) *results.ResultWithValue[*models.Role] {
+func (u *RoleRepositoy) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Role] {
 
 	r := results.NewResultWithValue[*models.Role]("Get-Role", false, nil, nil).Failure()
 
@@ -59,7 +59,7 @@ func (u *RoleRepositoy) Get(id int64) *results.ResultWithValue[*models.Role] {
 	return r.Success().WithValue(&role)
 }
 
-func (u *RoleRepositoy) GetAll(params ...string) ([]models.Role, *results.GeneralError) {
+func (u *RoleRepositoy) GetAll(isTemplate bool, params ...string) ([]models.Role, *results.GeneralError) {
 	var roles []models.Role = make([]models.Role, 0)
 
 	ctx := context.Background() // Or use a specific context
@@ -98,7 +98,7 @@ func (u *RoleRepositoy) GetAll(params ...string) ([]models.Role, *results.Genera
 	return rolesValus, nil
 }
 
-func (u *RoleRepositoy) Create(role *models.Role) *results.ResultWithValue[*models.Role] {
+func (u *RoleRepositoy) Create(role *models.Role, isTemplate bool) *results.ResultWithValue[*models.Role] {
 
 	r := results.NewResultWithValue[*models.Role]("Create-Role", false, nil, nil).Failure()
 
@@ -128,7 +128,7 @@ func (u *RoleRepositoy) Create(role *models.Role) *results.ResultWithValue[*mode
 	return r.Success().WithValue(role)
 }
 
-func (u *RoleRepositoy) Update(role *models.Role) *results.ResultWithValue[*models.Role] {
+func (u *RoleRepositoy) Update(role *models.Role, isTemplate bool) *results.ResultWithValue[*models.Role] {
 
 	r := results.NewResultWithValue[*models.Role]("Update-Unit", false, nil, nil).Failure()
 
@@ -166,7 +166,7 @@ func (u *RoleRepositoy) Update(role *models.Role) *results.ResultWithValue[*mode
 	return r.Success().WithValue(role)
 }
 
-func (u *RoleRepositoy) Delete(id int64) *results.Result {
+func (u *RoleRepositoy) Delete(id int64, isTemplate bool) *results.Result {
 
 	r := results.NewResult("Delete-Role", false, nil).Failure()
 

@@ -28,6 +28,9 @@ type MissionLocation struct {
 	// Street *string `db:"street"`
 
 	Address *string `db:"address"`
+
+	Street *string `db:"street"`
+	Beach  *string `db:"beach"`
 }
 
 func (s *MissionLocation) SetId(id int64) {
@@ -50,5 +53,7 @@ func (s *MissionLocation) GetNameArgs() pgx.NamedArgs {
 		"urb_id":          s.UrbId,
 		"urb":             s.Urb,
 		"address":         s.Address,
+		"street":          s.Street,
+		"beach":           s.Beach,
 	}
 }

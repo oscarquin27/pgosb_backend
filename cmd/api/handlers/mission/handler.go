@@ -72,6 +72,8 @@ func (u *MissionController) GetAllMissions(c *gin.Context) {
 
 func (u *MissionController) Create(c *gin.Context) {
 
+	//time.Sleep(5 * time.Second)
+
 	var mission api_models.MissionJson
 
 	if err := c.BindJSON(&mission); err != nil {

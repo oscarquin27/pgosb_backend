@@ -28,7 +28,7 @@ func NewUserService(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationServi
 	}
 }
 
-func (u *UserRepository) Get(id int64) *results.ResultWithValue[*models.User] {
+func (u *UserRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.User] {
 
 	r := results.NewResultWithValue[*models.User]("Get-User", false, nil, nil).Failure()
 
@@ -103,7 +103,7 @@ where u.id = $1`, id)
 	return r.Success().WithValue(&user)
 }
 
-func (u *UserRepository) GetAll(params ...string) ([]models.User, *results.GeneralError) {
+func (u *UserRepository) GetAll(isTemplate bool, params ...string) ([]models.User, *results.GeneralError) {
 
 	var usersDefault []models.User = make([]models.User, 0)
 
@@ -186,7 +186,7 @@ left join users.roles ra on ra.id = u.id_role ORDER BY u.id DESC`)
 	return users, nil
 }
 
-func (u *UserRepository) Create(user *models.User) *results.ResultWithValue[*models.User] {
+func (u *UserRepository) Create(user *models.User, isTemplate bool) *results.ResultWithValue[*models.User] {
 
 	r := results.NewResultWithValue[*models.User]("Create-User", false, nil, nil).Failure()
 
@@ -350,7 +350,7 @@ VALUES($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $1
 	return r.Success().WithValue(user)
 }
 
-func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*models.User] {
+func (u *UserRepository) Update(user *models.User, isTemplate bool) *results.ResultWithValue[*models.User] {
 
 	r := results.NewResultWithValue[*models.User]("Update-User", false, nil, nil).Failure()
 
@@ -376,7 +376,7 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 
 	var keycloakId sql.NullString
 
-	userResult := u.Get(user.Id)
+	userResult := u.Get(user.Id, isTemplate)
 
 	if !userResult.IsSuccessful {
 		return userResult
@@ -533,7 +533,7 @@ func (u *UserRepository) Update(user *models.User) *results.ResultWithValue[*mod
 	return r.Success().WithValue(user)
 }
 
-func (u *UserRepository) Delete(id int64) *results.Result {
+func (u *UserRepository) Delete(id int64, isTemplate bool) *results.Result {
 
 	r := results.NewResult("Delete-User", false, nil).Failure()
 
@@ -595,7 +595,7 @@ func (u *UserRepository) GetAllSimple() *results.ResultWithValue[[]models.UserSi
 	r := results.NewResultWithValue[[]models.UserSimple]("Get-All-Simple", false, make([]models.UserSimple, 0), nil).
 		Failure()
 
-	allUsers, err := u.GetAll()
+	allUsers, err := u.GetAll(false)
 
 	if err != nil {
 		return r.WithError(err)

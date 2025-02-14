@@ -7,6 +7,7 @@ import (
 	"fdms/src/services"
 	"fdms/src/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -37,6 +38,8 @@ func (u *MissionFireFigtherController) GetAll(c *gin.Context) {
 }
 
 func (u *MissionFireFigtherController) Create(c *gin.Context) {
+	//time.Sleep(5 * time.Second)
+
 	s := api_models.MissionFirefighterJson{}
 
 	var model abstract_handler.AbstactModel[models.MissionFirefighter, api_models.MissionFirefighterJson] = &s
@@ -62,7 +65,9 @@ func (u *MissionFireFigtherController) GetUsers(c *gin.Context) {
 
 	id := utils.ParseInt(c.Param("id"))
 
-	result, err := u.missionFirefighterService.GetByMissionId(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	result, err := u.missionFirefighterService.GetByMissionId(id, isTemplate)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)

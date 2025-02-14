@@ -34,18 +34,18 @@ const updateSectorQuery = `UPDATE locations.sectors
 
 const deleteSectorQuery = `DELETE FROM locations.sectors WHERE id = $1`
 
-func (u *SectorRepository) Get(id int64) *results.ResultWithValue[*models.Sector] {
+func (u *SectorRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Sector] {
 
-	r := u.AbstractRepository.Get(id, selectSectorQuery)
+	r := u.AbstractRepository.Get(id, selectSectorQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *SectorRepository) GetAll(params ...string) ([]models.Sector, *results.GeneralError) {
+func (u *SectorRepository) GetAll(isTemplate bool, params ...string) ([]models.Sector, *results.GeneralError) {
 
 	var municipalities []models.Sector = make([]models.Sector, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllSectorQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllSectorQuery, false, params...)
 
 	if err != nil {
 		return municipalities, err
@@ -54,23 +54,23 @@ func (u *SectorRepository) GetAll(params ...string) ([]models.Sector, *results.G
 	return values, nil
 }
 
-func (u *SectorRepository) Create(state *models.Sector) *results.ResultWithValue[*models.Sector] {
+func (u *SectorRepository) Create(state *models.Sector, isTemplate bool) *results.ResultWithValue[*models.Sector] {
 
-	r, id := u.AbstractRepository.Create(*state, insertSectorQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertSectorQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *SectorRepository) Update(state *models.Sector) *results.ResultWithValue[*models.Sector] {
+func (u *SectorRepository) Update(state *models.Sector, isTemplate bool) *results.ResultWithValue[*models.Sector] {
 
-	r := u.AbstractRepository.Update(*state, updateSectorQuery, state.GetNameArgs())
+	r := u.AbstractRepository.Update(*state, updateSectorQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *SectorRepository) Delete(id int64) *results.Result {
+func (u *SectorRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteSectorQuery)
+	return u.AbstractRepository.Delete(id, deleteSectorQuery, false)
 }

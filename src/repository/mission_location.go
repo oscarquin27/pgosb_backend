@@ -24,20 +24,33 @@ func NewMissionLocationService(db *pgxpool.Pool) services.MissionLocationService
 }
 
 const selectMissionLocationQuery = "SELECT * FROM missions.locations WHERE id = $1"
+const selectMissionLocationQueryTemplate = "SELECT * FROM missions.locations_template WHERE id = $1"
 
 const selectMissionLocationQuerybyServiceId = "SELECT * FROM missions.locations WHERE mission_id = $1"
+const selectMissionLocationQuerybyServiceIdTemplate = "SELECT * FROM missions.locations_template WHERE mission_id = $1"
 
 const selectAllMissionLocationQuery = "SELECT * FROM missions.locations"
+const selectAllMissionLocationQueryTemplate = "SELECT * FROM missions.locations_template"
 
 const insertMissionLocationQuery = `INSERT INTO missions.locations (
     
     alias,state_id, state, municipality_id, municipality, parish_id,
-    parish, sector_id, sector, urb_id, urb,  address , mission_id
+    parish, sector_id, sector, urb_id, urb,  address , mission_id, street, beach
 )
 VALUES (
      @alias, 
     @state_id, @state, @municipality_id, @municipality, @parish_id, 
-    @parish, @sector_id, @sector, @urb_id, @urb,  @address, @mission_id
+    @parish, @sector_id, @sector, @urb_id, @urb,  @address, @mission_id, @street, @beach
+) RETURNING id`
+const insertMissionLocationQueryTemplate = `INSERT INTO missions.locations_template (
+    
+alias,state_id, state, municipality_id, municipality, parish_id,
+parish, sector_id, sector, urb_id, urb,  address , mission_id, street, beach
+)
+VALUES (
+ @alias, 
+@state_id, @state, @municipality_id, @municipality, @parish_id, 
+@parish, @sector_id, @sector, @urb_id, @urb,  @address, @mission_id, @street, @beach
 ) RETURNING id`
 
 const updateMissionLocationQuery = `UPDATE missions.locations
@@ -55,22 +68,56 @@ SET
     urb_id = @urb_id,
     urb = @urb,
     address = @address,
+	street = @street,
+	beach = @beach,
+	mission_id = @mission_id
+WHERE id = @id; `
+const updateMissionLocationQueryTemplate = `UPDATE missions.locations_template
+SET 
+    alias = @alias, 
+    
+    state_id = @state_id,
+    state = @state,
+    municipality_id = @municipality_id,
+    municipality = @municipality,
+    parish_id = @parish_id,
+    parish = @parish,
+    sector_id = @sector_id,
+    sector = @sector,
+    urb_id = @urb_id,
+    urb = @urb,
+    address = @address,
+	street = @street,
+	beach = @beach,
 	mission_id = @mission_id
 WHERE id = @id; `
 
 const deleteMissionLocationQuery = `DELETE FROM missions.locations WHERE id = $1`
+const deleteMissionLocationQueryTemplate = `DELETE FROM missions.locations_template WHERE id = $1`
 
-func (u *MissionLocationRepository) Get(id int64) *results.ResultWithValue[*models.MissionLocation] {
-	r := u.AbstractRepository.Get(id, selectMissionLocationQuery)
+func (u *MissionLocationRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.MissionLocation] {
+	query := selectMissionLocationQuery
+
+	if isTemplate {
+		query = selectMissionLocationQueryTemplate
+	}
+
+	r := u.AbstractRepository.Get(id, query, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *MissionLocationRepository) GetAll(params ...string) ([]models.MissionLocation, *results.GeneralError) {
+func (u *MissionLocationRepository) GetAll(isTemplate bool, params ...string) ([]models.MissionLocation, *results.GeneralError) {
 
 	var states []models.MissionLocation = make([]models.MissionLocation, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMissionLocationQuery, params...)
+	query := selectAllMissionLocationQuery
+
+	if isTemplate {
+		query = selectAllMissionLocationQueryTemplate
+	}
+
+	values, err := u.AbstractRepository.GetAll(query, false, params...)
 
 	if err != nil {
 		return states, err
@@ -79,29 +126,54 @@ func (u *MissionLocationRepository) GetAll(params ...string) ([]models.MissionLo
 	return values, nil
 }
 
-func (u *MissionLocationRepository) Create(state *models.MissionLocation) *results.ResultWithValue[*models.MissionLocation] {
+func (u *MissionLocationRepository) Create(state *models.MissionLocation, isTemplate bool) *results.ResultWithValue[*models.MissionLocation] {
 
-	r, id := u.AbstractRepository.Create(*state, insertMissionLocationQuery, state.GetNameArgs(), state.SetId)
+	query := insertMissionLocationQuery
+
+	if isTemplate {
+		query = insertMissionLocationQueryTemplate
+	}
+
+	r, id := u.AbstractRepository.Create(*state, query, state.GetNameArgs(), state.SetId, false)
 
 	r.Value.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MissionLocationRepository) Update(state *models.MissionLocation) *results.ResultWithValue[*models.MissionLocation] {
-	r := u.AbstractRepository.Update(*state, updateMissionLocationQuery, state.GetNameArgs())
+func (u *MissionLocationRepository) Update(state *models.MissionLocation, isTemplate bool) *results.ResultWithValue[*models.MissionLocation] {
+
+	query := updateMissionLocationQuery
+
+	if isTemplate {
+		query = updateMissionLocationQueryTemplate
+	}
+
+	r := u.AbstractRepository.Update(*state, query, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MissionLocationRepository) Delete(id int64) *results.Result {
+func (u *MissionLocationRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteMissionLocationQuery)
+	query := deleteMissionLocationQuery
+
+	if isTemplate {
+		query = deleteMissionLocationQueryTemplate
+	}
+
+	return u.AbstractRepository.Delete(id, query, false)
 }
 
-func (u *MissionLocationRepository) GetLocationsByServiceId(id int64) *results.ResultWithValue[[]models.MissionLocation] {
+func (u *MissionLocationRepository) GetLocationsByServiceId(id int64, isTemplate bool) *results.ResultWithValue[[]models.MissionLocation] {
 
 	defaultList := make([]models.MissionLocation, 0)
+
+	query := selectMissionLocationQuerybyServiceId
+
+	if isTemplate {
+		query = selectMissionLocationQuerybyServiceIdTemplate
+	}
 
 	rest := results.NewResultWithValue("GetLocationByServiceId", false, defaultList, nil)
 
@@ -116,7 +188,7 @@ func (u *MissionLocationRepository) GetLocationsByServiceId(id int64) *results.R
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, selectMissionLocationQuerybyServiceId, id)
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		return rest.WithError(

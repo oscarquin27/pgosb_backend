@@ -39,4 +39,6 @@ type MissionSummary struct {
 	NumAuthorityPerson   sql.NullInt64    `db:"num_authority_person"`
 	NumAuthorityVehicle  sql.NullInt64    `db:"num_authority_vehicle"`
 	StationId            sql.NullInt64    `db:"station_id"`
+	Street               sql.NullString   `db:"street"`
+	Beach                sql.NullString   `db:"beach"`
 }

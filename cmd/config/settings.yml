@@ -1,5 +1,5 @@
 http:
-  port: 8082
+  port: 5700
   main_domain: "pruebas.gres.net"
   enable_ssl: true
   ssl_cert: "./config/pruebas.gres.net.pem"
@@ -17,7 +17,7 @@ keycloak:
   realm: "pgosb"
 
 log_settings:
-  console: true
+  console: false
   beutify_console: false
   file: true
   route: "./logs/application.log"

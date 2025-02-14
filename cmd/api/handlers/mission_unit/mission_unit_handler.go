@@ -7,6 +7,7 @@ import (
 	"fdms/src/services"
 	"fdms/src/utils"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -36,6 +37,9 @@ func (u *MissionUnitController) GetAll(c *gin.Context) {
 }
 
 func (u *MissionUnitController) Create(c *gin.Context) {
+
+	//time.Sleep(5 * time.Second)
+
 	s := api_models.MissionUnitJson{}
 
 	var model abstract_handler.AbstactModel[models.MissionUnit, api_models.MissionUnitJson] = &s
@@ -61,7 +65,9 @@ func (u *MissionUnitController) GetAllSummary(c *gin.Context) {
 
 	id := utils.ParseInt(c.Param("id"))
 
-	result, err := u.missionUnitService.GetByMissionId(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	result, err := u.missionUnitService.GetByMissionId(id, isTemplate)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err)

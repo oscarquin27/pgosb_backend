@@ -24,32 +24,55 @@ func NewMissionUnitService(db *pgxpool.Pool) services.MissionUnitService {
 }
 
 const selectMissionUnitQuery = "SELECT * FROM missions.units WHERE id = $1"
+const selectMissionUnitQueryTemplate = "SELECT * FROM missions.units_template WHERE id = $1"
 
 const selectAllMissionUnitQuery = "SELECT * FROM missions.units"
+const selectAllMissionUnitQueryTemplate = "SELECT * FROM missions.units"
 
 const insertMissionUnitQuery = `INSERT INTO missions.units(
 	 mission_id, unit_id)
 	VALUES ( @mission_id, @unit_id) RETURNING id`
+const insertMissionUnitQueryTemplate = `INSERT INTO missions.units_template(
+		mission_id, unit_id)
+	   VALUES ( @mission_id, @unit_id) RETURNING id`
 
 const updateMissionUnitQuery = `UPDATE missions.units
 	SET   unit_id=@unit_id, mission_id=@mission_id
 	WHERE id = @id `
+const updateMissionUnitQueryTemplate = `UPDATE missions.units_template
+	SET   unit_id=@unit_id, mission_id=@mission_id
+	WHERE id = @id `
 
 const deleteMissionUnitQuery = `DELETE FROM missions.units WHERE id = $1`
+const deleteMissionUnitQueryTemplate = `DELETE FROM missions.units_template WHERE id = $1`
 
 const selectMissionUnitByMissionIdQuery = `SELECT * FROM missions.vw_units_mission WHERE mission_id = $1`
+const selectMissionUnitByMissionIdQueryTemplate = `SELECT * FROM missions.vw_units_mission_template WHERE mission_id = $1`
 
-func (u *MissionUnitRepository) Get(id int64) *results.ResultWithValue[*models.MissionUnit] {
-	r := u.AbstractRepository.Get(id, selectMissionUnitQuery)
+func (u *MissionUnitRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.MissionUnit] {
+
+	query := selectMissionUnitQuery
+
+	if isTemplate {
+		query = selectMissionUnitQueryTemplate
+	}
+
+	r := u.AbstractRepository.Get(id, query, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *MissionUnitRepository) GetAll(params ...string) ([]models.MissionUnit, *results.GeneralError) {
+func (u *MissionUnitRepository) GetAll(isTemplate bool, params ...string) ([]models.MissionUnit, *results.GeneralError) {
 
 	var MissionUnits []models.MissionUnit = make([]models.MissionUnit, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMissionUnitQuery, params...)
+	query := selectAllMissionUnitQuery
+
+	if isTemplate {
+		query = selectAllMissionUnitQueryTemplate
+	}
+
+	values, err := u.AbstractRepository.GetAll(query, false, params...)
 
 	if err != nil {
 		return MissionUnits, err
@@ -58,27 +81,47 @@ func (u *MissionUnitRepository) GetAll(params ...string) ([]models.MissionUnit, 
 	return values, nil
 }
 
-func (u *MissionUnitRepository) Create(MissionUnit *models.MissionUnit) *results.ResultWithValue[*models.MissionUnit] {
+func (u *MissionUnitRepository) Create(MissionUnit *models.MissionUnit, isTemplate bool) *results.ResultWithValue[*models.MissionUnit] {
 
-	r, id := u.AbstractRepository.Create(*MissionUnit, insertMissionUnitQuery, MissionUnit.GetNameArgs(), MissionUnit.SetId)
+	query := insertMissionUnitQuery
+
+	if isTemplate {
+		query = insertMissionUnitQueryTemplate
+	}
+
+	r, id := u.AbstractRepository.Create(*MissionUnit, query, MissionUnit.GetNameArgs(), MissionUnit.SetId, false)
 
 	MissionUnit.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+
 }
 
-func (u *MissionUnitRepository) Update(MissionUnit *models.MissionUnit) *results.ResultWithValue[*models.MissionUnit] {
-	r := u.AbstractRepository.Update(*MissionUnit, updateMissionUnitQuery, MissionUnit.GetNameArgs())
+func (u *MissionUnitRepository) Update(MissionUnit *models.MissionUnit, isTemplate bool) *results.ResultWithValue[*models.MissionUnit] {
+
+	query := updateMissionUnitQuery
+
+	if isTemplate {
+		query = updateMissionUnitQueryTemplate
+	}
+
+	r := u.AbstractRepository.Update(*MissionUnit, query, MissionUnit.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MissionUnitRepository) Delete(id int64) *results.Result {
+func (u *MissionUnitRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteMissionUnitQuery)
+	query := deleteMissionUnitQuery
+
+	if isTemplate {
+		query = deleteMissionUnitQueryTemplate
+	}
+
+	return u.AbstractRepository.Delete(id, query, false)
 }
 
-func (u *MissionUnitRepository) GetByMissionId(id int) ([]models.MissionUnitSummary, error) {
+func (u *MissionUnitRepository) GetByMissionId(id int, isTemplate bool) ([]models.MissionUnitSummary, error) {
 
 	ctx := context.Background()
 	conn, err := u.db.Acquire(ctx)
@@ -89,7 +132,13 @@ func (u *MissionUnitRepository) GetByMissionId(id int) ([]models.MissionUnitSumm
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, selectMissionUnitByMissionIdQuery, id)
+	query := selectMissionUnitByMissionIdQuery
+
+	if isTemplate {
+		query = selectMissionUnitByMissionIdQueryTemplate
+	}
+
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		return nil, err

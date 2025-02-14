@@ -8,5 +8,5 @@ import (
 
 type MissionLocationService interface {
 	abstract_handler.AbstractCRUDService[models.MissionLocation]
-	GetLocationsByServiceId(id int64) *results.ResultWithValue[[]models.MissionLocation]
+	GetLocationsByServiceId(id int64, isTemplate bool) *results.ResultWithValue[[]models.MissionLocation]
 }

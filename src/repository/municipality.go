@@ -35,18 +35,18 @@ const updateMunicipalityQuery = `UPDATE locations.municipalities
 
 const deleteMunicipalityQuery = `DELETE FROM locations.municipalities WHERE id = $1`
 
-func (u *MunicipalityRepository) Get(id int64) *results.ResultWithValue[*models.Municipality] {
+func (u *MunicipalityRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Municipality] {
 
-	r := u.AbstractRepository.Get(id, selectMunicipalityQuery)
+	r := u.AbstractRepository.Get(id, selectMunicipalityQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MunicipalityRepository) GetAll(params ...string) ([]models.Municipality, *results.GeneralError) {
+func (u *MunicipalityRepository) GetAll(isTemplate bool, params ...string) ([]models.Municipality, *results.GeneralError) {
 
 	var municipalities []models.Municipality = make([]models.Municipality, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMunicipalityQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllMunicipalityQuery, false, params...)
 
 	if err != nil {
 		return municipalities, err
@@ -55,23 +55,23 @@ func (u *MunicipalityRepository) GetAll(params ...string) ([]models.Municipality
 	return values, nil
 }
 
-func (u *MunicipalityRepository) Create(state *models.Municipality) *results.ResultWithValue[*models.Municipality] {
+func (u *MunicipalityRepository) Create(state *models.Municipality, isTemplate bool) *results.ResultWithValue[*models.Municipality] {
 
-	r, id := u.AbstractRepository.Create(*state, insertMunicipalityQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMunicipalityQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MunicipalityRepository) Update(state *models.Municipality) *results.ResultWithValue[*models.Municipality] {
+func (u *MunicipalityRepository) Update(state *models.Municipality, isTemplate bool) *results.ResultWithValue[*models.Municipality] {
 
-	r := u.AbstractRepository.Update(*state, updateMunicipalityQuery, state.GetNameArgs())
+	r := u.AbstractRepository.Update(*state, updateMunicipalityQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MunicipalityRepository) Delete(id int64) *results.Result {
+func (u *MunicipalityRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteMunicipalityQuery)
+	return u.AbstractRepository.Delete(id, deleteMunicipalityQuery, false)
 }

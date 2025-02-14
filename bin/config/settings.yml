@@ -17,7 +17,7 @@ keycloak:
   realm: "pgosb"
 
 log_settings:
-  console: true
+  console: false
   beutify_console: false
   file: true
   route: "./logs/application.log"

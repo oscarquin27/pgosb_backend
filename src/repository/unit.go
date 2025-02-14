@@ -158,7 +158,7 @@ func NewUnityService(db *pgxpool.Pool) services.UnitService {
 	}
 }
 
-func (u *UnitRepository) Get(id int64) *results.ResultWithValue[*models.Unit] {
+func (u *UnitRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Unit] {
 
 	r := results.NewResultWithValue[*models.Unit]("Get-Unit", false, nil, nil).Failure()
 
@@ -195,7 +195,7 @@ func (u *UnitRepository) Get(id int64) *results.ResultWithValue[*models.Unit] {
 	return r.Success().WithValue(&unity)
 }
 
-func (u *UnitRepository) GetAll(parmas ...string) ([]models.Unit, *results.GeneralError) {
+func (u *UnitRepository) GetAll(isTemplate bool, params ...string) ([]models.Unit, *results.GeneralError) {
 	var units []models.Unit = make([]models.Unit, 0)
 
 	ctx := context.Background()
@@ -232,7 +232,7 @@ func (u *UnitRepository) GetAll(parmas ...string) ([]models.Unit, *results.Gener
 	return unity, nil
 }
 
-func (u *UnitRepository) Create(unit *models.Unit) *results.ResultWithValue[*models.Unit] {
+func (u *UnitRepository) Create(unit *models.Unit, isTemplate bool) *results.ResultWithValue[*models.Unit] {
 
 	r := results.NewResultWithValue[*models.Unit]("Create-Unit", false, nil, nil).Failure()
 
@@ -282,7 +282,7 @@ func (u *UnitRepository) Create(unit *models.Unit) *results.ResultWithValue[*mod
 	return r.Success().WithValue(unit)
 }
 
-func (u *UnitRepository) Update(unit *models.Unit) *results.ResultWithValue[*models.Unit] {
+func (u *UnitRepository) Update(unit *models.Unit, isTemplate bool) *results.ResultWithValue[*models.Unit] {
 	r := results.NewResultWithValue[*models.Unit]("Update-Unit", false, nil, nil).Failure()
 
 	ctx := context.Background()
@@ -343,7 +343,7 @@ func (u *UnitRepository) Update(unit *models.Unit) *results.ResultWithValue[*mod
 	return r.Success().WithValue(unit)
 }
 
-func (u *UnitRepository) Delete(id int64) *results.Result {
+func (u *UnitRepository) Delete(id int64, isTemplate bool) *results.Result {
 
 	r := results.NewResult("Delete-Unit", false, nil).Failure()
 
@@ -379,7 +379,7 @@ func (u *UnitRepository) GetAllSimple() *results.ResultWithValue[[]models.UnitSi
 	r := results.NewResultWithValue[[]models.UnitSimple]("Get-All-Simple", false, make([]models.UnitSimple, 0), nil).
 		Failure()
 
-	allUnist, err := u.GetAll()
+	allUnist, err := u.GetAll(false)
 
 	if err != nil {
 		return r.WithError(err)

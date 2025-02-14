@@ -35,18 +35,18 @@ const updateParishQuery = `UPDATE locations.parish
 
 const deleteParishQuery = `DELETE FROM locations.parish WHERE id = $1`
 
-func (u *ParishRepository) Get(id int64) *results.ResultWithValue[*models.Parish] {
+func (u *ParishRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Parish] {
 
-	r := u.AbstractRepository.Get(id, selectParishQuery)
+	r := u.AbstractRepository.Get(id, selectParishQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *ParishRepository) GetAll(params ...string) ([]models.Parish, *results.GeneralError) {
+func (u *ParishRepository) GetAll(isTemplate bool, params ...string) ([]models.Parish, *results.GeneralError) {
 
 	var municipalities []models.Parish = make([]models.Parish, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllParishQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllParishQuery, false, params...)
 
 	if err != nil {
 		return municipalities, err
@@ -55,23 +55,24 @@ func (u *ParishRepository) GetAll(params ...string) ([]models.Parish, *results.G
 	return values, nil
 }
 
-func (u *ParishRepository) Create(state *models.Parish) *results.ResultWithValue[*models.Parish] {
+func (u *ParishRepository) Create(state *models.Parish, isTemplate bool) *results.ResultWithValue[*models.Parish] {
 
-	r, id := u.AbstractRepository.Create(*state, insertParishQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertParishQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *ParishRepository) Update(state *models.Parish) *results.ResultWithValue[*models.Parish] {
+func (u *ParishRepository) Update(state *models.Parish, isTemplate bool) *results.ResultWithValue[*models.Parish] {
 
-	r := u.AbstractRepository.Update(*state, updateParishQuery, state.GetNameArgs())
+	r := u.AbstractRepository.Update(*state, updateParishQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+
 }
 
-func (u *ParishRepository) Delete(id int64) *results.Result {
+func (u *ParishRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteParishQuery)
+	return u.AbstractRepository.Delete(id, deleteParishQuery, false)
 }

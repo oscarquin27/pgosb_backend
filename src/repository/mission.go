@@ -79,12 +79,62 @@ const (
     `
 
 	insertMissionTemplate = `
-	INSERT INTO missions.mission_template (
-		name, description, status, created_at, updated_at, deleted_at
-	) VALUES (
-		$1, $2, $3, $4, $5, $6
-	) RETURNING *
-	`
+
+        INSERT INTO missions.mission_template (
+		 
+		code, 
+		
+		alias, 
+		operative_areas, 
+		summary, 
+		description, 
+		unharmed, 
+		injured, 
+		transported, 
+		deceased, 
+		station_id, 
+		location_id, 
+		center_id, 
+		sending_user_id, 
+		receiving_user_id, 
+		level, 
+		peace_quadrant, 
+		location_destiny_id, 
+		is_important, 
+		pending_for_data,
+		cancel_reason,
+		manual_mission_date
+		
+		)
+        VALUES (
+		
+		@code, 
+	
+		@alias, 
+		@operative_areas, 
+		@summary, 
+		@description, 
+		@unharmed, 
+		@injured, 
+		@transported, 
+		@deceased, 
+		@station_id, 
+		@location_id, 
+		@center_id, 
+		@sending_user_id, 
+		@receiving_user_id, 
+		@level, 
+		@peace_quadrant, 
+		@location_destiny_id, 
+		@is_important, 
+		@pending_for_data,
+		@cancel_reason,
+		@manual_mission_date 
+		
+		
+		) 
+		RETURNING id , created_at
+    `
 
 	updateMission = `
 	UPDATE missions.mission
@@ -115,13 +165,32 @@ const (
 	`
 
 	updateMissionTemplate = `
-	UPDATE missions.mission_template 
-	SET name = $1,
-		description = $2,
-		status = $3,
-		updated_at = $4
-	WHERE id = $5
-	RETURNING *
+	UPDATE missions.mission_template
+	SET 
+		code = @code,
+
+		alias = @alias,
+		operative_areas = @operative_areas,
+		summary = @summary,
+		description = @description,
+		unharmed = @unharmed,
+		injured = @injured,
+		transported = @transported,
+		deceased = @deceased,
+		station_id = @station_id,
+		location_id = @location_id,
+		center_id = @center_id,
+		sending_user_id = @sending_user_id,
+		receiving_user_id = @receiving_user_id,
+		level = @level,
+		peace_quadrant = @peace_quadrant,
+		location_destiny_id = @location_destiny_id,
+		is_important = @is_important,
+		pending_for_data = @pending_for_data,
+		cancel_reason = @cancel_reason,
+		manual_mission_date = @manual_mission_date
+	
+		WHERE id = @id
 	`
 
 	deleteMission = `

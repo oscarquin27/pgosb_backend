@@ -34,18 +34,18 @@ const updateUrbanizationQuery = `UPDATE locations.urbanization
 
 const deleteUrbanizationQuery = `DELETE FROM locations.urbanization WHERE id = $1`
 
-func (u *UrbanizationRepository) Get(id int64) *results.ResultWithValue[*models.Urbanization] {
+func (u *UrbanizationRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Urbanization] {
 
-	r := u.AbstractRepository.Get(id, selectUrbanizationQuery)
+	r := u.AbstractRepository.Get(id, selectUrbanizationQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *UrbanizationRepository) GetAll(params ...string) ([]models.Urbanization, *results.GeneralError) {
+func (u *UrbanizationRepository) GetAll(isTemplate bool, params ...string) ([]models.Urbanization, *results.GeneralError) {
 
 	var municipalities []models.Urbanization = make([]models.Urbanization, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllUrbanizationQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllUrbanizationQuery, false, params...)
 
 	if err != nil {
 		return municipalities, err
@@ -54,23 +54,23 @@ func (u *UrbanizationRepository) GetAll(params ...string) ([]models.Urbanization
 	return values, nil
 }
 
-func (u *UrbanizationRepository) Create(state *models.Urbanization) *results.ResultWithValue[*models.Urbanization] {
+func (u *UrbanizationRepository) Create(state *models.Urbanization, isTemplate bool) *results.ResultWithValue[*models.Urbanization] {
 
-	r, id := u.AbstractRepository.Create(*state, insertUrbanizationQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertUrbanizationQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *UrbanizationRepository) Update(state *models.Urbanization) *results.ResultWithValue[*models.Urbanization] {
+func (u *UrbanizationRepository) Update(state *models.Urbanization, isTemplate bool) *results.ResultWithValue[*models.Urbanization] {
 
-	r := u.AbstractRepository.Update(*state, updateUrbanizationQuery, state.GetNameArgs())
+	r := u.AbstractRepository.Update(*state, updateUrbanizationQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *UrbanizationRepository) Delete(id int64) *results.Result {
+func (u *UrbanizationRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteUrbanizationQuery)
+	return u.AbstractRepository.Delete(id, deleteUrbanizationQuery, false)
 }

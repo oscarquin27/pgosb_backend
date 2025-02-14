@@ -155,7 +155,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	conf.AllowCredentials = true
 
-	conf.AllowOrigins = []string{"https://gres.local.net:8083", "http://localhost:5173",
+	conf.AllowOrigins = []string{"https://gres.local.net:8083", "http://localhost:5173", "http://localhost:5174",
 		"http://192.168.120.136:5173", "http://192.168.100.108:5173", "https://hackorlandodev.com:8083",
 		"http://pruebas.gres.net:8083", "http://192.168.100.103:5173", "http://192.168.120.145:5173"}
 
@@ -376,6 +376,18 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	}
 
+	firefightersMissionTemplate := v1.Group("mission/firefighter/template")
+	{
+		firefightersMissionTemplate.GET("/:id", missionFireFighterController.Get)
+		firefightersMissionTemplate.GET("/all", missionFireFighterController.GetAll)
+
+		firefightersMissionTemplate.POST("/create", missionFireFighterController.Create)
+		firefightersMissionTemplate.PUT("/update", missionFireFighterController.Update)
+		firefightersMissionTemplate.DELETE("/delete/:id", missionFireFighterController.Delete)
+		firefightersMissionTemplate.GET("/group/:id", missionFireFighterController.GetUsers)
+
+	}
+
 	unitMission := v1.Group("mission/unit")
 	{
 		unitMission.GET("/:id", missionUnitController.Get)
@@ -384,6 +396,16 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		unitMission.PUT("/update", missionUnitController.Update)
 		unitMission.DELETE("/delete/:id", missionUnitController.Delete)
 		unitMission.GET("/group/:id", missionUnitController.GetAllSummary)
+	}
+
+	unitMissionTemplate := v1.Group("mission/unit/template")
+	{
+		unitMissionTemplate.GET("/:id", missionUnitController.Get)
+		unitMissionTemplate.GET("/all", missionUnitController.GetAll)
+		unitMissionTemplate.POST("/create", missionUnitController.Create)
+		unitMissionTemplate.PUT("/update", missionUnitController.Update)
+		unitMissionTemplate.DELETE("/delete/:id", missionUnitController.Delete)
+		unitMissionTemplate.GET("/group/:id", missionUnitController.GetAllSummary)
 	}
 
 	infraMission := v1.Group("mission/infrastructure")
@@ -456,6 +478,16 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		locationMission.POST("/create", missionLocationController.Create)
 		locationMission.PUT("/update", missionLocationController.Update)
 		locationMission.DELETE("/delete/:id", missionLocationController.Delete)
+	}
+
+	locationMissionTemplate := v1.Group("mission/location/template")
+	{
+		locationMissionTemplate.GET("/:id", missionLocationController.Get)
+		locationMissionTemplate.GET("/all", missionLocationController.GetAll)
+		locationMissionTemplate.POST("/create", missionLocationController.Create)
+		locationMissionTemplate.PUT("/update", missionLocationController.Update)
+		locationMissionTemplate.DELETE("/delete/:id", missionLocationController.Delete)
+		locationMissionTemplate.GET("/group/:id", missionLocationController.GetLocationsByServiceId)
 	}
 
 	operativeRegion := v1.Group("operative/region")

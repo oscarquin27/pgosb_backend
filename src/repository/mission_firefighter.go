@@ -24,32 +24,54 @@ func NewMissionFirefighterService(db *pgxpool.Pool) services.MissionFirefighterS
 }
 
 const selectMissionFirefighterQuery = "SELECT * FROM missions.firefighters WHERE id = $1"
+const selectMissionFirefighterQueryTemplate = "SELECT * FROM missions.firefighters_template WHERE id = $1"
 
 const selectAllMissionFirefighterQuery = "SELECT * FROM missions.firefighters"
+const selectAllMissionFirefighterTemplateQuery = "SELECT * FROM missions.firefighters_template"
 
 const insertMissionFirefighterQuery = `INSERT INTO missions.firefighters(
 	 user_id, service_role,mission_id)
 	VALUES ( @user_id, @service_role,@mission_id) RETURNING id`
+const insertMissionFirefighterQueryTemplate = `INSERT INTO missions.firefighters_template(
+		user_id, service_role,mission_id)
+	   VALUES ( @user_id, @service_role,@mission_id) RETURNING id`
 
 const updateMissionFirefighterQuery = `UPDATE missions.firefighters
 	SET   user_id=@user_id, service_role=@service_role, mission_id=@mission_id
 	WHERE id = @id `
+const updateMissionFirefighterQueryTemplate = `UPDATE missions.firefighters_template
+	SET   user_id=@user_id, service_role=@service_role, mission_id=@mission_id
+	WHERE id = @id `
 
 const deleteMissionFirefighterQuery = `DELETE FROM missions.firefighters WHERE id = $1`
+const deleteMissionFirefighterQueryTemplate = `DELETE FROM missions.firefighters_template WHERE id = $1`
 
 const selectMissionFirefighterByMissionIdQuery = `SELECT * FROM missions.vw_firefighters_mission WHERE mission_id = $1`
+const selectMissionFirefighterByMissionIdQueryTemplate = `SELECT * FROM missions.vw_firefighters_mission_template WHERE mission_id = $1`
 
-func (u *MissionFirefighterRepository) Get(id int64) *results.ResultWithValue[*models.MissionFirefighter] {
-	r := u.AbstractRepository.Get(id, selectMissionFirefighterQuery)
+func (u *MissionFirefighterRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.MissionFirefighter] {
+	query := selectMissionFirefighterQuery
+
+	if isTemplate {
+		query = selectMissionFirefighterQueryTemplate
+	}
+
+	r := u.AbstractRepository.Get(id, query, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *MissionFirefighterRepository) GetAll(params ...string) ([]models.MissionFirefighter, *results.GeneralError) {
+func (u *MissionFirefighterRepository) GetAll(isTemmplate bool, params ...string) ([]models.MissionFirefighter, *results.GeneralError) {
 
 	var MissionFirefighters []models.MissionFirefighter = make([]models.MissionFirefighter, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMissionFirefighterQuery, params...)
+	query := selectAllMissionFirefighterQuery
+
+	if isTemmplate {
+		query = selectAllMissionFirefighterTemplateQuery
+	}
+
+	values, err := u.AbstractRepository.GetAll(query, false, params...)
 
 	if err != nil {
 		return MissionFirefighters, err
@@ -58,27 +80,45 @@ func (u *MissionFirefighterRepository) GetAll(params ...string) ([]models.Missio
 	return values, nil
 }
 
-func (u *MissionFirefighterRepository) Create(MissionFirefighter *models.MissionFirefighter) *results.ResultWithValue[*models.MissionFirefighter] {
+func (u *MissionFirefighterRepository) Create(MissionFirefighter *models.MissionFirefighter, isTemplate bool) *results.ResultWithValue[*models.MissionFirefighter] {
 
-	r, id := u.AbstractRepository.Create(*MissionFirefighter, insertMissionFirefighterQuery, MissionFirefighter.GetNameArgs(), MissionFirefighter.SetId)
+	query := insertMissionFirefighterQuery
+
+	if isTemplate {
+		query = insertMissionFirefighterQueryTemplate
+	}
+
+	r, id := u.AbstractRepository.Create(*MissionFirefighter, query, MissionFirefighter.GetNameArgs(), MissionFirefighter.SetId, false)
 
 	MissionFirefighter.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MissionFirefighterRepository) Update(MissionFirefighter *models.MissionFirefighter) *results.ResultWithValue[*models.MissionFirefighter] {
-	r := u.AbstractRepository.Update(*MissionFirefighter, updateMissionFirefighterQuery, MissionFirefighter.GetNameArgs())
+func (u *MissionFirefighterRepository) Update(MissionFirefighter *models.MissionFirefighter, isTemplate bool) *results.ResultWithValue[*models.MissionFirefighter] {
+
+	query := updateMissionFirefighterQuery
+
+	if isTemplate {
+		query = updateMissionFirefighterQueryTemplate
+	}
+	r := u.AbstractRepository.Update(*MissionFirefighter, query, MissionFirefighter.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *MissionFirefighterRepository) Delete(id int64) *results.Result {
+func (u *MissionFirefighterRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteMissionFirefighterQuery)
+	query := deleteMissionFirefighterQuery
+
+	if isTemplate {
+		query = deleteMissionFirefighterQueryTemplate
+	}
+
+	return u.AbstractRepository.Delete(id, query, false)
 }
 
-func (u *MissionFirefighterRepository) GetByMissionId(id int) ([]models.MissionFirefighterUser, error) {
+func (u *MissionFirefighterRepository) GetByMissionId(id int, isTemplate bool) ([]models.MissionFirefighterUser, error) {
 
 	ctx := context.Background()
 	conn, err := u.db.Acquire(ctx)
@@ -89,7 +129,13 @@ func (u *MissionFirefighterRepository) GetByMissionId(id int) ([]models.MissionF
 
 	defer conn.Release()
 
-	rows, err := conn.Query(ctx, selectMissionFirefighterByMissionIdQuery, id)
+	query := selectMissionFirefighterByMissionIdQuery
+
+	if isTemplate {
+		query = selectMissionFirefighterByMissionIdQueryTemplate
+	}
+
+	rows, err := conn.Query(ctx, query, id)
 
 	if err != nil {
 		return nil, err

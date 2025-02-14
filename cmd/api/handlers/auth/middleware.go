@@ -131,7 +131,7 @@ func RolePermissionMiddleware(moduleName string, perm string,
 			return
 		}
 
-		userResult := userService.Get(id)
+		userResult := userService.Get(id, false)
 
 		if !userResult.IsSuccessful {
 

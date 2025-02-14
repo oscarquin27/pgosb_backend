@@ -73,17 +73,17 @@ WHERE id = @id; `
 
 const deleteMissionAuthorityVehicleQuery = `DELETE FROM missions.authorities_vehicle WHERE id = $1`
 
-func (u *MissionAuthorityVehicleRepository) Get(id int64) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
-	r := u.AbstractRepository.Get(id, selectMissionAuthorityVehicleQuery)
+func (u *MissionAuthorityVehicleRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
+	r := u.AbstractRepository.Get(id, selectMissionAuthorityVehicleQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *MissionAuthorityVehicleRepository) GetAll(params ...string) ([]models.MissionAuthorityVehicle, *results.GeneralError) {
+func (u *MissionAuthorityVehicleRepository) GetAll(isTemplate bool, params ...string) ([]models.MissionAuthorityVehicle, *results.GeneralError) {
 
 	var states []models.MissionAuthorityVehicle = make([]models.MissionAuthorityVehicle, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllMissionAuthorityVehicleQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllMissionAuthorityVehicleQuery, false, params...)
 
 	if err != nil {
 		return states, err
@@ -92,24 +92,26 @@ func (u *MissionAuthorityVehicleRepository) GetAll(params ...string) ([]models.M
 	return values, nil
 }
 
-func (u *MissionAuthorityVehicleRepository) Create(state *models.MissionAuthorityVehicle) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
+func (u *MissionAuthorityVehicleRepository) Create(state *models.MissionAuthorityVehicle, isTemplate bool) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
 
-	r, id := u.AbstractRepository.Create(*state, insertMissionAuthorityVehicleQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertMissionAuthorityVehicleQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+
 }
 
-func (u *MissionAuthorityVehicleRepository) Update(state *models.MissionAuthorityVehicle) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
-	r := u.AbstractRepository.Update(*state, updateMissionAuthorityVehicleQuery, state.GetNameArgs())
+func (u *MissionAuthorityVehicleRepository) Update(state *models.MissionAuthorityVehicle, isTemplate bool) *results.ResultWithValue[*models.MissionAuthorityVehicle] {
+	r := u.AbstractRepository.Update(*state, updateMissionAuthorityVehicleQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
+
 }
 
-func (u *MissionAuthorityVehicleRepository) Delete(id int64) *results.Result {
+func (u *MissionAuthorityVehicleRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteMissionAuthorityVehicleQuery)
+	return u.AbstractRepository.Delete(id, deleteMissionAuthorityVehicleQuery, false)
 }
 
 func (u *MissionAuthorityVehicleRepository) GetByAuthorityId(id int64) *results.ResultWithValue[[]models.MissionAuthorityVehicle] {

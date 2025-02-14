@@ -33,18 +33,18 @@ const updateOperativeRegion = `UPDATE hq.operative_regions
 
 const deleteOperativeRegion = `DELETE FROM hq.operative_regions WHERE id = @id`
 
-func (u *OperativeRegionsRepository) Get(id int64) *results.ResultWithValue[*models.OperativeRegions] {
+func (u *OperativeRegionsRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.OperativeRegions] {
 
-	r := u.AbstractRepository.Get(id, selectOperativeRegion)
+	r := u.AbstractRepository.Get(id, selectOperativeRegion, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *OperativeRegionsRepository) GetAll(params ...string) ([]models.OperativeRegions, *results.GeneralError) {
+func (u *OperativeRegionsRepository) GetAll(isTemplate bool, params ...string) ([]models.OperativeRegions, *results.GeneralError) {
 
 	var operativeRegions []models.OperativeRegions = make([]models.OperativeRegions, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllOperativeRegions, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllOperativeRegions, false, params...)
 
 	if err != nil {
 		return operativeRegions, err
@@ -53,23 +53,23 @@ func (u *OperativeRegionsRepository) GetAll(params ...string) ([]models.Operativ
 	return values, nil
 }
 
-func (u *OperativeRegionsRepository) Create(operativeRegions *models.OperativeRegions) *results.ResultWithValue[*models.OperativeRegions] {
+func (u *OperativeRegionsRepository) Create(operativeRegions *models.OperativeRegions, isTemplate bool) *results.ResultWithValue[*models.OperativeRegions] {
 
-	r, id := u.AbstractRepository.Create(*operativeRegions, insertOperativeRegion, operativeRegions.GetNameArgs(), operativeRegions.SetId)
+	r, id := u.AbstractRepository.Create(*operativeRegions, insertOperativeRegion, operativeRegions.GetNameArgs(), operativeRegions.SetId, false)
 
 	operativeRegions.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *OperativeRegionsRepository) Update(state *models.OperativeRegions) *results.ResultWithValue[*models.OperativeRegions] {
+func (u *OperativeRegionsRepository) Update(state *models.OperativeRegions, isTemplate bool) *results.ResultWithValue[*models.OperativeRegions] {
 
-	r := u.AbstractRepository.Update(*state, updateUrbanizationQuery, state.GetNameArgs())
+	r := u.AbstractRepository.Update(*state, updateUrbanizationQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *OperativeRegionsRepository) Delete(id int64) *results.Result {
+func (u *OperativeRegionsRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteUrbanizationQuery)
+	return u.AbstractRepository.Delete(id, deleteUrbanizationQuery, false)
 }

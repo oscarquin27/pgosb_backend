@@ -7,5 +7,5 @@ import (
 
 type MissionFirefighterService interface {
 	abstract_handler.AbstractCRUDService[models.MissionFirefighter]
-	GetByMissionId(id int) ([]models.MissionFirefighterUser, error)
+	GetByMissionId(id int, isTemplate bool) ([]models.MissionFirefighterUser, error)
 }

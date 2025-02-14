@@ -27,8 +27,9 @@ type MissionLocationJson struct {
 	UrbId string `json:"urb_id"`
 	Urb   string `json:"urb"`
 
-	// Street string `json:"street"`
+	Street string `json:"street"`
 
+	Beach   string `json:"beach"`
 	Address string `json:"address"`
 }
 
@@ -52,6 +53,9 @@ func ModelToMissionLocationJson(s *models.MissionLocation) *MissionLocationJson 
 		Urb:          utils.GetStringFromPointer(s.Urb),
 		// Street:       utils.GetStringFromPointer(s.Street),
 		Address: utils.GetStringFromPointer(s.Address),
+
+		Street: utils.GetStringFromPointer(s.Street),
+		Beach:  utils.GetStringFromPointer(s.Beach),
 	}
 	return &station
 }
@@ -81,6 +85,8 @@ func (s *MissionLocationJson) ToModel() models.MissionLocation {
 		Sector:         &s.Sector,
 		Urb:            &s.Urb,
 		// Street:         &s.Street,
+		Street:  &s.Street,
+		Beach:   &s.Beach,
 		Address: &s.Address,
 	}
 	return station

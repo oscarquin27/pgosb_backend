@@ -44,6 +44,8 @@ type MissionSummaryJson struct {
 	NumAuthorityPerson   string   `json:"num_authority_person"`
 	NumAuthorityVehicle  string   `json:"num_authority_vehicle"`
 	StationId            string   `json:"station_id"`
+	Street               string   `json:"street"`
+	Beach                string   `json:"beach"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
@@ -210,6 +212,14 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.Commander = s.Commander.String
 	}
 
+	if s.Street.Valid {
+		service.Street = s.Street.String
+	}
+
+	if s.Beach.Valid {
+		service.Beach = s.Beach.String
+	}
+
 	return &service
 }
 
@@ -301,6 +311,15 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 		service.Sector.Valid = true
 	}
 
+	if s.Street != "" {
+		service.Street.String = s.Street
+		service.Street.Valid = true
+	}
+
+	if s.Beach != "" {
+		service.Beach.String = s.Beach
+		service.Beach.Valid = true
+	}
 	op := make([]sql.NullString, 0)
 
 	for _, i := range s.OperativesAreas {

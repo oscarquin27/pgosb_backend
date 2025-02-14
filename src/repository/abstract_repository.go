@@ -22,7 +22,7 @@ func NewAbstractRepository[T any](connPool *pgxpool.Pool) AbstractRepository[T] 
 	}
 }
 
-func (u *AbstractRepository[T]) Get(id int64, selectQuery string) *results.ResultWithValue[T] {
+func (u *AbstractRepository[T]) Get(id int64, selectQuery string, isTemmplate bool) *results.ResultWithValue[T] {
 
 	r := results.NewResultWithZeroValue[T]("Get", false, nil).Failure()
 
@@ -59,7 +59,7 @@ func (u *AbstractRepository[T]) Get(id int64, selectQuery string) *results.Resul
 	return r.Success().WithValue(register)
 }
 
-func (u *AbstractRepository[T]) GetAll(query string, params ...string) ([]T, *results.GeneralError) {
+func (u *AbstractRepository[T]) GetAll(query string, isTemplate bool, params ...string) ([]T, *results.GeneralError) {
 	var registersDefault []T = make([]T, 0)
 
 	ctx := context.Background()
@@ -102,7 +102,7 @@ func (u *AbstractRepository[T]) GetAll(query string, params ...string) ([]T, *re
 	return registers, nil
 }
 
-func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.NamedArgs, SetId func(int64)) (*results.ResultWithValue[T], int64) {
+func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.NamedArgs, SetId func(int64), isTemplate bool) (*results.ResultWithValue[T], int64) {
 
 	r := results.NewResultWithZeroValue[T]("Create-Unit", false, nil).Failure()
 
@@ -133,7 +133,7 @@ func (u *AbstractRepository[T]) Create(register T, insertQuery string, args pgx.
 	return r.Success().WithValue(register), id
 }
 
-func (u *AbstractRepository[T]) Update(register T, updateQuery string, args pgx.NamedArgs) *results.ResultWithValue[T] {
+func (u *AbstractRepository[T]) Update(register T, updateQuery string, args pgx.NamedArgs, isTemplate bool) *results.ResultWithValue[T] {
 	r := results.NewResultWithZeroValue[T]("Update-Register", false, nil).Failure()
 
 	ctx := context.Background()
@@ -167,7 +167,7 @@ func (u *AbstractRepository[T]) Update(register T, updateQuery string, args pgx.
 	return r.Success().WithValue(register)
 }
 
-func (u *AbstractRepository[T]) Delete(id int64, deleteInsert string) *results.Result {
+func (u *AbstractRepository[T]) Delete(id int64, deleteInsert string, isTemplate bool) *results.Result {
 
 	r := results.NewResult("Delete-Register", false, nil).Failure()
 

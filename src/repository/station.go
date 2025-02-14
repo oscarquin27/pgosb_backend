@@ -60,17 +60,17 @@ WHERE id = @id; `
 
 const deleteStationQuery = `DELETE FROM hq.stations WHERE id = $1`
 
-func (u *StationRepository) Get(id int64) *results.ResultWithValue[*models.Station] {
-	r := u.AbstractRepository.Get(id, selectStationQuery)
+func (u *StationRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.Station] {
+	r := u.AbstractRepository.Get(id, selectStationQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *StationRepository) GetAll(params ...string) ([]models.Station, *results.GeneralError) {
+func (u *StationRepository) GetAll(isTemplate bool, params ...string) ([]models.Station, *results.GeneralError) {
 
 	var states []models.Station = make([]models.Station, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllStationQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllStationQuery, false, params...)
 
 	if err != nil {
 		return states, err
@@ -79,22 +79,22 @@ func (u *StationRepository) GetAll(params ...string) ([]models.Station, *results
 	return values, nil
 }
 
-func (u *StationRepository) Create(state *models.Station) *results.ResultWithValue[*models.Station] {
+func (u *StationRepository) Create(state *models.Station, isTemplate bool) *results.ResultWithValue[*models.Station] {
 
-	r, id := u.AbstractRepository.Create(*state, insertStationQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertStationQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *StationRepository) Update(state *models.Station) *results.ResultWithValue[*models.Station] {
-	r := u.AbstractRepository.Update(*state, updateStationQuery, state.GetNameArgs())
+func (u *StationRepository) Update(state *models.Station, isTemplate bool) *results.ResultWithValue[*models.Station] {
+	r := u.AbstractRepository.Update(*state, updateStationQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *StationRepository) Delete(id int64) *results.Result {
+func (u *StationRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteStationQuery)
+	return u.AbstractRepository.Delete(id, deleteStationQuery, false)
 }

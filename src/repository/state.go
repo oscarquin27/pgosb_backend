@@ -35,17 +35,17 @@ const updateStateQuery = `UPDATE locations.states
 
 const deleteStateQuery = `DELETE FROM locations.states WHERE id = $1`
 
-func (u *StateRepository) Get(id int64) *results.ResultWithValue[*models.State] {
-	r := u.AbstractRepository.Get(id, selectStateQuery)
+func (u *StateRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.State] {
+	r := u.AbstractRepository.Get(id, selectStateQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *StateRepository) GetAll(params ...string) ([]models.State, *results.GeneralError) {
+func (u *StateRepository) GetAll(isTemplate bool, params ...string) ([]models.State, *results.GeneralError) {
 
 	var states []models.State = make([]models.State, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllStateQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllStateQuery, false, params...)
 
 	if err != nil {
 		return states, err
@@ -54,22 +54,22 @@ func (u *StateRepository) GetAll(params ...string) ([]models.State, *results.Gen
 	return values, nil
 }
 
-func (u *StateRepository) Create(state *models.State) *results.ResultWithValue[*models.State] {
+func (u *StateRepository) Create(state *models.State, isTemplate bool) *results.ResultWithValue[*models.State] {
 
-	r, id := u.AbstractRepository.Create(*state, insertStateQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertStateQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *StateRepository) Update(state *models.State) *results.ResultWithValue[*models.State] {
-	r := u.AbstractRepository.Update(*state, updateStateQuery, state.GetNameArgs())
+func (u *StateRepository) Update(state *models.State, isTemplate bool) *results.ResultWithValue[*models.State] {
+	r := u.AbstractRepository.Update(*state, updateStateQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *StateRepository) Delete(id int64) *results.Result {
+func (u *StateRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteStateQuery)
+	return u.AbstractRepository.Delete(id, deleteStateQuery, false)
 }

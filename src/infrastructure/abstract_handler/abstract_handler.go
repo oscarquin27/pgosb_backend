@@ -5,16 +5,17 @@ import (
 	"fdms/src/utils/results"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 type AbstractCRUDService[T any] interface {
-	Get(id int64) *results.ResultWithValue[*T]
-	GetAll(params ...string) ([]T, *results.GeneralError)
-	Create(value *T) *results.ResultWithValue[*T]
-	Update(value *T) *results.ResultWithValue[*T]
-	Delete(id int64) *results.Result
+	Get(id int64, isTemplate bool) *results.ResultWithValue[*T]
+	GetAll(isTemplate bool, params ...string) ([]T, *results.GeneralError)
+	Create(value *T, isTemplate bool) *results.ResultWithValue[*T]
+	Update(value *T, isTemplate bool) *results.ResultWithValue[*T]
+	Delete(id int64, isTemplate bool) *results.Result
 }
 
 type AbstractHandler[T any, F any] struct {
@@ -35,7 +36,9 @@ func (u *AbstractHandler[T, F]) Get(FromModel func(*T) *F,
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	r := u.service.Get(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	r := u.service.Get(id, isTemplate)
 
 	if !r.IsSuccessful {
 
@@ -60,7 +63,9 @@ func (u *AbstractHandler[T, F]) Get(FromModel func(*T) *F,
 
 func (u *AbstractHandler[T, F]) GetAll(FromModel func(*T) *F, c *gin.Context) {
 
-	allEntitys, err := u.service.GetAll()
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	allEntitys, err := u.service.GetAll(isTemplate)
 
 	if err != nil {
 
@@ -87,6 +92,8 @@ func (u *AbstractHandler[T, F]) GetAll(FromModel func(*T) *F, c *gin.Context) {
 
 func (u *AbstractHandler[T, F]) Create(model AbstactModel[T, F], FromModel func(*T) *F, c *gin.Context) {
 
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
 	if err := c.BindJSON(&model); err != nil {
 
 		logger.Warn().Err(err).Msg("Error parseando la data")
@@ -98,7 +105,7 @@ func (u *AbstractHandler[T, F]) Create(model AbstactModel[T, F], FromModel func(
 
 	entity := model.ToModel()
 
-	r := u.service.Create(&entity)
+	r := u.service.Create(&entity, isTemplate)
 
 	if !r.IsSuccessful {
 
@@ -116,6 +123,8 @@ func (u *AbstractHandler[T, F]) Create(model AbstactModel[T, F], FromModel func(
 
 func (u *AbstractHandler[T, F]) Update(model AbstactModel[T, F], FromModel func(*T) *F, c *gin.Context) {
 
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
 	if err := c.BindJSON(&model); err != nil {
 
 		logger.Warn().Err(err).Msg("error parseando datos")
@@ -126,7 +135,7 @@ func (u *AbstractHandler[T, F]) Update(model AbstactModel[T, F], FromModel func(
 
 	entity := model.ToModel()
 
-	r := u.service.Update(&entity)
+	r := u.service.Update(&entity, isTemplate)
 
 	if !r.IsSuccessful {
 
@@ -150,7 +159,9 @@ func (u *AbstractHandler[T, F]) Delete(c *gin.Context) {
 
 	id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
-	r := u.service.Delete(id)
+	isTemplate := strings.Contains(c.Request.URL.Path, "template")
+
+	r := u.service.Delete(id, isTemplate)
 
 	if !r.IsSuccessful {
 

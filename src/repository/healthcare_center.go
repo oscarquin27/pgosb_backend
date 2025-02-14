@@ -60,17 +60,17 @@ WHERE code = @code; `
 
 const deleteHealthcareCenterQuery = `DELETE FROM hq.centers WHERE code = $1`
 
-func (u *HealthcareCenterRepository) Get(id int64) *results.ResultWithValue[*models.HealthcareCenter] {
-	r := u.AbstractRepository.Get(id, selectHealthcareCenterQuery)
+func (u *HealthcareCenterRepository) Get(id int64, isTemplate bool) *results.ResultWithValue[*models.HealthcareCenter] {
+	r := u.AbstractRepository.Get(id, selectHealthcareCenterQuery, false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 
 }
-func (u *HealthcareCenterRepository) GetAll(params ...string) ([]models.HealthcareCenter, *results.GeneralError) {
+func (u *HealthcareCenterRepository) GetAll(isTemplate bool, params ...string) ([]models.HealthcareCenter, *results.GeneralError) {
 
 	var states []models.HealthcareCenter = make([]models.HealthcareCenter, 0)
 
-	values, err := u.AbstractRepository.GetAll(selectAllHealthcareCenterQuery, params...)
+	values, err := u.AbstractRepository.GetAll(selectAllHealthcareCenterQuery, false, params...)
 
 	if err != nil {
 		return states, err
@@ -79,22 +79,22 @@ func (u *HealthcareCenterRepository) GetAll(params ...string) ([]models.Healthca
 	return values, nil
 }
 
-func (u *HealthcareCenterRepository) Create(state *models.HealthcareCenter) *results.ResultWithValue[*models.HealthcareCenter] {
+func (u *HealthcareCenterRepository) Create(state *models.HealthcareCenter, isTemplate bool) *results.ResultWithValue[*models.HealthcareCenter] {
 
-	r, id := u.AbstractRepository.Create(*state, insertHealthcareCenterQuery, state.GetNameArgs(), state.SetId)
+	r, id := u.AbstractRepository.Create(*state, insertHealthcareCenterQuery, state.GetNameArgs(), state.SetId, false)
 
 	state.Id = id
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *HealthcareCenterRepository) Update(state *models.HealthcareCenter) *results.ResultWithValue[*models.HealthcareCenter] {
-	r := u.AbstractRepository.Update(*state, updateHealthcareCenterQuery, state.GetNameArgs())
+func (u *HealthcareCenterRepository) Update(state *models.HealthcareCenter, isTemplate bool) *results.ResultWithValue[*models.HealthcareCenter] {
+	r := u.AbstractRepository.Update(*state, updateHealthcareCenterQuery, state.GetNameArgs(), false)
 
 	return results.NewResultWithValue(r.StepIdentifier, r.IsSuccessful, &r.Value, r.Err)
 }
 
-func (u *HealthcareCenterRepository) Delete(id int64) *results.Result {
+func (u *HealthcareCenterRepository) Delete(id int64, isTemplate bool) *results.Result {
 
-	return u.AbstractRepository.Delete(id, deleteHealthcareCenterQuery)
+	return u.AbstractRepository.Delete(id, deleteHealthcareCenterQuery, false)
 }
