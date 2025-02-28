@@ -47,6 +47,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	mission_report_hierarchical_handler "fdms/cmd/api/handlers"
+	mission_report_agregations_handler "fdms/cmd/api/handlers/mission_report_agregations"
 )
 
 func ZerologMiddleware() gin.HandlerFunc {
@@ -112,6 +115,8 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	missionAuthorityServiceService := repository.NewMissionAuthorityServiceService(db)
 
+	missionReportAggregationsService := repository.NewMissionReportAggregationsService(db)
+
 	authorityController := authority_handler.NewAuthorityController(authorityService)
 
 	missionController := mission_handlers.NewMissionController(missionService)
@@ -153,6 +158,11 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 
 	AuthController := auth_handlers.NewAuthController(auth)
 
+	missionReportHierarchicalService := repository.NewMissionReportHierarchicalService(db)
+	missionReportHierarchicalController := mission_report_hierarchical_handler.NewMissionReportHierarchicalController(missionReportHierarchicalService)
+
+	missionReportAggregationsController := mission_report_agregations_handler.NewMissionReportAggregationsController(missionReportAggregationsService)
+
 	conf.AllowCredentials = true
 
 	conf.AllowOrigins = []string{"https://gres.local.net:8083", "http://localhost:5173", "http://localhost:5175",
@@ -171,6 +181,10 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 	router.GET("/metrics", gin.WrapH(promhttp.Handler()))
 
 	v1 := router.Group("/api/v1")
+
+	missionReportHierarchicalController.RegisterRoutes(router.Group("/api/v1"))
+
+	missionReportAggregationsController.RegisterRoutes(router.Group("/api/v1"))
 
 	authGroup := v1.Group("/auth")
 	{
