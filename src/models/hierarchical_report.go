@@ -53,6 +53,7 @@ type MissionDetail struct {
 	People                         []Person         `json:"people"`
 	Vehicles                       []VehicleReport  `json:"vehicles"`
 	Infrastructures                []Infrastructure `json:"infrastructures"`
+	CancelReason                   string           `json:"cancel_reason"`
 }
 
 // Firefighter represents firefighter information

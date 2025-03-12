@@ -1,12 +1,12 @@
 http:
-  port: 8082
+  port: 5700
   main_domain: "pruebas.gres.net"
   enable_ssl: true
-  ssl_cert: "./config/pruebas.local.sypago.net.pem"
-  ssl_key: "./config/pruebas.local.sypago.net-key.pem"
+  ssl_cert: "./config/pruebas.gres.net.pem"
+  ssl_key: "./config/pruebas.gres.net-key.pem"
 
 database:
-  connection_string: "dbname=postgres user=postgres password=postgres host=127.0.0.1 port=5435 pool_max_conns=10"
+  connection_string: "dbname=postgres user=postgres password=postgres host=localhost port=5435 pool_max_conns=10"
 
 keycloak:
   address: "http://localhost:8442"

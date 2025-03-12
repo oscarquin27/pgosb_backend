@@ -202,6 +202,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 		m.injured,
 		m.transported,
 		m.deceased,
+		m.cancel_reason,
 		
 		-- Units
 		COALESCE((
@@ -218,7 +219,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 					'name', COALESCE(concat(u.first_name, ' ', u.last_name), ''),
 					'document_id', COALESCE(u.legal_id, ''),
 					'role', COALESCE(f.service_role, ''),
-					'team', COALESCE(u.code, ''),
+					'team', COALESCE(u.personal_code, ''),
 					'rank', COALESCE(u."rank", '')
 					
 				)
@@ -365,7 +366,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 		var firstServiceJSON, firefightersJSON, peopleJSON, vehiclesJSON, infrastructuresJSON []byte
 		var originLocationJSON, destinationLocationJSON, carecenterLocationJSON []byte
 		var units []string
-		var code, level, peaceQuadrant, description sql.NullString
+		var code, level, peaceQuadrant, description, cancelReason sql.NullString
 		var operativeAreas []sql.NullString
 
 		err := rows.Scan(
@@ -381,6 +382,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 			&injured,
 			&transported,
 			&deceased,
+			&cancelReason,
 			&units,
 			&firefightersJSON,
 			&firstServiceJSON,
@@ -396,6 +398,9 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 		}
 
 		// Set string fields
+		if cancelReason.Valid {
+			mission.CancelReason = cancelReason.String
+		}
 		mission.Code = code.String
 		mission.Level = level.String
 		mission.PeaceQuadrant = peaceQuadrant.String
