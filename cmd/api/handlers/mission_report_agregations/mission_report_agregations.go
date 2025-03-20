@@ -28,6 +28,8 @@ func (c *MissionReportAggregationsController) RegisterRoutes(router *gin.RouterG
 		group.POST("/antares/in", c.GetAntaresAggregation)
 		group.POST("/station/in", c.GetStationAggregation)
 		group.POST("/antares-type/in", c.GetAntaresTypeAggregation)
+		group.POST("/municipality/in", c.GetMunicipalityAggregation)
+		group.POST("/parish/in", c.GetParishAggregation)
 	}
 }
 
@@ -78,6 +80,54 @@ func (c *MissionReportAggregationsController) GetAntaresAggregation(ctx *gin.Con
 
 	// Convert to JSON format
 	jsonReport := api_models.ModelToAntaresAggregationJsonList(report)
+	ctx.JSON(http.StatusOK, jsonReport)
+}
+
+func (c *MissionReportAggregationsController) GetMunicipalityAggregation(ctx *gin.Context) {
+	var missionIds []string
+
+	if err := ctx.ShouldBindJSON(&missionIds); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(missionIds) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "mission_ids is required"})
+		return
+	}
+
+	report, err := c.service.GetMunicipalityOriginByMissionIds(missionIds)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Convert to JSON format
+	jsonReport := api_models.ModelToMunicipalityTypeAggregationJsonList(report)
+	ctx.JSON(http.StatusOK, jsonReport)
+}
+
+func (c *MissionReportAggregationsController) GetParishAggregation(ctx *gin.Context) {
+	var missionIds []string
+
+	if err := ctx.ShouldBindJSON(&missionIds); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(missionIds) == 0 {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "mission_ids is required"})
+		return
+	}
+
+	report, err := c.service.GetParishOriginByMissionIds(missionIds)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Convert to JSON format
+	jsonReport := api_models.ModelToParishTypeAggregationJsonList(report)
 	ctx.JSON(http.StatusOK, jsonReport)
 }
 

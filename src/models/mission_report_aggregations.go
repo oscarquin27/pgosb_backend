@@ -16,6 +16,10 @@ type AntaresStationAggregation struct {
 	Injured     sql.NullInt64 `db:"injured"`
 	Transported sql.NullInt64 `db:"transported"`
 	Deceased    sql.NullInt64 `db:"deceased"`
+	MunicipalityOrigin sql.NullString `db:"municipality_origin"`
+	ParishOrigin 	sql.NullString `db:"parish_origin"`
+	MunicipalityDestiny sql.NullString `db:"municipality_destiny"`
+	ParishDestiny sql.NullString `db:"parish_destiny"`
 }
 
 // AntaresAggregation represents the result of the antares query
@@ -23,6 +27,16 @@ type AntaresStationAggregation struct {
 type AntaresAggregation struct {
 	AntaresId   sql.NullInt64  `db:"antares_id"`
 	AntaresName sql.NullString `db:"antares_name"`
+	Count       int64          `db:"count"`
+}
+
+type MunicipalityOriginAggregation struct {
+	MunicipalityOrigin   sql.NullString  `db:"municipality_origin"`
+	Count       int64          `db:"count"`
+}
+
+type ParishOriginAggregation struct {
+	ParishOrigin   sql.NullString  `db:"parish_origin"`
 	Count       int64          `db:"count"`
 }
 

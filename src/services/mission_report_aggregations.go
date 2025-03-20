@@ -14,4 +14,9 @@ type MissionReportAggregationsService interface {
 
 	// GetAntaresTypeByMissionIds returns aggregated data grouped by antares type
 	GetAntaresTypeByMissionIds(missionIds []string) ([]models.AntaresTypeAggregation, error)
+
+	GetMunicipalityOriginByMissionIds(missionIds []string) ([]models.MunicipalityOriginAggregation, error)
+
+	GetParishOriginByMissionIds(missionIds []string) ([]models.ParishOriginAggregation, error)
+
 }

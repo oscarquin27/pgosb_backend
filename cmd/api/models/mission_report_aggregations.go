@@ -17,6 +17,10 @@ type AntaresStationAggregationJson struct {
 	Transported         string `json:"transported"`
 	Deceased            string `json:"deceased"`
 	Count               string `json:"count"`
+	MunicipalityOrigin  string `json:"municipality_origin"`
+	ParishOrigin 		string `json:"parish_origin"`
+	MunicipalityDestiny string `json:"municipality_destiny"`
+	ParishDestiny		string `json:"parish_destiny"`
 }
 
 // ModelToAntaresStationAggregationJson converts from database model to JSON model
@@ -59,6 +63,22 @@ func ModelToAntaresStationAggregationJson(s models.AntaresStationAggregation) *A
 
 	if s.Deceased.Valid {
 		result.Deceased = utils.ParseInt64String(s.Deceased.Int64)
+	}
+
+	if s.MunicipalityOrigin.Valid {
+		result.MunicipalityOrigin = s.MunicipalityOrigin.String
+	}
+
+	if s.ParishOrigin.Valid {
+		result.ParishOrigin = s.ParishOrigin.String
+	}
+
+	if s.MunicipalityDestiny.Valid {
+		result.MunicipalityDestiny = s.MunicipalityDestiny.String
+	}
+
+	if s.ParishDestiny.Valid {
+		result.ParishDestiny = s.ParishDestiny.String
 	}
 
 	return &result
@@ -172,4 +192,56 @@ func ModelToAntaresTypeAggregationJsonList(models []models.AntaresTypeAggregatio
 		result = append(result, *jsonModel)
 	}
 	return result
+}
+
+type MunicipalityOriginAggregationJson struct {
+	MunicipalityOrigin  string `json:"municipality_origin"`
+	Count               string `json:"count"`
+}
+
+type ParishOriginAggregationJson struct {
+	ParishOrigin        string `json:"parish_origin"`
+	Count               string `json:"count"`
+}
+
+func ModelMunicipalityOriginAggregationJson(s models.MunicipalityOriginAggregation) *MunicipalityOriginAggregationJson {
+	result := MunicipalityOriginAggregationJson{
+		Count: utils.ParseInt64String(s.Count),
+	}
+
+	if s.MunicipalityOrigin.Valid {
+		result.MunicipalityOrigin = s.MunicipalityOrigin.String
+	}
+
+	return &result
+}
+
+func ModelToMunicipalityTypeAggregationJsonList(models []models.MunicipalityOriginAggregation) []MunicipalityOriginAggregationJson {
+	result := make([]MunicipalityOriginAggregationJson, 0, len(models))
+	for _, m := range models {
+		jsonModel := ModelMunicipalityOriginAggregationJson(m)
+		result = append(result, *jsonModel)
+	}
+	return result
+}
+
+func ModelToParishTypeAggregationJsonList(models []models.ParishOriginAggregation) []ParishOriginAggregationJson {
+	result := make([]ParishOriginAggregationJson, 0, len(models))
+	for _, m := range models {
+		jsonModel := ModelParishOriginAggregationJson(m)
+		result = append(result, *jsonModel)
+	}
+	return result
+}
+
+func ModelParishOriginAggregationJson(s models.ParishOriginAggregation) *ParishOriginAggregationJson {
+	result := ParishOriginAggregationJson{
+		Count: utils.ParseInt64String(s.Count),
+	}
+
+	if s.ParishOrigin.Valid {
+		result.ParishOrigin = s.ParishOrigin.String
+	}
+
+	return &result
 }

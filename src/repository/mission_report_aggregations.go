@@ -61,11 +61,11 @@ func (r *MissionReportAggregationsRepository) GetAntaresStationByMissionIds(miss
 
 	inClause := createInClauseWithParams(1, len(missionIds))
 	query := fmt.Sprintf(`
-	SELECT antares_id, antares_name, station_id, station_name, station_abbreviation, unharmed, injured, transported, deceased, count(1)
+	SELECT antares_id, antares_name, station_id, station_name, station_abbreviation, unharmed, injured, transported, deceased, count(1), municipality_origin, parish_origin, municipality_destiny, parish_destiny
 	FROM missions.vw_mission_report_summary
 	WHERE antares_id IS NOT NULL 
 		AND mission_id IN %s
-	GROUP BY (antares_id, antares_name, station_id, station_name, station_abbreviation, unharmed, injured, transported, deceased)
+	GROUP BY (antares_id, antares_name, station_id, station_name, station_abbreviation, unharmed, injured, transported, deceased, municipality_origin, parish_origin, municipality_destiny, parish_destiny)
 	`, inClause)
 
 	args := stringSliceToInterfaceSlice(missionIds)
@@ -110,6 +110,72 @@ func (r *MissionReportAggregationsRepository) GetAntaresByMissionIds(missionIds 
 	}
 
 	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.AntaresAggregation])
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (r *MissionReportAggregationsRepository) GetMunicipalityOriginByMissionIds(missionIds []string) ([]models.MunicipalityOriginAggregation, error) {
+	ctx := context.Background()
+
+	conn, err := r.db.Acquire(ctx)
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	inClause := createInClauseWithParams(1, len(missionIds))
+	query := fmt.Sprintf(`
+	SELECT municipality_origin, count(1)
+	FROM missions.vw_mission_report_summary
+	WHERE antares_id IS NOT NULL
+		AND mission_id IN %s
+	GROUP BY (municipality_origin)
+	`, inClause)
+
+	args := stringSliceToInterfaceSlice(missionIds)
+	rows, err := conn.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.MunicipalityOriginAggregation])
+	if err != nil {
+		return nil, err
+	}
+
+	return results, nil
+}
+
+func (r *MissionReportAggregationsRepository) GetParishOriginByMissionIds(missionIds []string) ([]models.ParishOriginAggregation, error) {
+	ctx := context.Background()
+
+	conn, err := r.db.Acquire(ctx)
+	defer conn.Release()
+
+	if err != nil {
+		return nil, err
+	}
+
+	inClause := createInClauseWithParams(1, len(missionIds))
+	query := fmt.Sprintf(`
+	SELECT parish_origin, count(1)
+	FROM missions.vw_mission_report_summary
+	WHERE antares_id IS NOT NULL
+		AND mission_id IN %s
+	GROUP BY (parish_origin)
+	`, inClause)
+
+	args := stringSliceToInterfaceSlice(missionIds)
+	rows, err := conn.Query(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+
+	results, err := pgx.CollectRows(rows, pgx.RowToStructByName[models.ParishOriginAggregation])
 	if err != nil {
 		return nil, err
 	}
