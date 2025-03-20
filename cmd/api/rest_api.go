@@ -323,6 +323,7 @@ func Run(db *pgxpool.Pool, auth *keycloak.KeycloakAuthenticationService) {
 		mission.PUT("/update", missionController.Update)
 		mission.DELETE("/:id", missionController.Delete)
 		mission.GET("/relevant/:id", missionServiceController.GetRelevantMissions)
+		mission.GET("/special-operations/all", missionController.GetSpecialOperationList)
 	}
 
 	missionTemplate := v1.Group("mission/template")

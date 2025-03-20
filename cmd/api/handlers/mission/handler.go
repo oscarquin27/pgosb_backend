@@ -143,3 +143,13 @@ func (u *MissionController) Delete(c *gin.Context) {
 	c.JSON(http.StatusOK, "Misión eliminado satisfactoriamente")
 
 }
+
+func (u *MissionController) GetSpecialOperationList(c *gin.Context) {
+	operations, err := u.missionService.GetSpecialOperationList()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, err.Error())
+		return
+	}
+	c.JSON(http.StatusOK, operations)
+}

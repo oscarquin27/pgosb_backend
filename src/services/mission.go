@@ -10,4 +10,5 @@ type MissionService interface {
 	Create(user *models.Mission, isTemplate bool) (*models.Mission, error)
 	Update(user *models.Mission, isTemplate bool) error
 	Delete(id int64, isTemplate bool) error
+	GetSpecialOperationList() ([]string, error)
 }

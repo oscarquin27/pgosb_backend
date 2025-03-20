@@ -45,7 +45,8 @@ const (
 		is_important, 
 		pending_for_data,
 		cancel_reason,
-		manual_mission_date
+		manual_mission_date,
+		special_operation
 		
 		)
         VALUES (
@@ -71,7 +72,8 @@ const (
 		@is_important, 
 		@pending_for_data,
 		@cancel_reason,
-		@manual_mission_date 
+		@manual_mission_date,
+		@special_operation
 		
 		
 		) 
@@ -103,7 +105,8 @@ const (
 		is_important, 
 		pending_for_data,
 		cancel_reason,
-		manual_mission_date
+		manual_mission_date,
+		special_operation
 		
 		)
         VALUES (
@@ -129,7 +132,8 @@ const (
 		@is_important, 
 		@pending_for_data,
 		@cancel_reason,
-		@manual_mission_date 
+		@manual_mission_date,
+		@special_operation
 		
 		
 		) 
@@ -159,7 +163,8 @@ const (
 		is_important = @is_important,
 		pending_for_data = @pending_for_data,
 		cancel_reason = @cancel_reason,
-		manual_mission_date = @manual_mission_date
+		manual_mission_date = @manual_mission_date,
+		special_operation = @special_operation
 	
 		WHERE id = @id
 	`
@@ -188,7 +193,8 @@ const (
 		is_important = @is_important,
 		pending_for_data = @pending_for_data,
 		cancel_reason = @cancel_reason,
-		manual_mission_date = @manual_mission_date
+		manual_mission_date = @manual_mission_date,
+		special_operation = @special_operation
 	
 		WHERE id = @id
 	`
@@ -431,4 +437,38 @@ func (u *MissionRepository) Delete(id int64, isTemplate bool) error {
 	}
 
 	return nil
+}
+
+func (u *MissionRepository) GetSpecialOperationList() ([]string, error) {
+	ctx := context.Background()
+
+	conn, err := u.db.Acquire(ctx)
+	if err != nil {
+		return nil, err
+	}
+	defer conn.Release()
+
+	query := "SELECT operation FROM missions.special_operations"
+
+	rows, err := conn.Query(ctx, query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var operations []string
+
+	for rows.Next() {
+		var operation string
+		if err := rows.Scan(&operation); err != nil {
+			return nil, err
+		}
+		operations = append(operations, operation)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return operations, nil
 }

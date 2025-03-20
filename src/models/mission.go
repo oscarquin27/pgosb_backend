@@ -47,6 +47,8 @@ type Mission struct {
 
 	PendingForData sql.NullBool   `json:"pending_for_data" db:"pending_for_data"`
 	CanceledReason sql.NullString `json:"cancel_reason" db:"cancel_reason"`
+
+	SpecialOperation sql.NullString `json:"special_operation" db:"special_operation"`
 }
 
 func (m *Mission) SetId(id int64) {
@@ -128,6 +130,10 @@ func (m *Mission) GetNameArgs() pgx.NamedArgs {
 	}
 	if m.CanceledReason.Valid {
 		args["cancel_reason"] = m.CanceledReason.String
+	}
+
+	if m.SpecialOperation.Valid {
+		args["special_operation"] = m.SpecialOperation.String
 	}
 
 	return args

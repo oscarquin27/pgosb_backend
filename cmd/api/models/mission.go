@@ -32,6 +32,8 @@ type MissionJson struct {
 	PeaceQuadrant      string `json:"peace_quadrant"`
 	CanceledReason     string `json:"cancel_reason"`
 	PendingForData     bool   `json:"pending_for_data"`
+
+	SpecialOperation string `json:"special_operation"`
 }
 
 func ModelToMissionJson(s models.Mission) *MissionJson {
@@ -133,6 +135,10 @@ func ModelToMissionJson(s models.Mission) *MissionJson {
 		mission.CanceledReason = s.CanceledReason.String
 	}
 
+	if s.SpecialOperation.Valid {
+		mission.SpecialOperation = s.SpecialOperation.String
+	}
+
 	return &mission
 }
 
@@ -190,7 +196,7 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.Unharmed.Int64 = utils.ParseInt64(s.Unharmed)
 		mission.Unharmed.Valid = true
 	} else {
-		mission.Unharmed.Valid = false
+		mission.Unharmed.Valid = true
 		mission.Unharmed.Int64 = 0
 	}
 
@@ -198,7 +204,7 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.Injured.Int64 = utils.ParseInt64(s.Injured)
 		mission.Injured.Valid = true
 	} else {
-		mission.Injured.Valid = false
+		mission.Injured.Valid = true
 		mission.Injured.Int64 = 0
 	}
 
@@ -206,7 +212,7 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.Transported.Int64 = utils.ParseInt64(s.Transported)
 		mission.Transported.Valid = true
 	} else {
-		mission.Transported.Valid = false
+		mission.Transported.Valid = true
 		mission.Transported.Int64 = 0
 	}
 
@@ -214,7 +220,7 @@ func (s *MissionJson) ToModel() models.Mission {
 		mission.Deceased.Int64 = utils.ParseInt64(s.Deceased)
 		mission.Deceased.Valid = true
 	} else {
-		mission.Deceased.Valid = false
+		mission.Deceased.Valid = true
 		mission.Deceased.Int64 = 0
 	}
 
@@ -289,6 +295,11 @@ func (s *MissionJson) ToModel() models.Mission {
 
 	mission.PendingForData.Bool = s.PendingForData
 	mission.PendingForData.Valid = true
+
+	if s.SpecialOperation != "" {
+		mission.SpecialOperation.String = s.SpecialOperation
+		mission.SpecialOperation.Valid = true
+	}
 
 	return mission
 }

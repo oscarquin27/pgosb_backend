@@ -46,6 +46,8 @@ type MissionSummaryJson struct {
 	StationId            string   `json:"station_id"`
 	Street               string   `json:"street"`
 	Beach                string   `json:"beach"`
+
+	SpecialOperation string `json:"special_operation"`
 }
 
 func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
@@ -220,6 +222,10 @@ func ModelToMissionSummaryJson(s models.MissionSummary) *MissionSummaryJson {
 		service.Beach = s.Beach.String
 	}
 
+	if s.SpecialOperation.Valid {
+		service.SpecialOperation = s.SpecialOperation.String
+	}
+
 	return &service
 }
 
@@ -331,6 +337,11 @@ func (s *MissionSummaryJson) ToModel() models.MissionSummary {
 	}
 
 	service.OperativesAreas = op
+
+	if s.SpecialOperation != "" {
+		service.SpecialOperation.String = s.SpecialOperation
+		service.SpecialOperation.Valid = true
+	}
 
 	return service
 }
