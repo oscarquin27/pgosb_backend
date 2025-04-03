@@ -339,7 +339,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 				)
 			)
 			FROM missions.infrastructure i
-			WHERE i.mission_id IN (%s)
+			WHERE i.mission_id = m.id
 		), '[]'::jsonb) AS infrastructures
 		
 	FROM missions.mission m
@@ -350,7 +350,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 
 	ids := missionIdsToQuery(missionIds)
 	stationId := strconv.FormatInt(station.ID, 10)
-	missionsQuery = fmt.Sprintf(missionsQuery, ids, stationId, ids)
+	missionsQuery = fmt.Sprintf(missionsQuery, stationId, ids)
 
 	//fmt.Println(missionsQuery)
 
@@ -401,7 +401,7 @@ func (r *MissionReportHierarchicalRepository) getStationWithMissions(
 		if cancelReason.Valid {
 			mission.CancelReason = cancelReason.String
 		}
-		mission.Code = code.String
+		mission.Code = strconv.FormatInt(mission.ID, 10)
 		mission.Level = level.String
 		mission.PeaceQuadrant = peaceQuadrant.String
 		mission.Description = description.String
